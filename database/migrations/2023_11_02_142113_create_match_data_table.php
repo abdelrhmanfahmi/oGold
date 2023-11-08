@@ -16,6 +16,9 @@ return new class extends Migration
             $table->text('access_token')->nullable();
             $table->unsignedInteger('partner_id')->nullable();
             $table->text('offer_uuid')->nullable();
+            $table->text('oneTimeToken')->nullable();
+            $table->text('co_auth')->nullable();
+            $table->text('trading_api_token')->nullable();
             $table->timestamps();
         });
     }

@@ -50,6 +50,28 @@ class MatchService {
         }
     }
 
+    public function loginAccount($data)
+    {
+        try{
+            $client = new \GuzzleHttp\Client();
+            $url = 'https://platform.ogold.app/manager/co-login';
+            $response = $client->request('POST', $url, [
+                'headers' => ['Content-Type' => 'application/json' , 'Accept' => 'application/json'],
+                'json' => [
+                    'email' => $data['email'],
+                    'password' => $data['password'],
+                    'brokerId' => "97",
+                ]
+            ]);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+            $dataMatch = MatchData::first();
+            $dataMatch->update(['co_auth' => $decodedData->token , 'trading_api_token' => $decodedData->accounts[0]->tradingApiToken]);
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
     public function createUserInMatch($data)
     {
         try{
@@ -71,6 +93,9 @@ class MatchService {
             $account->bankAccount = $data['bankAccount'];
             $account->bankName = $data['bankName'];
             $account->accountName = $data['accountName'];
+            $account->password = $data['password'];
+            $account->role = "ROLE_USER";
+            // $account->clientType = "Professional";
             $url = 'https://bo-mtrwl.match-trade.com/documentation/process/api/accounts/sync';
             $response = $client->request('POST', $url, [
                 'headers' => ['Content-Type' => 'application/json' , 'Authorization' => 'Bearer '. $match_data->access_token],
@@ -80,8 +105,11 @@ class MatchService {
                     'account' => $account,
                 ]
             ]);
-            $response->getBody()->getContents();
-            return true;
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+            $decodedData->oneTimeToken;
+            $dataMatch = MatchData::first();
+            $dataMatch->update(['oneTimeToken' => $decodedData->oneTimeToken]);
         }catch(\Exception $e){
             return $e;
         }

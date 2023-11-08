@@ -37,6 +37,9 @@ class AuthController extends Controller
                 ], 401);
             }
 
+            //login in match apis
+            $this->matchService->loginAccount($credentials);
+
             //check if this credentials belongs to this user type
             if (Auth::user()->type != Request()->type) {
                 auth()->logout();
