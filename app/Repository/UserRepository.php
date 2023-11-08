@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repository;
 
 use App\Models\User;
 use App\Filters\UserFilter;
@@ -51,6 +51,15 @@ class UserRepository implements UserRepositoryInterface
     public function find($model_id): ?object
     {
         return $this->model->find($model_id);
+    }
+
+    /**
+     * @param int $model_id
+     * @return object
+     */
+    public function findByEmail($email): ?object
+    {
+        return $this->model->where('email' , $email)->first();
     }
 
     /**

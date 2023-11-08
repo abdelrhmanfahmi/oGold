@@ -22,6 +22,13 @@ interface UserRepositoryInterface
      */
     public function find(int $model_id): ?object;
 
+
+    /**
+     * @param int $model_id
+     * @return object
+     */
+    public function findByEmail(string $email): ?object;
+
     // public function delete($mode_id);
     /**
      * @param array $attributes

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegisterRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,22 +22,22 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|min:2|max:100|string',
-            'surname' => 'nullable|min:2|max:100|string',
-            'email' => 'required|min:3|max:50|email|unique:users,email',
-            'password' => 'required|min:7|confirmed',
-            'phone' => 'nullable|numeric',
-            'dateOfBirth' => 'nullable|date',
-            'country' => 'nullable|string',
-            'state' => 'nullable|string',
-            'city' => 'nullable|string',
+            'name' => 'min:2|max:100|string',
+            'surname' => 'min:2|max:100|string',
+            'email' => 'min:3|max:50|email|unique:users,email,'. $this->id,
+            'password' => 'min:7|confirmed',
+            'phone' => 'numeric',
+            'dateOfBirth' => 'date',
+            'country' => 'string',
+            'state' => 'string',
+            'city' => 'string',
             'address' => 'nullable|string',
             'bankName' => 'nullable|string',
             'bankAddress' => 'nullable|string',
             'bankSwiftCode' => 'nullable|string',
             'bankAccount' => 'nullable|string',
             'accountName' => 'nullable|string',
-            'type' => 'required|min:5|max:10|in:admin,client,provider'
+            'type' => 'min:5|max:10|in:admin,client,provider'
         ];
     }
 }
