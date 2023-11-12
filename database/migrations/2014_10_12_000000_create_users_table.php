@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('bankSwiftCode')->nullable();
             $table->string('bankAccount')->nullable();
             $table->string('accountName')->nullable();
-            $table->enum('type' , ['admin' , 'client' , 'provider']);
+            $table->enum('type' , ['admin' , 'client' , 'refinery']);
             $table->string('client_uuid')->nullable();
             $table->rememberToken();
             $table->timestamps();

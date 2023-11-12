@@ -2,19 +2,18 @@
 
 namespace App\Repository\Interfaces;
 
-use App\Models\User;
+use App\Models\Setting;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-interface UserRepositoryInterface
+interface SettingRepositoryInterface
 {
     /**
      * @param int $count
      * @param bool $paginate
-     * @param array $relations
      * @return object
      */
-    public function all(int $count, bool $paginate,array $relations);
+    public function all(int $count, bool $paginate);
 
     /**
      * @param int $model_id
@@ -22,26 +21,18 @@ interface UserRepositoryInterface
      */
     public function find(int $model_id): ?object;
 
-
-    /**
-     * @param int $model_id
-     * @return object
-     */
-    public function findByEmail(string $email): ?object;
-
     /**
      * @param array $attributes
      * @return object
      */
-
     public function create(array $attributes): ?object;
 
     /**
-     * @param User  $model
+     * @param Setting  $model
      * @param array $attributes
      * @return object
      */
-    public function update(User $model, array $attribute): object;
+    public function update(Setting $model, array $attribute): object;
 
     /**
      * @param int $model_id

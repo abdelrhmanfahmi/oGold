@@ -76,7 +76,7 @@ class AuthController extends Controller
             }else if($user->type == 'client'){
                 $user->assignRole('client');
             }else{
-                $user->assignRole('provider');
+                $user->assignRole('refinery');
             }
 
             $token = Auth::login($user);

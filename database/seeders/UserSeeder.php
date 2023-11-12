@@ -56,10 +56,10 @@ class UserSeeder extends Seeder
 
         $client->assignRole('client');
 
-        $provider = User::create([
-            'name' => 'provider',
-            'surname' => 'provider_surname',
-            'email' => 'provider@gmail.com',
+        $refinery = User::create([
+            'name' => 'refinery',
+            'surname' => 'refinery_surname',
+            'email' => 'refinery@gmail.com',
             'password' => Hash::make('12345678'),
             'phone' => '01228343407',
             'dateOfBirth' => '1999-09-20',
@@ -72,9 +72,9 @@ class UserSeeder extends Seeder
             'bankSwiftCode' => 'bank swift code data three',
             'bankAccount' => 'bank account data three',
             'accountName' => 'account name data three',
-            'type' => 'provider'
+            'type' => 'refinery'
         ]);
 
-        $provider->assignRole('provider');
+        $refinery->assignRole('refinery');
     }
 }
