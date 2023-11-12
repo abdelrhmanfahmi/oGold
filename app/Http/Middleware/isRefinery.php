@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class isProvider
+class isRefinery
 {
     /**
      * Handle an incoming request.
@@ -17,7 +17,7 @@ class isProvider
     public function handle(Request $request, Closure $next, $guard = 'api')
     {
         if (Auth::guard($guard)->check()) {
-            if (Auth::user()->type == 'provider') {
+            if (Auth::user()->type == 'refinery') {
                 return $next($request);
             }
                 return response()->json(['message' => 'Unauthorized' , 403]);
