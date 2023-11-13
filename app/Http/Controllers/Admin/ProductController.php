@@ -7,11 +7,12 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Repository\Interfaces\ProductRepositoryInterface;
+use App\Services\FileService;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function __construct(private ProductRepositoryInterface $productRepository)
+    public function __construct(private ProductRepositoryInterface $productRepository , private FileService $fileService)
     {
         $this->middleware('auth:api');
     }
@@ -36,6 +37,10 @@ class ProductController extends Controller
     {
         try{
             $data = $request->validated();
+            if($request->hasFile('image')){
+                $fileName = $this->fileService->storeFile($data['image']);
+                $data['image'] = $fileName;
+            }
             $this->productRepository->create($data);
             return response()->json(['message' => 'Product Created Successfully']);
         }catch(\Exception $e){
@@ -59,6 +64,10 @@ class ProductController extends Controller
         try{
             $data = $request->validated();
             $model = $this->productRepository->find($id , []);
+            if($request->has('image')){
+                $fileName = $this->fileService->updateFile($data['image'] , $model);
+                $data['image'] = $fileName;
+            }
             $this->productRepository->update($model , $data);
             return response()->json(['message' => 'Product Updated Successfully']);
         }catch(\Exception $e){
@@ -69,6 +78,7 @@ class ProductController extends Controller
     public function destroy($id)
     {
         try{
+            $this->fileService->deleteFileFromUploads($id , $this->productRepository);
             $this->productRepository->delete($id);
             return response()->json(['message' => 'Product Deleted Successfully']);
         }catch(\Exception $e){

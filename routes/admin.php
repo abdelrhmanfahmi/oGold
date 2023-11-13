@@ -15,7 +15,7 @@ $router->group(['prefix' => 'products' ,'namespace' => 'App\Http\Controllers\Adm
     $router->get('/', ['as' => 'products.index', 'uses' => 'ProductController@index']);
     $router->post('/', ['as' => 'products.store', 'uses' => 'ProductController@store']);
     $router->get('/{id}', ['as' => 'products.show', 'uses' => 'ProductController@show']);
-    $router->put('/{id}', ['as' => 'products.update', 'uses' => 'ProductController@update']);
+    $router->post('/{id}', ['as' => 'products.update', 'uses' => 'ProductController@update']);
     $router->delete('/{id}', ['as' => 'products.delete', 'uses' => 'ProductController@destroy']);
 });
 
