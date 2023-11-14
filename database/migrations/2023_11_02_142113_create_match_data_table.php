@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('oneTimeToken')->nullable();
             $table->text('co_auth')->nullable();
             $table->text('trading_api_token')->nullable();
+            $table->string('symbol')->nullable();
             $table->timestamps();
         });
     }

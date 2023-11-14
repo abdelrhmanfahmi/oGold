@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ResetForgetPasswordRequest extends FormRequest
+class BuyGoldRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,9 @@ class ResetForgetPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|min:3|max:100|email|exists:users,email',
-            'password' => 'required|min:7|confirmed',
-            'current_password' => 'required|min:7'
+            'name' => 'required|min:2|max:100|string|unique:products,name',
+            'price' => 'required|min:1|max:100000|numeric',
+            'image' => 'image|mimes:png,jpg,jpeg,svg'
         ];
     }
 }

@@ -21,8 +21,8 @@ class MatchService {
             ]);
             $data = $response->getBody()->getContents();
             return json_decode($data);
-        }catch(\Exception $e){
-            return $e;
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
         }
     }
 
@@ -45,8 +45,8 @@ class MatchService {
                 'offer_uuid' => $data_transform[0]->uuid
             ]);
             
-        }catch(\Exception $e){
-            return $e;
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
         }
     }
 
@@ -67,8 +67,8 @@ class MatchService {
             $decodedData = json_decode($result);
             $dataMatch = MatchData::first();
             $dataMatch->update(['co_auth' => $decodedData->token , 'trading_api_token' => $decodedData->accounts[0]->tradingApiToken]);
-        }catch(\Exception $e){
-            return $e;
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
         }
     }
 
@@ -83,7 +83,7 @@ class MatchService {
             $account->name = $data['name'];
             $account->surname = $data['surname'];
             $account->phone = $data['phone'];
-            $account->dateOfBirth = $data['dateOfBirth'];
+            // $account->dateOfBirth = $data['dateOfBirth'];
             $account->country = $data['country'];
             $account->state = $data['state'];
             $account->city = $data['city'];
@@ -110,8 +110,50 @@ class MatchService {
             $decodedData->oneTimeToken;
             $dataMatch = MatchData::first();
             $dataMatch->update(['oneTimeToken' => $decodedData->oneTimeToken]);
-        }catch(\Exception $e){
-            return $e;
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function forgetPassowrdInMatch($data)
+    {
+        try{
+            $client = new \GuzzleHttp\Client();
+            $account = new \stdClass();
+            $account->partnerId = 97;
+            $account->email = $data['email'];
+            $account->systemLink = "https://platform.ogold.app/change-password";
+            $url = 'https://platform.ogold.app/manager/user/request-password-reset';
+            $response = $client->request('POST', $url, [
+                'json' => $account,
+                'headers' => ['Content-Type' => 'application/json']
+            ]);
+            
+            $response->getBody()->getContents();
+            return true;
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function changePassowrdInMatch($data)
+    {
+        try{
+            $client = new \GuzzleHttp\Client();
+            $match_data = MatchData::first();
+            $account = new \stdClass();
+            $account->currentPassword = $data['current_password'];
+            $account->newPassword = $data['password'];
+            $url = 'https://platform.ogold.app/manager/user/change-password';
+            $response = $client->request('POST', $url, [
+                'json' => $account,
+                'headers' => ['Content-Type' => 'application/json' , 'co-auth' => 'Bearer ' . $match_data->co_auth]
+            ]);
+            
+            $response->getBody()->getContents();
+            return true;
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
         }
     }
 
@@ -127,8 +169,89 @@ class MatchService {
             
             $response->getBody()->getContents();
             return true;
-        }catch(\Exception $e){
-            return $e;
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function getMarketWatchSymbol()
+    {
+        try{
+            $token = MatchData::first();
+            $client = new \GuzzleHttp\Client();
+            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/quotations?symbols=GoldGram24c';
+            $response = $client->request('GET', $url, [
+                'headers' => ['co-auth' => $token->co_auth , 'Auth-trading-api' =>  $token->trading_api_token]
+            ]);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+            $dataMatch = MatchData::first();
+            return $dataMatch;
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function openPosition()
+    {
+        try{
+            $client = new \GuzzleHttp\Client();
+            $match_data = MatchData::first();
+            $dataDahab = new \stdClass();
+            $dataDahab->instrument = 'GoldGram24c';
+            $dataDahab->orderSide = 'BUY';
+            $dataDahab->volume = 1;
+            $dataDahab->slPrice = 0;
+            $dataDahab->tpPrice = 0;
+            $dataDahab->isMobile = true;
+            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/position/open';
+            $response = $client->request('POST', $url, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Auth-trading-api' => $match_data->trading_api_token,
+                    'Cookie' => 'co-auth=' . $match_data->co_auth],
+                'form_params' => [
+                    $dataDahab,
+                ]
+            ]);
+            $result = $response->getBody()->getContents();
+            dd($result);
+            $decodedData = json_decode($result);
+            $decodedData->oneTimeToken;
+            dd($decodedData);
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function closePosition()
+    {
+        try{
+            $client = new \GuzzleHttp\Client();
+            $match_data = MatchData::first();
+            $dataDahab = new \stdClass();
+            $dataDahab->instrument = 'GoldGram24c';
+            $dataDahab->orderSide = 'BUY';
+            $dataDahab->volume = "1";
+            $dataDahab->positionId = "M288040295974991";
+
+            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/position/close';
+            $response = $client->request('POST', $url, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Auth-trading-api' => $match_data->trading_api_token,
+                    'Cookie' => 'co-auth=' . $match_data->co_auth],
+                'form_params' => [
+                    $dataDahab,
+                ]
+            ]);
+            $result = $response->getBody()->getContents();
+            dd($result);
+            $decodedData = json_decode($result);
+            $decodedData->oneTimeToken;
+            dd($decodedData);
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
         }
     }
 }

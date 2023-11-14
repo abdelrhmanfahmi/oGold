@@ -37,7 +37,7 @@ class RegisterRequest extends FormRequest
             'bankSwiftCode' => 'nullable|string',
             'bankAccount' => 'nullable|string',
             'accountName' => 'nullable|string',
-            'type' => 'required|min:5|max:10|in:admin,client,refinery'
+            'type' => 'required|in:admin,client,refinery'
         ];
     }
 }

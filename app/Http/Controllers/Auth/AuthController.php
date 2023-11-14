@@ -20,7 +20,7 @@ class AuthController extends Controller
 {
     public function __construct(private MatchService $matchService , private UserRepositoryInterface $userRepository , private PasswordResetService $passwordResetService)
     {
-        $this->middleware('auth:api', ['except' => ['login','register','forgetPassowrd','resetPassword']]);
+        $this->middleware('auth:api', ['except' => ['login','register','forgetPassowrdMatch','resetPasswordMatch']]);
     }
 
     public function login(LoginRequest $request)
@@ -38,6 +38,8 @@ class AuthController extends Controller
             }
 
             //login in match apis
+            $match_data = $this->matchService->getAccessToken();
+            $this->matchService->getOfferUUID($match_data);
             $this->matchService->loginAccount($credentials);
 
             //check if this credentials belongs to this user type
@@ -106,33 +108,57 @@ class AuthController extends Controller
         }
     }
 
-    public function forgetPassowrd(ForgetPasswordRequest $request)
+    // public function forgetPassowrd(ForgetPasswordRequest $request)
+    // {
+    //     try{
+    //         $data = $request->validated();
+    //         $token = Str::random(64);
+    //         $this->passwordResetService->createPasswordReset($data , $token);
+    //         \Mail::to($data['email'])->send(new UserMail($token));
+    //         return response()->json(['message'=> 'Check Inbox Please']);
+    //     }catch(\Exception $e){
+    //         return $e;
+    //     }
+    // }
+
+    public function forgetPassowrdMatch(ForgetPasswordRequest $request)
     {
         try{
             $data = $request->validated();
-            $token = Str::random(64);
-            $this->passwordResetService->createPasswordReset($data , $token);
-            \Mail::to($data['email'])->send(new UserMail($token));
+            $this->matchService->forgetPassowrdInMatch($data);
             return response()->json(['message'=> 'Check Inbox Please']);
         }catch(\Exception $e){
             return $e;
         }
     }
 
-    public function resetPassword(ResetForgetPasswordRequest $request)
+    // public function resetPassword(ResetForgetPasswordRequest $request)
+    // {
+    //     try{
+    //         $data = $request->validated();
+    //         $updatePassword = $this->passwordResetService->checkIfPasswordResetExists($data , Request()->token);
+  
+    //         if($updatePassword == 0){
+    //             return response()->json(['message' => 'invalid token']);
+    //         }else{
+    //             $model = $this->userRepository->findByEmail($data['email']);
+    //             $this->userRepository->update($model , $data);
+    //             $this->passwordResetService->deletePasswordResetRecord($data['email']);
+    //             return response()->json(['message' => 'Password Changed Successfully']);
+    //         }
+    //     }catch(\Exception $e){
+    //         return $e;
+    //     }
+    // }
+
+    public function resetPasswordMatch(ResetForgetPasswordRequest $request)
     {
         try{
             $data = $request->validated();
-            $updatePassword = $this->passwordResetService->checkIfPasswordResetExists($data , Request()->token);
-  
-            if($updatePassword == 0){
-                return response()->json(['message' => 'invalid token']);
-            }else{
-                $model = $this->userRepository->findByEmail($data['email']);
-                $this->userRepository->update($model , $data);
-                $this->passwordResetService->deletePasswordResetRecord($data['email']);
-                return response()->json(['message' => 'Password Changed Successfully']);
-            }
+            // $model = $this->userRepository->findByEmail($data['email']);
+            $this->matchService->changePassowrdInMatch($data);
+            return response()->json(['message' => 'Password Changed Successfully']);
+            
         }catch(\Exception $e){
             return $e;
         }
