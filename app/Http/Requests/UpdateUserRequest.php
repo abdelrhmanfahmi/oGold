@@ -37,7 +37,7 @@ class UpdateUserRequest extends FormRequest
             'bankSwiftCode' => 'nullable|string',
             'bankAccount' => 'nullable|string',
             'accountName' => 'nullable|string',
-            'type' => 'min:5|max:10|in:admin,client,provider'
+            'type' => 'in:admin,client,provider'
         ];
     }
 }
