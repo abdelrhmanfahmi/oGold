@@ -12,4 +12,5 @@ $router->group(['prefix' => 'products' ,'namespace' => 'App\Http\Controllers\Cli
     $router->get('/market-watch', ['as' => 'products.market', 'uses' => 'ProductController@getMarketWatch']);
     $router->post('/buy-gold', ['as' => 'products.buy_gold', 'uses' => 'ProductController@buyGold']);
     $router->post('/sell-gold', ['as' => 'products.sell_gold', 'uses' => 'ProductController@sellGold']);
+    $router->get('/get-balance', ['as' => 'products.balance', 'uses' => 'ProductController@getBalance']);
 });
