@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BuyGoldRequest extends FormRequest
+class ExchangeGoldRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,7 @@ class BuyGoldRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'payment_type' => 'required|in:cash,visa',
-            'address' => 'required|min:5|max:100',
+            'symbol' => 'required|string',
             'user_id' => 'required|integer|exists:users,id',
             'products' => 'required|array|min:1',
             'products.*.product_id' => 'required|integer|exists:products,id',

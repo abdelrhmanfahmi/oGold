@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\BuyGoldRequest;
+use App\Http\Requests\BuyGoldRequestClient;
+use App\Http\Requests\ExchangeGoldRequest;
+use App\Http\Requests\SellGoldRequestClient;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\SymbolResource;
 use App\Repository\Interfaces\OrderRepositoryInterface;
@@ -50,30 +52,38 @@ class ProductController extends Controller
         }
     }
 
-    public function buyGold(BuyGoldRequest $request)
+    public function buyGold(BuyGoldRequestClient $request)
     {
         try{
             $data = $request->validated();
-            $orderData = $request->only('address' , 'payment_type' , 'user_id');
-            $order = $this->orderRepository->create($orderData);
+            $order = $this->matchService->openPosition($data);
 
-            $order->products()->attach($data['products']);
-            return $this->matchService->openPosition();
+            return response()->json(['data' => $order] , 200);
         }catch(\Exception $e){
             return $e;
         }
     }
 
-    public function sellGold(Request $request)
+    public function sellGold(SellGoldRequestClient $request)
     {
         try{
-            // $data = $request->validated();
-            // if($request->hasFile('image')){
-            //     $fileName = $this->fileService->storeFile($data['image']);
-            //     $data['image'] = $fileName;
-            // }
-            // $this->productRepository->create($data);
-            return $this->matchService->closePosition();
+            $data = $request->validated();
+            $order = $this->matchService->closePosition($data);
+            return response()->json(['data' => $order] , 200);
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function exchangeGold(ExchangeGoldRequest $request)
+    {
+        try{
+            $data = $request->validated();
+            $orderData = $request->only('user_id');
+            $order = $this->orderRepository->create($orderData);
+            $order->products()->attach($data['products']);
+
+            return response()->json(['message' => 'Transaction Done Successfully'] , 200);
         }catch(\Exception $e){
             return $e;
         }

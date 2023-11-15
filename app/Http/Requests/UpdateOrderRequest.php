@@ -22,8 +22,6 @@ class UpdateOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'payment_type' => 'in:cash,visa',
-            'address' => 'min:5|max:100',
             'user_id' => 'integer|exists:users,id',
             'products' => 'array|min:1',
             'products.*.product_id' => 'integer|exists:products,id',

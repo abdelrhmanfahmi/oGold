@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     use HasFactory;
-    protected $fillable = ['payment_type' , 'address' , 'user_id'];
+    protected $fillable = ['user_id'];
 
     public function scopeFilter($query, Filters $filter)
     {
@@ -18,7 +18,7 @@ class Order extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class , 'order_products' , 'order_id' , 'product_id')->withPivot('quantity');
+        return $this->belongsToMany(Product::class , 'order_products' , 'order_id' , 'product_id')->withPivot('quantity' , 'order_position_id');
     }
 
     public function client()

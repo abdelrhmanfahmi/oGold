@@ -15,6 +15,8 @@ class DeliveryResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'address' => $this->address ?? null,
+            'payment_type' => $this->payment_type ?? null,
             'status' => $this->status ?? null,
             'total_price' => $this->total_price ?? null,
             'order' => OrderResource::make($this->whenLoaded('order'))
