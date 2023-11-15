@@ -22,9 +22,12 @@ class BuyGoldRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|min:2|max:100|string|unique:products,name',
-            'price' => 'required|min:1|max:100000|numeric',
-            'image' => 'image|mimes:png,jpg,jpeg,svg'
+            'payment_type' => 'required|in:cash,visa',
+            'address' => 'required|min:5|max:100',
+            'user_id' => 'required|integer|exists:users,id',
+            'products' => 'required|array|min:1',
+            'products.*.product_id' => 'required|integer|exists:products,id',
+            'products.*.quantity' => 'required|integer',
         ];
     }
 }

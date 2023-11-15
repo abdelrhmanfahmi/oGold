@@ -37,11 +37,6 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            //login in match apis
-            $match_data = $this->matchService->getAccessToken();
-            $this->matchService->getOfferUUID($match_data);
-            $this->matchService->loginAccount($credentials);
-
             //check if this credentials belongs to this user type
             if (Auth::user()->type != Request()->type) {
                 auth()->logout();
@@ -50,11 +45,17 @@ class AuthController extends Controller
 
             //success logged in
             $user = Auth::user();
+
+            //login in match apis
+            $match_data = $this->matchService->getAccessToken();
+            $this->matchService->getOfferUUID($match_data);
+            $this->matchService->loginAccount($credentials);
+
             return response()->json([
                 'status' => 'success',
                 'user' => $user,
                 'token' => $token
-            ]);
+            ] , 200);
         }catch(\Exception $e){
             return $e;
         }
