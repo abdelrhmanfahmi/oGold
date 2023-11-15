@@ -196,62 +196,56 @@ class MatchService {
         }
     }
 
-    public function openPosition()
+    public function openPosition($data)
     {
         try{
             $client = new \GuzzleHttp\Client();
-            $dataDahab = [];
-            $dataDahab['instrument'] = 'GoldGram24c';
-            $dataDahab['orderSide'] = 'BUY';
-            $dataDahab['volume'] = 1;
-            $dataDahab['slPrice'] = 0;
-            $dataDahab['tpPrice'] = 0;
-            $dataDahab['isMobile'] = true;
+            $dataDahab = new \stdClass();
+            $dataDahab->instrument = $data['symbol'];
+            $dataDahab->orderSide = 'BUY';
+            $dataDahab->volume = $data['volume'];
+            $dataDahab->slPrice = 0;
+            $dataDahab->tpPrice = 0;
+            $dataDahab->isMobile = true;
             $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/position/open';
             $response = $client->request('POST', $url, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
                     'Auth-trading-api' => Auth::user()->trading_api_token,
                     'Cookie' => 'co-auth=' . Auth::user()->co_auth
                 ],
-                'json' => [
-                    $dataDahab,
-                ],
+                'json' => $dataDahab,
             ]);
             $result = $response->getBody()->getContents();
-            dd($result);
             $decodedData = json_decode($result);
-            dd($decodedData);
+            return $decodedData;
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
         }
     }
 
-    public function closePosition()
+    public function closePosition($data)
     {
         try{
             $client = new \GuzzleHttp\Client();
             $dataDahab = new \stdClass();
-            $dataDahab->instrument = 'GoldGram24c';
+            $dataDahab->instrument = $data['symbol'];
             $dataDahab->orderSide = 'BUY';
-            $dataDahab->volume = "1";
-            $dataDahab->positionId = "M288040295974991";
+            $dataDahab->volume = $data['volume'];
+            $dataDahab->positionId = $data['positionId'];
 
             $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/position/close';
             $response = $client->request('POST', $url, [
                 'headers' => [
                     'Accept' => 'application/json',
                     'Auth-trading-api' => Auth::user()->trading_api_token,
-                    'Cookie' => 'co-auth=' . Auth::user()->co_auth],
-                'form_params' => [
-                    $dataDahab,
-                ]
+                    'Cookie' => 'co-auth=' . Auth::user()->co_auth
+                ],
+                'json' => $dataDahab,
             ]);
             $result = $response->getBody()->getContents();
-            dd($result);
             $decodedData = json_decode($result);
-            dd($decodedData);
+            return $decodedData;
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
         }

@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('deliveries', function (Blueprint $table) {
             $table->id();
+            $table->string('payment_type');
+            $table->string('address');
             $table->enum('status' , ['pending' , 'ready_to_picked' , 'ready_to_shipped' , 'delivered']);
             $table->unsignedDouble('total_price');
             $table->foreignId('order_id')->constrained()->onUpdate('cascade')->onDelete('cascade');

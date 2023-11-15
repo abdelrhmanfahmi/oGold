@@ -22,8 +22,6 @@ class StoreOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'payment_type' => 'required|in:cash,visa',
-            'address' => 'required|min:5|max:100',
             'user_id' => 'required|integer|exists:users,id',
             'products' => 'required|array|min:1',
             'products.*.product_id' => 'required|integer|exists:products,id',
