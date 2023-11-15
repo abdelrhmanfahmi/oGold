@@ -16,6 +16,7 @@ class DeliveryResource extends JsonResource
     {
         return [
             'status' => $this->status ?? null,
+            'total_price' => $this->total_price ?? null,
             'order' => OrderResource::make($this->whenLoaded('order'))
         ];
     }
