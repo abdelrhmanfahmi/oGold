@@ -200,27 +200,28 @@ class MatchService {
     {
         try{
             $client = new \GuzzleHttp\Client();
-            $dataDahab = new \stdClass();
-            $dataDahab->instrument = 'GoldGram24c';
-            $dataDahab->orderSide = 'BUY';
-            $dataDahab->volume = 1;
-            $dataDahab->slPrice = 0;
-            $dataDahab->tpPrice = 0;
-            $dataDahab->isMobile = true;
+            $dataDahab = [];
+            $dataDahab['instrument'] = 'GoldGram24c';
+            $dataDahab['orderSide'] = 'BUY';
+            $dataDahab['volume'] = 1;
+            $dataDahab['slPrice'] = 0;
+            $dataDahab['tpPrice'] = 0;
+            $dataDahab['isMobile'] = true;
             $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/position/open';
             $response = $client->request('POST', $url, [
                 'headers' => [
                     'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
                     'Auth-trading-api' => Auth::user()->trading_api_token,
-                    'Cookie' => 'co-auth=' . Auth::user()->co_auth],
+                    'Cookie' => 'co-auth=' . Auth::user()->co_auth
+                ],
                 'json' => [
                     $dataDahab,
-                ]
+                ],
             ]);
             $result = $response->getBody()->getContents();
             dd($result);
             $decodedData = json_decode($result);
-            $decodedData->oneTimeToken;
             dd($decodedData);
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
@@ -250,9 +251,28 @@ class MatchService {
             $result = $response->getBody()->getContents();
             dd($result);
             $decodedData = json_decode($result);
-            $decodedData->oneTimeToken;
             dd($decodedData);
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function getBalanceMatch()
+    {
+        try{
+            $client = new \GuzzleHttp\Client();
+            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/balance';
+            $response = $client->request('GET', $url, [
+                'headers' => [
+                    'co-auth' => Auth::user()->co_auth,
+                    'Auth-trading-api' => Auth::user()->trading_api_token,
+                    'Cookie' => 'co-auth='. Auth::user()->co_auth
+                ],
+            ]);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+            return $decodedData;
+        }catch(\GuzzleHttp\Exception\BadResponseException $e){
             return $e->getResponse()->getBody()->getContents();
         }
     }

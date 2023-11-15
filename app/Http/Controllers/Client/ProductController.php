@@ -58,7 +58,7 @@ class ProductController extends Controller
             $order = $this->orderRepository->create($orderData);
 
             $order->products()->attach($data['products']);
-            // return $this->matchService->openPosition();
+            return $this->matchService->openPosition();
         }catch(\Exception $e){
             return $e;
         }
@@ -74,6 +74,15 @@ class ProductController extends Controller
             // }
             // $this->productRepository->create($data);
             return $this->matchService->closePosition();
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function getBalance()
+    {
+        try{
+            return $this->matchService->getBalanceMatch();
         }catch(\Exception $e){
             return $e;
         }
