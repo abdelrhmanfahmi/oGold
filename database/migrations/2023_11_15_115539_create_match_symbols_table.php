@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('match_data', function (Blueprint $table) {
+        Schema::create('match_symbols', function (Blueprint $table) {
             $table->id();
-            $table->text('access_token')->nullable();
-            $table->unsignedInteger('partner_id')->nullable();
-            $table->text('offer_uuid')->nullable();
-            $table->text('oneTimeToken')->nullable();
+            $table->string('symbol');
+            $table->string('alias');
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('match_data');
+        Schema::dropIfExists('match_symbols');
     }
 };

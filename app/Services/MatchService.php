@@ -3,7 +3,10 @@
 namespace App\Services;
 
 use App\Models\MatchData;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
+use App\Models\MatchSymbol;
+use Carbon\Carbon;
+
 class MatchService {
 
     public function getAccessToken()
@@ -65,8 +68,8 @@ class MatchService {
             ]);
             $result = $response->getBody()->getContents();
             $decodedData = json_decode($result);
-            $dataMatch = MatchData::first();
-            $dataMatch->update(['co_auth' => $decodedData->token , 'trading_api_token' => $decodedData->accounts[0]->tradingApiToken]);
+            $authUser = Auth::user();
+            $authUser->update(['co_auth' => $decodedData->token , 'trading_api_token' => $decodedData->accounts[0]->tradingApiToken]);
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
         }
@@ -140,14 +143,13 @@ class MatchService {
     {
         try{
             $client = new \GuzzleHttp\Client();
-            $match_data = MatchData::first();
             $account = new \stdClass();
             $account->currentPassword = $data['current_password'];
             $account->newPassword = $data['password'];
             $url = 'https://platform.ogold.app/manager/user/change-password';
             $response = $client->request('POST', $url, [
                 'json' => $account,
-                'headers' => ['Content-Type' => 'application/json' , 'co-auth' => 'Bearer ' . $match_data->co_auth]
+                'headers' => ['Content-Type' => 'application/json' , 'co-auth' => 'Bearer ' . Auth::user()->co_auth]
             ]);
             
             $response->getBody()->getContents();
@@ -177,30 +179,18 @@ class MatchService {
     public function getMarketWatchSymbol()
     {
         try{
-            // $token = MatchData::first();
-            // $client = new \GuzzleHttp\Client();
-            // $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/quotations?symbols=GoldGram24c';
-            // $response = $client->request('GET', $url, [
-            //     'headers' => [
-            //         'co-auth' => $token->co_auth,
-            //         'Auth-trading-api' => $token->trading_api_token
-            //     ],
-            // ]);
-            // $result = $response->getBody()->getContents();
-            // dd($result);
-            // $decodedData = json_decode($result);
-            // return $decodedData;
-            $token = MatchData::first();
-            $response = Http::get('https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/quotations?symbols=GoldGram24c' , [
+            $client = new \GuzzleHttp\Client();
+            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/quotations?symbols=GoldGram24c';
+            $response = $client->request('GET', $url, [
                 'headers' => [
-                    'co-auth' => $token->co_auth,
-                    'Auth-trading-api' => $token->trading_api_token
+                    'co-auth' => Auth::user()->co_auth,
+                    'Auth-trading-api' => Auth::user()->trading_api_token,
+                    'Cookie' => 'co-auth='. Auth::user()->co_auth
                 ],
             ]);
-            $data = $response->body();
-            // $data = $response->json();
-            // $data = $response->status();
-            dd($data);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+            return $decodedData;
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
         }
@@ -210,7 +200,6 @@ class MatchService {
     {
         try{
             $client = new \GuzzleHttp\Client();
-            $match_data = MatchData::first();
             $dataDahab = new \stdClass();
             $dataDahab->instrument = 'GoldGram24c';
             $dataDahab->orderSide = 'BUY';
@@ -222,8 +211,8 @@ class MatchService {
             $response = $client->request('POST', $url, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Auth-trading-api' => $match_data->trading_api_token,
-                    'Cookie' => 'co-auth=' . $match_data->co_auth],
+                    'Auth-trading-api' => Auth::user()->trading_api_token,
+                    'Cookie' => 'co-auth=' . Auth::user()->co_auth],
                 'json' => [
                     $dataDahab,
                 ]
@@ -242,7 +231,6 @@ class MatchService {
     {
         try{
             $client = new \GuzzleHttp\Client();
-            $match_data = MatchData::first();
             $dataDahab = new \stdClass();
             $dataDahab->instrument = 'GoldGram24c';
             $dataDahab->orderSide = 'BUY';
@@ -253,8 +241,8 @@ class MatchService {
             $response = $client->request('POST', $url, [
                 'headers' => [
                     'Accept' => 'application/json',
-                    'Auth-trading-api' => $match_data->trading_api_token,
-                    'Cookie' => 'co-auth=' . $match_data->co_auth],
+                    'Auth-trading-api' => Auth::user()->trading_api_token,
+                    'Cookie' => 'co-auth=' . Auth::user()->co_auth],
                 'form_params' => [
                     $dataDahab,
                 ]
@@ -265,6 +253,24 @@ class MatchService {
             $decodedData->oneTimeToken;
             dd($decodedData);
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function saveSymbols($symbols)
+    {
+        try{
+            $arrInsert = [];
+            foreach($symbols as $symbol){
+                $arrInsert['symbol'] = $symbol->symbol;
+                $arrInsert['alias'] = $symbol->alias;
+                $arrInsert['created_at'] = Carbon::now();
+                $arrInsert['updated_at'] = Carbon::now();
+            }
+            MatchSymbol::updateOrInsert([
+                'symbol' => $arrInsert['symbol']
+            ] , $arrInsert);
+        }catch(\GuzzleHttp\Exception\BadResponseException $e){
             return $e->getResponse()->getBody()->getContents();
         }
     }

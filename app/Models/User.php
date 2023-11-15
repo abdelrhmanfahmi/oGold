@@ -36,7 +36,9 @@ class User extends Authenticatable implements JWTSubject
         'bankSwiftCode',
         'bankAccount',
         'accountName',
-        'type'
+        'type',
+        'co_auth',
+        'trading_api_token'
     ];
 
     /**
