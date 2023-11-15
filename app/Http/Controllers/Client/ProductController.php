@@ -53,7 +53,7 @@ class ProductController extends Controller
                 $fileName = $this->fileService->storeFile($data['image']);
                 $data['image'] = $fileName;
             }
-            $this->productRepository->create($data);
+            // $this->productRepository->create($data);
             return $this->matchService->openPosition();
         }catch(\Exception $e){
             return $e;

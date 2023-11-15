@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\MatchData;
-
+use Illuminate\Support\Facades\Http;
 class MatchService {
 
     public function getAccessToken()
@@ -61,7 +61,7 @@ class MatchService {
                     'email' => $data['email'],
                     'password' => $data['password'],
                     'brokerId' => "97",
-                ]
+                ],
             ]);
             $result = $response->getBody()->getContents();
             $decodedData = json_decode($result);
@@ -177,16 +177,30 @@ class MatchService {
     public function getMarketWatchSymbol()
     {
         try{
+            // $token = MatchData::first();
+            // $client = new \GuzzleHttp\Client();
+            // $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/quotations?symbols=GoldGram24c';
+            // $response = $client->request('GET', $url, [
+            //     'headers' => [
+            //         'co-auth' => $token->co_auth,
+            //         'Auth-trading-api' => $token->trading_api_token
+            //     ],
+            // ]);
+            // $result = $response->getBody()->getContents();
+            // dd($result);
+            // $decodedData = json_decode($result);
+            // return $decodedData;
             $token = MatchData::first();
-            $client = new \GuzzleHttp\Client();
-            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/quotations?symbols=GoldGram24c';
-            $response = $client->request('GET', $url, [
-                'headers' => ['co-auth' => $token->co_auth , 'Auth-trading-api' =>  $token->trading_api_token]
+            $response = Http::get('https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/quotations?symbols=GoldGram24c' , [
+                'headers' => [
+                    'co-auth' => $token->co_auth,
+                    'Auth-trading-api' => $token->trading_api_token
+                ],
             ]);
-            $result = $response->getBody()->getContents();
-            $decodedData = json_decode($result);
-            $dataMatch = MatchData::first();
-            return $dataMatch;
+            $data = $response->body();
+            // $data = $response->json();
+            // $data = $response->status();
+            dd($data);
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
         }
@@ -210,7 +224,7 @@ class MatchService {
                     'Accept' => 'application/json',
                     'Auth-trading-api' => $match_data->trading_api_token,
                     'Cookie' => 'co-auth=' . $match_data->co_auth],
-                'form_params' => [
+                'json' => [
                     $dataDahab,
                 ]
             ]);
