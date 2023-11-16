@@ -148,10 +148,13 @@ class MatchService {
             $account->newPassword = $data['password'];
             $url = 'https://platform.ogold.app/manager/user/change-password';
             $response = $client->request('POST', $url, [
+                'headers' => [
+                    'Content-Type' => 'application/json' ,
+                    'co-auth' => 'Bearer ' . Auth::user()->co_auth,
+                    'Cookie' =>  'co-auth=' . Auth::user()->co_auth,
+                ],
                 'json' => $account,
-                'headers' => ['Content-Type' => 'application/json' , 'co-auth' => 'Bearer ' . Auth::user()->co_auth]
             ]);
-            
             $response->getBody()->getContents();
             return true;
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {

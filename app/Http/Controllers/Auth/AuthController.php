@@ -14,13 +14,14 @@ use Illuminate\Support\Facades\Auth;
 use App\Repository\Interfaces\UserRepositoryInterface;
 use App\Services\MatchService;
 use App\Services\PasswordResetService;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
     public function __construct(private MatchService $matchService , private UserRepositoryInterface $userRepository , private PasswordResetService $passwordResetService)
     {
-        $this->middleware('auth:api', ['except' => ['login','register','forgetPassowrdMatch','resetPasswordMatch']]);
+        $this->middleware('auth:api', ['except' => ['login','register','forgetPassowrdMatch']]);
     }
 
     public function login(LoginRequest $request)
@@ -156,9 +157,14 @@ class AuthController extends Controller
     {
         try{
             $data = $request->validated();
-            // $model = $this->userRepository->findByEmail($data['email']);
-            $this->matchService->changePassowrdInMatch($data);
-            return response()->json(['message' => 'Password Changed Successfully']);
+            $model = $this->userRepository->find(Auth::user()->id);
+            if(Hash::check($data['current_password'] , Auth::user()->password)){
+                $this->matchService->changePassowrdInMatch($data);
+                $this->userRepository->update($model , $data);
+                return response()->json(['message' => 'Password Updated Successfully']);
+            }else{
+                return response()->json(['message' => 'Old Password Invalid']);
+            }
             
         }catch(\Exception $e){
             return $e;

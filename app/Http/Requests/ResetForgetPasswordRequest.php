@@ -22,7 +22,6 @@ class ResetForgetPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|min:3|max:100|email|exists:users,email',
             'password' => 'required|min:7|confirmed',
             'current_password' => 'required|min:7'
         ];
