@@ -163,7 +163,7 @@ class AuthController extends Controller
                 $this->userRepository->update($model , $data);
                 return response()->json(['message' => 'Password Updated Successfully']);
             }else{
-                return response()->json(['message' => 'Old Password Invalid']);
+                return response()->json(['message' => 'Old Password Invalid'], 422);
             }
             
         }catch(\Exception $e){
