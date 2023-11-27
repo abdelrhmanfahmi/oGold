@@ -17,6 +17,11 @@ class SymbolResource extends JsonResource
         return [
             'name' => $this->symbol,
             'alias' => $this->alias,
+            'bid' => $this->bid,
+            'ask' => $this->ask,
+            'change' => $this->change,
+            'high' => $this->high,
+            'low' => $this->low,
         ];
     }
 }
