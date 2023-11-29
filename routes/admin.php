@@ -11,6 +11,14 @@ $router->group(['prefix' => 'settings' ,'namespace' => 'App\Http\Controllers\Adm
     $router->delete('/{id}', ['as' => 'settings.delete', 'uses' => 'SettingController@destroy']);
 });
 
+$router->group(['prefix' => 'faqs' ,'namespace' => 'App\Http\Controllers\Admin'], function () use ($router) {
+    $router->get('/', ['as' => 'faqs.index', 'uses' => 'FaqController@index']);
+    $router->post('/', ['as' => 'faqs.store', 'uses' => 'FaqController@store']);
+    $router->get('/{id}', ['as' => 'faqs.show', 'uses' => 'FaqController@show']);
+    $router->put('/{id}', ['as' => 'faqs.update', 'uses' => 'FaqController@update']);
+    $router->delete('/{id}', ['as' => 'faqs.delete', 'uses' => 'FaqController@destroy']);
+});
+
 $router->group(['prefix' => 'products' ,'namespace' => 'App\Http\Controllers\Admin'], function () use ($router) {
     $router->get('/', ['as' => 'products.index', 'uses' => 'ProductController@index']);
     $router->post('/', ['as' => 'products.store', 'uses' => 'ProductController@store']);

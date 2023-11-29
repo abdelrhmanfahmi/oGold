@@ -15,7 +15,26 @@ class SettingSeeder extends Seeder
     {
         Setting::create([
             'key' => 'shipping_fees',
-            'value' => 50
+            'value' => '',
+            'image' => ''
+        ]);
+
+        Setting::create([
+            'key' => 'terms',
+            'value' => '',
+            'image' => ''
+        ]);
+
+        Setting::create([
+            'key' => 'privacy',
+            'value' => '',
+            'image' => ''
+        ]);
+
+        Setting::create([
+            'key' => 'about',
+            'value' => '',
+            'image' => ''
         ]);
     }
 }

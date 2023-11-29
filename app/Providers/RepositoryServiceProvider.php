@@ -14,6 +14,9 @@ use App\Repository\OrderRepository;
 use App\Repository\Interfaces\DeliveryRepositoryInterface;
 use App\Repository\DeliveryRepository;
 
+use App\Repository\Interfaces\FaqRepositoryInterface;
+use App\Repository\FaqRepository;
+
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
@@ -26,5 +29,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
         $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
         $this->app->bind(DeliveryRepositoryInterface::class, DeliveryRepository::class);
+        $this->app->bind(FaqRepositoryInterface::class, FaqRepository::class);
     }
 }

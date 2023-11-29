@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\MatchData;
 use Illuminate\Support\Facades\Auth;
 use App\Models\MatchSymbol;
+use App\Models\User;
 use Carbon\Carbon;
 
 class MatchService {
@@ -269,6 +270,37 @@ class MatchService {
             $result = $response->getBody()->getContents();
             $decodedData = json_decode($result);
             return $decodedData;
+        }catch(\GuzzleHttp\Exception\BadResponseException $e){
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function getOpenedPositions($user_id)
+    {
+        try{
+            $user = User::findOrFail($user_id);
+            $client = new \GuzzleHttp\Client();
+            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/open-positions';
+            $response = $client->request('GET', $url, [
+                'headers' => [
+                    'co-auth' => $user->co_auth,
+                    'Auth-trading-api' => $user->trading_api_token,
+                    'Cookie' => 'co-auth='. $user->co_auth
+                ],
+            ]);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+            return $decodedData;
+        }catch(\GuzzleHttp\Exception\BadResponseException $e){
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function getPositionsByOrder($data)
+    {
+        try{
+            $arrClosedPositions = [];
+            dd($data);
         }catch(\GuzzleHttp\Exception\BadResponseException $e){
             return $e->getResponse()->getBody()->getContents();
         }
