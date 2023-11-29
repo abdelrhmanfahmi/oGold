@@ -23,7 +23,7 @@ class UpdateProductRequest extends FormRequest
     {
         return [
             'name' => 'min:2|max:100|string|unique:products,name,'.$this->id,
-            'price' => 'min:1|max:100000|numeric',
+            'gram' => 'min:1|max:100000|numeric',
             'image' => 'image|mimes:png,jpg,jpeg,svg',
         ];
     }

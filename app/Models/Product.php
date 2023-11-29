@@ -9,7 +9,7 @@ use App\Filters\Filters;
 class Product extends Model
 {
     use HasFactory;
-    protected $fillable = ['name' , 'price' , 'image'];
+    protected $fillable = ['name' , 'gram' , 'image'];
 
     public function scopeFilter($query, Filters $filter)
     {

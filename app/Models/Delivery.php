@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Delivery extends Model
 {
     use HasFactory;
-    protected $fillable = ['status' , 'payment_type' , 'address' , 'total_price' , 'order_id'];
+    protected $fillable = ['status' , 'is_approved' , 'payment_type' , 'address' , 'total' , 'order_id'];
 
     public function scopeFilter($query, Filters $filter)
     {

@@ -7,12 +7,12 @@ use App\Http\Requests\StoreDeliveryRequest;
 use App\Http\Requests\UpdateDeliveryRequest;
 use App\Http\Resources\DeliveryResource;
 use App\Repository\Interfaces\DeliveryRepositoryInterface;
-use App\Services\TotalPriceService;
+use App\Services\TotalGramService;
 use Illuminate\Http\Request;
 
 class DeliveryController extends Controller
 {
-    public function __construct(private DeliveryRepositoryInterface $deliveryRepository , private TotalPriceService $totalPriceService)
+    public function __construct(private DeliveryRepositoryInterface $deliveryRepository , private TotalGramService $totalGramService)
     {
         $this->middleware('auth:api');
     }
@@ -37,7 +37,7 @@ class DeliveryController extends Controller
     {
         try{
             $data = $request->validated();
-            $data['total_price'] = $this->totalPriceService->calculateTotalService($data['order_id']);
+            $data['total'] = $this->totalGramService->calculateTotalService($data['order_id']);
             $this->deliveryRepository->create($data);
             return response()->json(['message' => 'Delivery Created Successfully']);
         }catch(\Exception $e){
@@ -61,7 +61,7 @@ class DeliveryController extends Controller
         try{
             $data = $request->validated();
             $model = $this->deliveryRepository->find($id , []);
-            $data['total_price'] = $this->totalPriceService->calculateTotalService($data['order_id']);
+            $data['total'] = $this->totalGramService->calculateTotalService($data['order_id']);
             $this->deliveryRepository->update($model , $data);
 
             return response()->json(['message' => 'Delivery Updated Successfully']);

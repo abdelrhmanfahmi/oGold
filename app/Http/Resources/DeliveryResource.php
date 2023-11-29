@@ -18,7 +18,8 @@ class DeliveryResource extends JsonResource
             'address' => $this->address ?? null,
             'payment_type' => $this->payment_type ?? null,
             'status' => $this->status ?? null,
-            'total_price' => $this->total_price ?? null,
+            'is_approved' => $this->is_approved ?? null,
+            'total' => $this->total ?? null,
             'order' => OrderResource::make($this->whenLoaded('order'))
         ];
     }

@@ -16,7 +16,7 @@ class ProductResource extends JsonResource
     {
         return [
             'name' => $this->name ?? null, 
-            'price' => $this->price ?? null,
+            'gram' => $this->gram ?? null,
             'image' => $this->image ?? null,
             'orders' => OrderResource::collection($this->whenLoaded('orders'))
         ];
