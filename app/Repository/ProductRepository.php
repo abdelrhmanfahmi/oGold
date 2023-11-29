@@ -50,7 +50,7 @@ class ProductRepository implements ProductRepositoryInterface
      */
     public function find($model_id , array $relations=[]): ?object
     {
-        return $this->model->with($relations)->find($model_id);
+        return $this->model->with($relations)->findOrFail($model_id);
     }
 
     /**

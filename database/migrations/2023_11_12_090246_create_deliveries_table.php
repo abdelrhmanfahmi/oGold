@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('payment_type');
             $table->string('address');
             $table->enum('status' , ['pending' , 'ready_to_picked' , 'ready_to_shipped' , 'delivered']);
-            $table->unsignedDouble('total_price');
+            $table->enum('is_approved' , [0,1])->default(0);
+            $table->unsignedDouble('total');
             $table->foreignId('order_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
         });

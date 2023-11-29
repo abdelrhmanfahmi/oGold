@@ -23,7 +23,7 @@ class StoreProductRequest extends FormRequest
     {
         return [
             'name' => 'required|min:2|max:100|string|unique:products,name',
-            'price' => 'required|min:1|max:100000|numeric',
+            'gram' => 'required|min:1|max:100000|numeric',
             'image' => 'image|mimes:png,jpg,jpeg,svg',
         ];
     }

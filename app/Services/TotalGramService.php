@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Order;
 use App\Repository\Interfaces\OrderRepositoryInterface;
 
-class TotalPriceService {
+class TotalGramService {
 
     public function __construct(private OrderRepositoryInterface $orderRepository)
     {}
@@ -13,20 +13,20 @@ class TotalPriceService {
     public function calculateTotalService($orderId)
     {
         try{
-            $totalPrice = 0;
+            $totalGram = 0;
             $calcArr = [];
             $relations = ['products'];
             
             $data = $this->orderRepository->find($orderId , $relations);
             foreach($data->products as $dat){
-                $calcArr[$dat->pivot->quantity] = $dat['price'];
+                $calcArr[$dat->pivot->quantity] = $dat['gram'];
             }
             
             foreach($calcArr as $key => $value){
-                $totalPrice += $key*$value;
+                $totalGram += $key*$value;
             }
 
-            return $totalPrice;
+            return $totalGram;
         }catch(\Exception $e){
             return $e;
         }

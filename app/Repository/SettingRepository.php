@@ -49,7 +49,7 @@ class SettingRepository implements SettingRepositoryInterface
      */
     public function find($model_id): ?object
     {
-        return $this->model->find($model_id);
+        return $this->model->findOrFail($model_id);
     }
 
     /**

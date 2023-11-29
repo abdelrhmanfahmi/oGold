@@ -15,12 +15,12 @@ class ProductSeeder extends Seeder
     {
         Product::create([
             'name' => 'product name one',
-            'price' => 100,
+            'gram' => 10,
             'image' => null,
         ]);
         Product::create([
             'name' => 'product name two',
-            'price' => 200,
+            'gram' => 20,
             'image' => null,
         ]);
     }
