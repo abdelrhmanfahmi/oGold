@@ -11,6 +11,7 @@ class OrderDeliveryController extends Controller
     {
         $this->middleware('auth:api');
     }
+    
     public function checkOrderApproved()
     {
         try{
