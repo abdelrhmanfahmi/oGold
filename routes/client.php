@@ -15,3 +15,8 @@ $router->group(['prefix' => 'products' ,'namespace' => 'App\Http\Controllers\Cli
     $router->get('/get-balance', ['as' => 'products.balance', 'uses' => 'ProductController@getBalance']);
     $router->post('/exchange-gold', ['as' => 'products.exchange_gold', 'uses' => 'ProductController@exchangeGold']);
 });
+
+$router->group(['prefix' => 'delivery' ,'namespace' => 'App\Http\Controllers\Client'], function () use ($router) {
+    $router->get('/index', ['as' => 'delivery.index', 'uses' => 'DeliveryController@getOrdersDelivery']);
+    $router->post('/store', ['as' => 'delivery.store', 'uses' => 'DeliveryController@storeOrderDelivery']);
+});

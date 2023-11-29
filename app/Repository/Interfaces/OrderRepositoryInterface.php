@@ -41,4 +41,12 @@ interface OrderRepositoryInterface
      * @return int
      */
     public function delete($mode_id);
+
+    /**
+     * @param int $count
+     * @param bool $paginate
+     * * @param array $relations
+     * @return object
+     */
+    public function getDeliveryOrders(int $count, bool $paginate , array $relations);
 }

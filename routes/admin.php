@@ -34,3 +34,8 @@ $router->group(['prefix' => 'delivery' ,'namespace' => 'App\Http\Controllers\Adm
     $router->put('/{id}', ['as' => 'delivery.update', 'uses' => 'DeliveryController@update']);
     $router->delete('/{id}', ['as' => 'delivery.delete', 'uses' => 'DeliveryController@destroy']);
 });
+
+
+$router->group(['prefix' => 'is_approved' ,'namespace' => 'App\Http\Controllers\Admin'], function () use ($router) {
+    $router->post('/order', ['as' => 'order_delivery.checkOrderDeliveryAdmin', 'uses' => 'OrderDeliveryController@checkOrderApproved']);
+});
