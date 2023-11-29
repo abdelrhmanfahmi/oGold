@@ -69,4 +69,12 @@ class OrderRepository implements OrderRepositoryInterface
     {
         return $this->model->destroy($model_id);
     }
+
+    public function getDeliveryOrders(int $count, bool $paginate,array $relations) :object
+    {
+        if ($paginate == true) {
+            return $this->model->with($relations)->where('user_id' , auth()->user()->id)->paginate($count);
+        }
+        return $this->model->with($relations)->where('user_id' , auth()->user()->id)->get();
+    }
 }
