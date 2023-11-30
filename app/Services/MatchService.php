@@ -300,7 +300,46 @@ class MatchService {
     {
         try{
             $arrClosedPositions = [];
-            dd($data);
+            foreach($data->positions as $d){
+                $newObj = new \stdClass();
+                $newObj->openTime = $d->openTime;
+                $newObj->positionId = $d->id;
+                $newObj->volume = $d->volume;
+                $newObj->orderSide = $d->side;
+                $newObj->instrument = $d->symbol;
+                $arrClosedPositions[] = $newObj;
+            }
+            $sortedObjects = collect($arrClosedPositions)->sortBy('openTime')->values()->all();
+            return $sortedObjects;
+        }catch(\GuzzleHttp\Exception\BadResponseException $e){
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function closePositionsByOrderDate($openedPositionsToClose , $user_id)
+    {
+        try{
+            $user = User::findOrFail($user_id);
+            $client = new \GuzzleHttp\Client();
+            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/positions/close';
+            
+            // $objectsWithoutId = array_map(function ($object) {
+            //     unset($object->openTime);
+            //     return $object;
+            // }, $openedPositionsToClose);
+
+            $response = $client->request('POST', $url, [
+                'headers' => [
+                    'co-auth' => $user->co_auth,
+                    'Auth-trading-api' => $user->trading_api_token,
+                    'Cookie' => 'co-auth='. $user->co_auth
+                ],
+                'json' => $openedPositionsToClose,
+            ]);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+            return $decodedData;
+
         }catch(\GuzzleHttp\Exception\BadResponseException $e){
             return $e->getResponse()->getBody()->getContents();
         }
