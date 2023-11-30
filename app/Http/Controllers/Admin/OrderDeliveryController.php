@@ -25,7 +25,8 @@ class OrderDeliveryController extends Controller
             $orderData = $this->orderRepository->find($data['order_id'] , []);
             $opendPositions = $this->matchService->getOpenedPositions($orderData->user_id);
             $getPositionsByOrder = $this->matchService->getPositionsByOrder($opendPositions);
-            return $getPositionsByOrder;
+            return $this->matchService->closePositionsByOrderDate($getPositionsByOrder , $orderData->user_id);
+            return 1;
         }catch(\Exception $e){
             return $e;
         }
