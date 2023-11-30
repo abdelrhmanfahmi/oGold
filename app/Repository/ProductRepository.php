@@ -68,4 +68,10 @@ class ProductRepository implements ProductRepositoryInterface
     {
         return $this->model->destroy($model_id);
     }
+
+    public function ActivateProductUpdate(Product $model, array $attributes)
+    {
+        $model->update($attributes);
+        return $model;
+    }
 }

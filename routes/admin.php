@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -46,4 +47,8 @@ $router->group(['prefix' => 'delivery' ,'namespace' => 'App\Http\Controllers\Adm
 
 $router->group(['prefix' => 'is_approved' ,'namespace' => 'App\Http\Controllers\Admin'], function () use ($router) {
     $router->post('/order', ['as' => 'order_delivery.checkOrderDeliveryAdmin', 'uses' => 'OrderDeliveryController@checkOrderApproved']);
+});
+
+$router->group(['namespace' => 'App\Http\Controllers\Admin'], function () use ($router) {
+    $router->put('/is_active/product/{id}', ['as' => 'order_delivery.checkOrderDeliveryAdmin', 'uses' => 'ProductController@updateProduct']);
 });
