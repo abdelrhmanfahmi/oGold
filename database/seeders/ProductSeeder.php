@@ -17,11 +17,13 @@ class ProductSeeder extends Seeder
             'name' => 'product name one',
             'gram' => 10,
             'image' => null,
+            'is_active' => '1',
         ]);
         Product::create([
             'name' => 'product name two',
             'gram' => 20,
             'image' => null,
+            'is_active' => '1',
         ]);
     }
 }

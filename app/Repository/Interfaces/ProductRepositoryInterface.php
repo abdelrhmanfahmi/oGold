@@ -40,4 +40,10 @@ interface ProductRepositoryInterface
      * @return int
      */
     public function delete($mode_id);
+
+    /**
+     * @param array $attributes
+     * @return int
+     */
+    public function ActivateProductUpdate(Product $model, array $attribute);
 }
