@@ -29,7 +29,9 @@ class ProductController extends Controller
     {
         try{
             //pagination is true or false
-            $paginate = Request()->paginate ?? true;
+            // $paginate = Request()->paginate ?? true;
+
+            $paginate = false;
             //check if requst has count
             $count = Request()->count ?? 10;
             //check if Product has relation
