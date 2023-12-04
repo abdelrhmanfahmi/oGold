@@ -12,7 +12,9 @@ use App\Repository\Interfaces\OrderRepositoryInterface;
 use App\Repository\Interfaces\ProductRepositoryInterface;
 use App\Services\FileService;
 use App\Services\MatchService;
+use App\Services\TotalVolumesService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -20,7 +22,9 @@ class ProductController extends Controller
         private MatchService $matchService,
         private OrderRepositoryInterface $orderRepository,
         private ProductRepositoryInterface $productRepository,
-        private FileService $fileService)
+        private FileService $fileService,
+        private TotalVolumesService $totalVolumesService
+        )
     {
         $this->middleware('auth:api');
     }
@@ -94,7 +98,10 @@ class ProductController extends Controller
     public function getBalance()
     {
         try{
-            return $this->matchService->getBalanceMatch();
+            $getOpenedPositions = $this->matchService->getOpenedPositions(Auth::id());
+            $totalVolumes = $this->totalVolumesService->getTotalVolumes($getOpenedPositions);
+            $balanceDataInMatch = $this->matchService->getBalanceMatch();
+            return response()->json(['data' => $balanceDataInMatch , 'totalVolumes' => $totalVolumes]);
         }catch(\Exception $e){
             return $e;
         }
