@@ -101,7 +101,8 @@ class ProductController extends Controller
             $getOpenedPositions = $this->matchService->getOpenedPositions(Auth::id());
             $totalVolumes = $this->totalVolumesService->getTotalVolumes($getOpenedPositions);
             $balanceDataInMatch = $this->matchService->getBalanceMatch();
-            return response()->json(['data' => $balanceDataInMatch , 'totalVolumes' => $totalVolumes]);
+            $balanceDataInMatch->totalVolumes = $totalVolumes;
+            return response()->json(['data' => $balanceDataInMatch]);
         }catch(\Exception $e){
             return $e;
         }

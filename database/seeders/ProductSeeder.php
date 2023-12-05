@@ -14,14 +14,32 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
         Product::create([
-            'name' => 'product name one',
+            'name' => 'Product One',
             'gram' => 10,
             'image' => null,
             'is_active' => '1',
         ]);
         Product::create([
-            'name' => 'product name two',
+            'name' => 'Product Two',
             'gram' => 20,
+            'image' => null,
+            'is_active' => '1',
+        ]);
+        Product::create([
+            'name' => 'Product Three',
+            'gram' => 30,
+            'image' => null,
+            'is_active' => '1',
+        ]);
+        Product::create([
+            'name' => 'Product Four',
+            'gram' => 40,
+            'image' => null,
+            'is_active' => '1',
+        ]);
+        Product::create([
+            'name' => 'Product Five',
+            'gram' => 50,
             'image' => null,
             'is_active' => '1',
         ]);
