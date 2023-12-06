@@ -27,7 +27,7 @@ class ProductController extends Controller
             $count = Request()->count ?? 10;
             //check if Product has relation
             $relations = ['orders'];
-            $products = $this->productRepository->all($paginate , $count , $relations);
+            $products = $this->productRepository->all($count , $paginate , $relations);
             return ProductResource::collection($products);
         }catch(\Exception $e){
             return $e;

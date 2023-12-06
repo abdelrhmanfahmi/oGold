@@ -20,3 +20,9 @@ $router->group(['prefix' => 'delivery' ,'namespace' => 'App\Http\Controllers\Cli
     $router->get('/index', ['as' => 'delivery.index', 'uses' => 'DeliveryController@getOrdersDelivery']);
     $router->post('/store', ['as' => 'delivery.store', 'uses' => 'DeliveryController@storeOrderDelivery']);
 });
+
+$router->group(['prefix' => 'address_books' ,'namespace' => 'App\Http\Controllers\Client'], function () use ($router) {
+    $router->get('/', ['as' => 'address_books.index', 'uses' => 'AddressBookController@index']);
+    $router->post('/', ['as' => 'address_books.store', 'uses' => 'AddressBookController@store']);
+    $router->put('/{id}', ['as' => 'address_books.update', 'uses' => 'AddressBookController@update']);
+});

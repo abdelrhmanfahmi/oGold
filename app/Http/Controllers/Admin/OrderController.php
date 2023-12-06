@@ -25,7 +25,7 @@ class OrderController extends Controller
             $count = Request()->count ?? 10;
             //check if Product has relation
             $relations = ['products' , 'client' , 'deliveries'];
-            $orders = $this->orderRepository->all($paginate , $count , $relations);
+            $orders = $this->orderRepository->all($count , $paginate , $relations);
             return OrderResource::collection($orders);
         }catch(\Exception $e){
             return $e;

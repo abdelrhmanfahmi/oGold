@@ -15,7 +15,7 @@ class UserController extends Controller
     {
         $this->middleware('auth:api');
     }
-    
+
     public function resetPassword(ResetPasswordRequest $request)
     {
         try{
