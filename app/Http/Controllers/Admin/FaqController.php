@@ -25,7 +25,7 @@ class FaqController extends Controller
             //count of pagination per page
             $count = Request()->count ?? 10;
 
-            $faqs = $this->faqRepository->all($paginate , $count);
+            $faqs = $this->faqRepository->all($count , $paginate);
             return FaqResource::collection($faqs);
         }catch(\Exception $e){
             return $e;
@@ -46,8 +46,8 @@ class FaqController extends Controller
     public function show($id)
     {
         try{
-            $setting = $this->faqRepository->find($id);
-            return FaqResource::make($setting);
+            $faq = $this->faqRepository->find($id);
+            return FaqResource::make($faq);
         }catch(\Exception $e){
             return $e;
         }

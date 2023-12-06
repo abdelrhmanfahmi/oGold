@@ -25,7 +25,7 @@ class SettingController extends Controller
             //count of pagination per page
             $count = Request()->count ?? 10;
 
-            $settings = $this->settingRepository->all($paginate , $count);
+            $settings = $this->settingRepository->all($count , $paginate);
             return SettingResource::collection($settings);
         }catch(\Exception $e){
             return $e;

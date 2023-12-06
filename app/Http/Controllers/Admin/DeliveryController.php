@@ -26,7 +26,7 @@ class DeliveryController extends Controller
             $count = Request()->count ?? 10;
             //check if Product has relation
             $relations = ['order'];
-            $delivery = $this->deliveryRepository->all($paginate , $count , $relations);
+            $delivery = $this->deliveryRepository->all($count , $paginate , $relations);
             return DeliveryResource::collection($delivery);
         }catch(\Exception $e){
             return $e;
