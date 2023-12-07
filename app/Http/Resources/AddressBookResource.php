@@ -15,10 +15,9 @@ class AddressBookResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'country' => $this->countrt ?? null,
+            'country' => $this->country ?? null,
             'city' => $this->city ?? null,
-            'address' => $this->address ?? null,
-            'user' => UserResource::make($this->user)
+            'address' => $this->address ?? null
         ];
     }
 }

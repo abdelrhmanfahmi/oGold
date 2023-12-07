@@ -21,7 +21,8 @@ class AddressBookController extends Controller
     {
         try{
         //pagination request true or false
-        $paginate = Request()->paginate ?? true;
+        // $paginate = Request()->paginate ?? true;
+        $paginate = false;
 
         //count of pagination per page
         $count = Request()->count ?? 10;

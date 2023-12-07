@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Services;
 
@@ -48,7 +48,7 @@ class MatchService {
                 'partner_id' => $match_data->partnerId,
                 'offer_uuid' => $data_transform[0]->uuid
             ]);
-            
+
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
         }
@@ -132,7 +132,7 @@ class MatchService {
                 'json' => $account,
                 'headers' => ['Content-Type' => 'application/json']
             ]);
-            
+
             $response->getBody()->getContents();
             return true;
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
@@ -172,7 +172,7 @@ class MatchService {
                 'json' => $data,
                 'headers' => ['Content-Type' => 'application/json' , 'Authorization' => 'Bearer '. $token->access_token]
             ]);
-            
+
             $response->getBody()->getContents();
             return true;
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
@@ -322,11 +322,6 @@ class MatchService {
             $user = User::findOrFail($user_id);
             $client = new \GuzzleHttp\Client();
             $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/positions/close';
-            
-            // $objectsWithoutId = array_map(function ($object) {
-            //     unset($object->openTime);
-            //     return $object;
-            // }, $openedPositionsToClose);
 
             $response = $client->request('POST', $url, [
                 'headers' => [
