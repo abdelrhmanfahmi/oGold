@@ -6,10 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BuyGoldRequestClient;
 use App\Http\Requests\ExchangeGoldRequest;
 use App\Http\Requests\SellGoldRequestClient;
+use App\Http\Requests\StoreDepositRequest;
+use App\Http\Requests\StoreWithdrawRequest;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\SymbolResource;
+use App\Repository\Interfaces\DepositRepositoryInterface;
 use App\Repository\Interfaces\OrderRepositoryInterface;
 use App\Repository\Interfaces\ProductRepositoryInterface;
+use App\Repository\Interfaces\WithdrawRepositoryInterface;
 use App\Services\FileService;
 use App\Services\MatchService;
 use App\Services\TotalVolumesService;
@@ -23,7 +27,9 @@ class ProductController extends Controller
         private OrderRepositoryInterface $orderRepository,
         private ProductRepositoryInterface $productRepository,
         private FileService $fileService,
-        private TotalVolumesService $totalVolumesService
+        private TotalVolumesService $totalVolumesService,
+        private WithdrawRepositoryInterface $withdrawRepository,
+        private DepositRepositoryInterface $depositRepository
         )
     {
         $this->middleware('auth:api');
@@ -105,6 +111,36 @@ class ProductController extends Controller
                 $balanceDataInMatch->totalVolumes = $totalVolumes;
             }
             return response()->json(['data' => $balanceDataInMatch]);
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function storeWithdraw(StoreWithdrawRequest $request)
+    {
+        try{
+            $data = $request->validated();
+            $data['user_id'] = Auth::id();
+            $token = $this->matchService->getAccessToken();
+            $paymentGateWayUUid = $this->matchService->getPayment($token);
+            $this->matchService->makeWithdraw($data , $token , $paymentGateWayUUid);
+            $this->withdrawRepository->create($data);
+            return response()->json(['message' => 'Withdraw Order Created Successfully']);
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function storeDeposit(StoreDepositRequest $request)
+    {
+        try{
+            $data = $request->validated();
+            $data['user_id'] = Auth::id();
+            $token = $this->matchService->getAccessToken();
+            $paymentGateWayUUid = $this->matchService->getPayment($token);
+            $this->matchService->makeWithdraw($data , $token , $paymentGateWayUUid);
+            $this->depositRepository->create($data);
+            return response()->json(['message' => 'Deposit Order Created Successfully']);
         }catch(\Exception $e){
             return $e;
         }

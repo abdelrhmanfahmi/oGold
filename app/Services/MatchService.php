@@ -357,4 +357,62 @@ class MatchService {
             return $e->getResponse()->getBody()->getContents();
         }
     }
+
+    public function getPayment($token)
+    {
+        try{
+            $client = new \GuzzleHttp\Client();
+            $url = 'https://bo-mtrwl.match-trade.com/documentation/payment/partner/97/payment-gateways';
+            $response = $client->request('GET', $url, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Bearer ' . $token->access_token
+                ],
+            ]);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+            return $decodedData[2]->uuid;
+        }catch(\GuzzleHttp\Exception\BadResponseException $e){
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function makeWithdraw($data , $token , $paymentGateWay)
+    {
+        try{
+            $client = new \GuzzleHttp\Client();
+            $dataWithdraw = new \stdClass();
+            $dataWithdraw->paymentGatewayUuid = $paymentGateWay;
+            $dataWithdraw->tradingAccountUuid = '9c3e2a2b-9cc7-48c6-9747-9e14ac9f16c2';
+            $dataWithdraw->currency = $data['currency'];
+            $dataWithdraw->amount = $data['amount'];
+            $dataWithdraw->netAmount = $data['amount'];
+            $dataWithdraw->remark = 'test';
+
+            $url = 'https://bo-mtrwl.match-trade.com/documentation/payment/api/partner/97/withdraws/manual';
+            $response = $client->request('POST', $url, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Bearer ' . $token->access_token
+                ],
+                'json' => $dataWithdraw,
+            ]);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+            return $decodedData;
+        }catch(\GuzzleHttp\Exception\BadResponseException $e){
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function makeDeposit($data)
+    {
+        try{
+
+        }catch(\GuzzleHttp\Exception\BadResponseException $e){
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
 }

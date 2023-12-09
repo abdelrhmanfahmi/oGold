@@ -19,6 +19,12 @@ use App\Repository\FaqRepository;
 use App\Repository\Interfaces\AddressBookRepositoryInterface;
 use App\Repository\AddressBookRepository;
 
+use App\Repository\Interfaces\WithdrawRepositoryInterface;
+use App\Repository\WithdrawRepository;
+
+use App\Repository\Interfaces\DepositRepositoryInterface;
+use App\Repository\DepositRepository;
+
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
@@ -33,5 +39,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(DeliveryRepositoryInterface::class, DeliveryRepository::class);
         $this->app->bind(FaqRepositoryInterface::class, FaqRepository::class);
         $this->app->bind(AddressBookRepositoryInterface::class, AddressBookRepository::class);
+        $this->app->bind(WithdrawRepositoryInterface::class, WithdrawRepository::class);
+        $this->app->bind(DepositRepositoryInterface::class, DepositRepository::class);
     }
 }
