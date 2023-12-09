@@ -15,6 +15,7 @@ class OrderResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'address_book' => AddressBookResource::make($this->whenLoaded('address_book')),
             'client' => UserResource::make($this->whenLoaded('client')),
             'products' => ProductResource::collection($this->whenLoaded('products')),
             'deliveries' => DeliveryResource::collection($this->whenLoaded('deliveries'))

@@ -27,6 +27,7 @@ class ExchangeGoldRequest extends FormRequest
             'products' => 'required|array|min:1',
             'products.*.product_id' => 'required|integer|exists:products,id',
             'products.*.quantity' => 'required|integer',
+            'address_book_id' => 'required|exists:address_books,id'
         ];
     }
 }

@@ -10,6 +10,7 @@ use App\Http\Requests\StoreDepositRequest;
 use App\Http\Requests\StoreWithdrawRequest;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\SymbolResource;
+use App\Repository\Interfaces\DeliveryRepositoryInterface;
 use App\Repository\Interfaces\DepositRepositoryInterface;
 use App\Repository\Interfaces\OrderRepositoryInterface;
 use App\Repository\Interfaces\ProductRepositoryInterface;
@@ -91,7 +92,7 @@ class ProductController extends Controller
     {
         try{
             $data = $request->validated();
-            $orderData = $request->only('user_id');
+            $orderData = $request->only('user_id','address_book_id');
             $order = $this->orderRepository->create($orderData);
             $order->products()->attach($data['products']);
 

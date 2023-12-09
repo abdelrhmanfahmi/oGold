@@ -43,7 +43,7 @@ class OrderController extends Controller
             }
 
             if($request->type == 'delivery'){
-                $relations = ['products' , 'client' , 'deliveries'];
+                $relations = ['products' , 'client' , 'deliveries' , 'address_book'];
                 $orders = $this->orderRepository->all($count , $paginate , $relations);
                 return OrderResource::collection($orders);
             }
@@ -71,7 +71,7 @@ class OrderController extends Controller
     public function show($id)
     {
         try{
-            $relations = ['client' , 'products'];
+            $relations = ['client' , 'products' , 'address_book'];
             $order = $this->orderRepository->find($id , $relations);
             return OrderResource::make($order);
         }catch(\Exception $e){
