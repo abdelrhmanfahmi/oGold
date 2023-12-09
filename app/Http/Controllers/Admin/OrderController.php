@@ -5,28 +5,50 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
+use App\Http\Resources\DepositOrderResource;
 use App\Http\Resources\OrderResource;
+use App\Http\Resources\WithdrawOrderResource;
+use App\Repository\Interfaces\DepositRepositoryInterface;
 use App\Repository\Interfaces\OrderRepositoryInterface;
+use App\Repository\Interfaces\WithdrawRepositoryInterface;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    public function __construct(private OrderRepositoryInterface $orderRepository)
+    public function __construct(
+        private OrderRepositoryInterface $orderRepository,
+        private WithdrawRepositoryInterface $withdrawRepository,
+        private DepositRepositoryInterface $depositRepository,
+    )
     {
         $this->middleware('auth:api');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         try{
-            //pagination is true or false
             $paginate = Request()->paginate ?? true;
-            //check if requst has count
             $count = Request()->count ?? 10;
-            //check if Product has relation
-            $relations = ['products' , 'client' , 'deliveries'];
-            $orders = $this->orderRepository->all($count , $paginate , $relations);
-            return OrderResource::collection($orders);
+
+            if($request->type == 'withdraws'){
+                $relations = ['client'];
+                $withdraws = $this->withdrawRepository->all($count , $paginate , $relations);
+                return WithdrawOrderResource::collection($withdraws);
+            }
+
+            if($request->type == 'deposits'){
+                $relations = ['client'];
+                $deposits = $this->depositRepository->all($count , $paginate , $relations);
+                return DepositOrderResource::collection($deposits);
+            }
+
+            if($request->type == 'delivery'){
+                $relations = ['products' , 'client' , 'deliveries'];
+                $orders = $this->orderRepository->all($count , $paginate , $relations);
+                return OrderResource::collection($orders);
+            }
+
+
         }catch(\Exception $e){
             return $e;
         }

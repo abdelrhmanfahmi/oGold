@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AddressBook extends Model
+class Withdraw extends Model
 {
     use HasFactory;
-    protected $fillable = ['country' , 'city' , 'address' , 'user_id'];
+    protected $fillable = ['user_id' , 'amount' , 'currency' , 'status'];
 
     public function client()
     {

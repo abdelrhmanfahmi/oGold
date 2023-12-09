@@ -26,3 +26,8 @@ $router->group(['prefix' => 'address_books' ,'namespace' => 'App\Http\Controller
     $router->post('/', ['as' => 'address_books.store', 'uses' => 'AddressBookController@store']);
     $router->put('/{id}', ['as' => 'address_books.update', 'uses' => 'AddressBookController@update']);
 });
+
+$router->group(['namespace' => 'App\Http\Controllers\Client'], function () use ($router) {
+    $router->post('/withdraw', ['as' => 'withdraw.store', 'uses' => 'ProductController@storeWithdraw']);
+    $router->post('/deposit', ['as' => 'deposit.store', 'uses' => 'ProductController@storeDeposit']);
+});
