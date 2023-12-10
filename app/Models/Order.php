@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id' , 'address_book_id'];
+    protected $fillable = ['user_id' , 'address_book_id' , 'status' , 'is_approved' , 'total'];
 
     public function scopeFilter($query, Filters $filter)
     {
@@ -29,10 +29,5 @@ class Order extends Model
     public function address_book()
     {
         return $this->belongsTo(AddressBook::class , 'address_book_id');
-    }
-
-    public function deliveries()
-    {
-        return $this->hasMany(Delivery::class);
     }
 }

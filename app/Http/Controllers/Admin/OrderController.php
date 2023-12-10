@@ -11,6 +11,7 @@ use App\Http\Resources\WithdrawOrderResource;
 use App\Repository\Interfaces\DepositRepositoryInterface;
 use App\Repository\Interfaces\OrderRepositoryInterface;
 use App\Repository\Interfaces\WithdrawRepositoryInterface;
+use App\Services\TotalGramService;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -19,6 +20,7 @@ class OrderController extends Controller
         private OrderRepositoryInterface $orderRepository,
         private WithdrawRepositoryInterface $withdrawRepository,
         private DepositRepositoryInterface $depositRepository,
+        private TotalGramService $totalGramService
     )
     {
         $this->middleware('auth:api');
@@ -43,7 +45,7 @@ class OrderController extends Controller
             }
 
             if($request->type == 'delivery'){
-                $relations = ['products' , 'client' , 'deliveries' , 'address_book'];
+                $relations = ['products' , 'client' , 'address_book'];
                 $orders = $this->orderRepository->all($count , $paginate , $relations);
                 return OrderResource::collection($orders);
             }
@@ -58,10 +60,13 @@ class OrderController extends Controller
     {
         try{
             $data = $request->validated();
-            $orderData = $request->only('address' , 'payment_type' , 'user_id');
+            $orderData = $request->only('user_id','address_book_id','status');
             $order = $this->orderRepository->create($orderData);
 
             $order->products()->attach($data['products']);
+            $data['total'] = $this->totalGramService->calculateTotalService($order->id);
+            $updatedOrder = $this->orderRepository->find($order->id ,[]);
+            $this->orderRepository->update($updatedOrder , ['total' => $data['total']]);
             return response()->json(['message' => 'Order Created Successfully']);
         }catch(\Exception $e){
             return $e;
@@ -83,11 +88,13 @@ class OrderController extends Controller
     {
         try{
             $data = $request->validated();
-            $orderData = $request->only('address' , 'payment_type' , 'user_id');
+            $orderData = $request->only('user_id','address_book_id','status');
             $model = $this->orderRepository->find($id , []);
             $order = $this->orderRepository->update($model , $orderData);
 
             $order->products()->sync($data['products']);
+            $data['total'] = $this->totalGramService->calculateTotalService($id);
+            $this->orderRepository->update($model , ['total' => $data['total']]);
             return response()->json(['message' => 'Order Updated Successfully']);
         }catch(\Exception $e){
             return $e;

@@ -18,7 +18,9 @@ class OrderResource extends JsonResource
             'address_book' => AddressBookResource::make($this->whenLoaded('address_book')),
             'client' => UserResource::make($this->whenLoaded('client')),
             'products' => ProductResource::collection($this->whenLoaded('products')),
-            'deliveries' => DeliveryResource::collection($this->whenLoaded('deliveries'))
+            'status' => $this->status ?? null,
+            'is_approved' => $this->is_approved ?? null,
+            'total' => $this->total ?? null,
         ];
     }
 }

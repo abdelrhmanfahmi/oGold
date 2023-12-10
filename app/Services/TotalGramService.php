@@ -16,12 +16,12 @@ class TotalGramService {
             $totalGram = 0;
             $calcArr = [];
             $relations = ['products'];
-            
+
             $data = $this->orderRepository->find($orderId , $relations);
             foreach($data->products as $dat){
                 $calcArr[$dat->pivot->quantity] = $dat['gram'];
             }
-            
+
             foreach($calcArr as $key => $value){
                 $totalGram += $key*$value;
             }
