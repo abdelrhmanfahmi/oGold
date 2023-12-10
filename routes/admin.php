@@ -36,14 +36,6 @@ $router->group(['prefix' => 'orders' ,'namespace' => 'App\Http\Controllers\Admin
     $router->delete('/{id}', ['as' => 'orders.delete', 'uses' => 'OrderController@destroy']);
 });
 
-$router->group(['prefix' => 'delivery' ,'namespace' => 'App\Http\Controllers\Admin'], function () use ($router) {
-    $router->get('/', ['as' => 'delivery.index', 'uses' => 'DeliveryController@index']);
-    $router->post('/', ['as' => 'delivery.store', 'uses' => 'DeliveryController@store']);
-    $router->get('/{id}', ['as' => 'delivery.show', 'uses' => 'DeliveryController@show']);
-    $router->put('/{id}', ['as' => 'delivery.update', 'uses' => 'DeliveryController@update']);
-    $router->delete('/{id}', ['as' => 'delivery.delete', 'uses' => 'DeliveryController@destroy']);
-});
-
 
 $router->group(['prefix' => 'is_approved' ,'namespace' => 'App\Http\Controllers\Admin'], function () use ($router) {
     $router->post('/order', ['as' => 'order_delivery.checkOrderDeliveryAdmin', 'uses' => 'OrderDeliveryController@checkOrderApproved']);

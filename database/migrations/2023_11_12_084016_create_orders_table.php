@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('address_book_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->enum('status' , ['pending' , 'ready_to_picked' , 'ready_to_shipped' , 'delivered']);
+            $table->enum('is_approved' , [0,1])->default(0);
+            $table->unsignedDouble('total')->nullable();
             $table->timestamps();
         });
     }

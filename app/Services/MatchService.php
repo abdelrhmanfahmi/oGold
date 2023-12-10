@@ -16,11 +16,11 @@ class MatchService {
             $client = new \GuzzleHttp\Client();
             $url = 'https://bo-mtrwl.match-trade.com/proxy/auth/oauth/token';
             $response = $client->request('POST', $url, [
-                'headers' => ['Content-Type: application/x-www-form-urlencoded' , 'Authorization' => 'Basic bGl2ZU10cjFDbGllbnQ6TU9USUI2ckRxbjNDenlNdDV2N2VHVmNhcWZqeDNlNWN1ZmlObG5uVFZHWVkzak5uRDJiWXJQS0JPTGRKMXVCRHpPWURTa1NVa1BObkxJdHd5bXRMZzlDUklLTmdIVW54MVlmdQ=='],
+                'headers' => ['Content-Type: application/x-www-form-urlencoded' , 'Authorization' => 'Basic '.env('OAUTH_TOKEN')],
                 'form_params' => [
-                    'grant_type' => 'password',
-                    'username' => 'nassef@ogold.app',
-                    'password' => 'Nassefa!23123'
+                    'grant_type' => env('GRANT_TYPE'),
+                    'username' => env('USERNAMEGOLD'),
+                    'password' => env('PASSWORDGOLD')
                 ]
             ]);
             $data = $response->getBody()->getContents();
@@ -64,7 +64,7 @@ class MatchService {
                 'json' => [
                     'email' => $data['email'],
                     'password' => $data['password'],
-                    'brokerId' => "97",
+                    'brokerId' => env('BROKERID'),
                 ],
             ]);
             $result = $response->getBody()->getContents();

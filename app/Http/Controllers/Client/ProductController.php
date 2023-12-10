@@ -17,6 +17,7 @@ use App\Repository\Interfaces\ProductRepositoryInterface;
 use App\Repository\Interfaces\WithdrawRepositoryInterface;
 use App\Services\FileService;
 use App\Services\MatchService;
+use App\Services\TotalGramService;
 use App\Services\TotalVolumesService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,7 +31,8 @@ class ProductController extends Controller
         private FileService $fileService,
         private TotalVolumesService $totalVolumesService,
         private WithdrawRepositoryInterface $withdrawRepository,
-        private DepositRepositoryInterface $depositRepository
+        private DepositRepositoryInterface $depositRepository,
+        private TotalGramService $totalGramService
         )
     {
         $this->middleware('auth:api');
@@ -58,8 +60,12 @@ class ProductController extends Controller
     {
         try{
             $symbols = $this->matchService->getMarketWatchSymbol();
-            $this->matchService->saveSymbols($symbols);
-            return SymbolResource::collection($symbols);
+            if(!is_string($symbols)){
+                $this->matchService->saveSymbols($symbols);
+                return SymbolResource::collection($symbols);
+            }else{
+                return response()->json(['message' => 'authenticated error'] , 400);
+            }
         }catch(\Exception $e){
             return $e;
         }
@@ -93,8 +99,13 @@ class ProductController extends Controller
         try{
             $data = $request->validated();
             $orderData = $request->only('user_id','address_book_id');
+            $orderData['status'] = 'pending';
             $order = $this->orderRepository->create($orderData);
+
             $order->products()->attach($data['products']);
+            $data['total'] = $this->totalGramService->calculateTotalService($order->id);
+            $updatedOrder = $this->orderRepository->find($order->id ,[]);
+            $this->orderRepository->update($updatedOrder , ['total' => $data['total']]);
 
             return response()->json(['message' => 'Transaction Done Successfully'] , 200);
         }catch(\Exception $e){
