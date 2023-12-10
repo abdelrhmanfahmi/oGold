@@ -64,7 +64,7 @@ class ProductController extends Controller
                 $this->matchService->saveSymbols($symbols);
                 return SymbolResource::collection($symbols);
             }else{
-                return response()->json(['message' => 'authenticated error'] , 400);
+                return response()->json(['message' => 'authenticated error'] , 403);
             }
         }catch(\Exception $e){
             return $e;
@@ -121,8 +121,10 @@ class ProductController extends Controller
             $balanceDataInMatch = $this->matchService->getBalanceMatch();
             if(!is_string($balanceDataInMatch)){
                 $balanceDataInMatch->totalVolumes = $totalVolumes;
+                return response()->json(['data' => $balanceDataInMatch]);
+            }else{
+                return response()->json(['message' => 'authenticated error'] , 403);
             }
-            return response()->json(['data' => $balanceDataInMatch]);
         }catch(\Exception $e){
             return $e;
         }
@@ -153,6 +155,21 @@ class ProductController extends Controller
             $this->matchService->makeWithdraw($data , $token , $paymentGateWayUUid);
             $this->depositRepository->create($data);
             return response()->json(['message' => 'Deposit Order Created Successfully']);
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function getOpenPositions()
+    {
+        try{
+            $openPosition = $this->matchService->getOpenedPositions(Auth::id());
+            if(!is_string($openPosition)){
+                return response()->json(['data' => $openPosition]);
+            }else{
+                return response()->json(['message' => 'authenticated error'] , 403);
+            }
+
         }catch(\Exception $e){
             return $e;
         }
