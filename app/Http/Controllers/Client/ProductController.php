@@ -152,7 +152,7 @@ class ProductController extends Controller
             $data['user_id'] = Auth::id();
             $token = $this->matchService->getAccessToken();
             $paymentGateWayUUid = $this->matchService->getPayment($token);
-            $this->matchService->makeWithdraw($data , $token , $paymentGateWayUUid);
+            $this->matchService->makeDeposit($data , $token , $paymentGateWayUUid);
             $this->depositRepository->create($data);
             return response()->json(['message' => 'Deposit Order Created Successfully']);
         }catch(\Exception $e){
