@@ -24,7 +24,7 @@ class SellGoldRequestClient extends FormRequest
         return [
             'symbol' => 'required|string',
             'volume' => 'required|integer|numeric',
-            'positionId' => 'required'
+//            'positionId' => 'required'
         ];
     }
 }

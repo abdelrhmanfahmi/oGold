@@ -236,9 +236,9 @@ class MatchService {
             $dataDahab->instrument = $data['symbol'];
             $dataDahab->orderSide = 'BUY';
             $dataDahab->volume = $data['volume'];
-            $dataDahab->positionId = $data['positionId'];
+//            $dataDahab->positionId = $data['positionId'];
 
-            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/position/close';
+            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/positions/close';
             $response = $client->request('POST', $url, [
                 'headers' => [
                     'Accept' => 'application/json',
