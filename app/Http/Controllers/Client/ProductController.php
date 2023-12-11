@@ -64,7 +64,7 @@ class ProductController extends Controller
                 $this->matchService->saveSymbols($symbols);
                 return SymbolResource::collection($symbols);
             }else{
-                return response()->json(['message' => 'authenticated error'] , 403);
+                return response()->json($symbols , 401);
             }
         }catch(\Exception $e){
             return $e;
@@ -123,7 +123,7 @@ class ProductController extends Controller
                 $balanceDataInMatch->totalVolumes = $totalVolumes;
                 return response()->json(['data' => $balanceDataInMatch]);
             }else{
-                return response()->json(['message' => 'authenticated error'] , 403);
+                return response()->json($balanceDataInMatch , 401);
             }
         }catch(\Exception $e){
             return $e;
