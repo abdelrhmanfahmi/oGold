@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class SellGoldRequestClient extends FormRequest
+class ConfirmEmailMatchRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,8 @@ class SellGoldRequestClient extends FormRequest
     public function rules(): array
     {
         return [
-            'symbol' => 'required|string',
-            'volume' => 'required|integer|numeric'
+            'email' => 'required|email|min:3|max:100',
+            'code' => 'required'
         ];
     }
 }

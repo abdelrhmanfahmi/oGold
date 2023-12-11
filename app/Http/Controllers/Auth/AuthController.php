@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ConfirmEmailMatchRequest;
 use App\Http\Requests\ForgetPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
@@ -21,7 +22,7 @@ class AuthController extends Controller
 {
     public function __construct(private MatchService $matchService , private UserRepositoryInterface $userRepository , private PasswordResetService $passwordResetService)
     {
-        $this->middleware('auth:api', ['except' => ['login','register','forgetPassowrdMatch']]);
+        $this->middleware('auth:api', ['except' => ['login','register','forgetPassowrdMatch','verifyEmailConfirmationMatch']]);
     }
 
     public function login(LoginRequest $request)
@@ -70,7 +71,10 @@ class AuthController extends Controller
             $match_data = $this->matchService->getAccessToken();
             $this->matchService->getOfferUUID($match_data);
             $this->matchService->createUserInMatch($data);
-            
+
+            //send verification code of match to new user
+            $this->matchService->sendVerificationCode($data['email']);
+
             //create user
             $user = $this->userRepository->create($data);
 
@@ -90,7 +94,23 @@ class AuthController extends Controller
                 'user' => $user,
                 'token' => $token
             ]);
-            
+
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function verifyEmailConfirmationMatch(ConfirmEmailMatchRequest $request)
+    {
+        try{
+            $data = $request->validated();
+            $isVerified = $this->matchService->confirmEmailVerification($data);
+            if($isVerified){
+                return response()->json(['message' => 'Email Verified Successfully'], 200);
+            }else{
+                return response()->json(['message' => 'something went wrong'], 500);
+            }
+
         }catch(\Exception $e){
             return $e;
         }
@@ -139,7 +159,7 @@ class AuthController extends Controller
     //     try{
     //         $data = $request->validated();
     //         $updatePassword = $this->passwordResetService->checkIfPasswordResetExists($data , Request()->token);
-  
+
     //         if($updatePassword == 0){
     //             return response()->json(['message' => 'invalid token']);
     //         }else{
@@ -165,7 +185,7 @@ class AuthController extends Controller
             }else{
                 return response()->json(['message' => 'Old Password Invalid'], 422);
             }
-            
+
         }catch(\Exception $e){
             return $e;
         }

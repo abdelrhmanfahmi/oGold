@@ -40,10 +40,10 @@ class RouteServiceProvider extends ServiceProvider
             Route::prefix('api/refinery')
                 ->middleware(['api', 'is_refinery'])
                 ->namespace($this->namespace)
-                ->group(base_path('routes/refinery.php')); 
-                
+                ->group(base_path('routes/refinery.php'));
+
             Route::prefix('api/client')
-                ->middleware(['api'])
+                ->middleware(['api' , 'is_match_authed'])
                 ->namespace($this->namespace)
                 ->group(base_path('routes/client.php'));
 

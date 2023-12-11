@@ -30,7 +30,6 @@ return new class extends Migration
             $table->string('bankAccount')->nullable();
             $table->string('accountName')->nullable();
             $table->enum('type' , ['admin' , 'client' , 'refinery']);
-            $table->string('client_uuid')->nullable();
             $table->text('co_auth')->nullable();
             $table->text('trading_api_token')->nullable();
             $table->rememberToken();
