@@ -407,10 +407,30 @@ class MatchService {
         }
     }
 
-    public function makeDeposit($data)
+    public function makeDeposit($data , $token , $paymentGateWay)
     {
         try{
+            $client = new \GuzzleHttp\Client();
+            $dataDeposit = new \stdClass();
+            $dataDeposit->paymentGatewayUuid = $paymentGateWay;
+            $dataDeposit->tradingAccountUuid = '9c3e2a2b-9cc7-48c6-9747-9e14ac9f16c2';
+            $dataDeposit->currency = $data['currency'];
+            $dataDeposit->amount = $data['amount'];
+            $dataDeposit->netAmount = $data['amount'];
+            $dataDeposit->remark = 'test';
 
+            $url = 'https://bo-mtrwl.match-trade.com/documentation/payment/api/partner/97/deposits/manual';
+            $response = $client->request('POST', $url, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Bearer ' . $token->access_token
+                ],
+                'json' => $dataDeposit,
+            ]);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+            return $decodedData;
         }catch(\GuzzleHttp\Exception\BadResponseException $e){
             return $e->getResponse()->getBody()->getContents();
         }
