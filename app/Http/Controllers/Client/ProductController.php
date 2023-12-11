@@ -83,12 +83,9 @@ class ProductController extends Controller
         }
     }
 
-    public function sellGold(SellGoldRequestClient $request)
+    public function sellGold()
     {
         try{
-            $data = $request->validated();
-//            $order = $this->matchService->closePosition($data);
-
             $opendPositions = $this->matchService->getOpenedPositions(Auth::id());
             $getPositionsByOrder = $this->matchService->getPositionsByOrder($opendPositions);
             $order = $this->matchService->closePositionsByOrderDate($getPositionsByOrder , Auth::id());

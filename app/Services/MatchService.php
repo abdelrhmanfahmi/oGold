@@ -119,6 +119,46 @@ class MatchService {
         }
     }
 
+    public function sendVerificationCode($email)
+    {
+        try{
+            $client = new \GuzzleHttp\Client();
+            $url = 'https://platform.ogold.app/manager/user/verification-email';
+            $objSended = new \stdClass();
+            $objSended->partnerId = env('BROKERID');
+            $objSended->email = $email;
+            $response = $client->request('POST', $url, [
+                'headers' => ['Content-Type' => 'application/json' , 'Accept' => 'application/json'],
+                'json' => $objSended,
+            ]);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function confirmEmailVerification($data)
+    {
+        try{
+            $client = new \GuzzleHttp\Client();
+            $url = 'https://platform.ogold.app/manager/user/verification-email/confirm';
+            $objSendedConfirmation = new \stdClass();
+            $objSendedConfirmation->partnerId = env('BROKERID');
+            $objSendedConfirmation->email = $data['email'];
+            $objSendedConfirmation->verificationCode = $data['code'];
+            $response = $client->request('POST', $url, [
+                'headers' => ['Content-Type' => 'application/json' , 'Accept' => 'application/json'],
+                'json' => $objSendedConfirmation,
+            ]);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+            return $decodedData;
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
     public function forgetPassowrdInMatch($data)
     {
         try{
