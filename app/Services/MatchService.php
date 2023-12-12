@@ -339,16 +339,18 @@ class MatchService {
     public function getPositionsByOrder($dataOpenedPositions,$data)
     {
         try{
-            // dd($dataOpenedPositions);
             $checkHasTotalVolume= 0;
             $arrClosedPositions = [];
+
             foreach($dataOpenedPositions->positions as $d){
                 $checkHasTotalVolume += $d->volume;
             }
 
-            if($data['volume'] > $checkHasTotalVolume){
+            if(count($dataOpenedPositions->positions) == 0){
+                return 0;
+            }else if($data['volume'] > $checkHasTotalVolume ){
                 return -1;
-            }else if(count($dataOpenedPositions->positions) > 0){
+            }else{
                 foreach($dataOpenedPositions->positions as $d){
                     $checkHasTotalVolume += $d->volume;
                     $newObj = new \stdClass();
@@ -379,8 +381,6 @@ class MatchService {
                     }
                 }
                 return ['originalClose' => $arrToClosePositionsPerQuantity , 'reminder' => $reminderVolume , 'positionId' => $positionId];
-            }else{
-                return 0;
             }
         }catch(\GuzzleHttp\Exception\BadResponseException $e){
             return $e->getResponse()->getBody()->getContents();
