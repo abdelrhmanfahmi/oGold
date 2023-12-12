@@ -8,7 +8,7 @@ class FileService {
     public function storeFile($file)
     {
         try{
-            $fileName = time().rand(1,99).'.'.$file->extension();
+            $fileName = env('APP_URL').'/uploads/'.time().rand(1,99).'.'.$file->extension();
             $file->move(public_path('uploads'), $fileName);
             return $fileName;
         }catch(\Exception $e){
@@ -31,7 +31,7 @@ class FileService {
                 $file->move(public_path('uploads'), $fileName);
                 return $fileName;
             }
-            
+
         }catch(\Exception $e){
             return $e;
         }
