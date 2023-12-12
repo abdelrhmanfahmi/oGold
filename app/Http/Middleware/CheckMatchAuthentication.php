@@ -14,6 +14,6 @@ class CheckMatchAuthentication
         if(Auth::user()->co_auth != null && Auth::user()->trading_api_token != null){
             return $next($request);
         }
-        return response()->json(['message' => 'Check Mail Verification And Login Again'], 401);
+        return response()->json(['message' => 'Check Mail Verification And Login Again'], 403);
     }
 }

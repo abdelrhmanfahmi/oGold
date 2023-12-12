@@ -340,37 +340,51 @@ class MatchService {
     {
         try{
             $arrClosedPositions = [];
-            foreach($dataOpenedPositions->positions as $d){
-                $newObj = new \stdClass();
-                $newObj->openTime = $d->openTime;
-                $newObj->positionId = $d->id;
-                $newObj->volume = $d->volume;
-                $newObj->orderSide = $d->side;
-                $newObj->instrument = $d->symbol;
-                $arrClosedPositions[] = $newObj;
-            }
-            $sortedObjects = collect($arrClosedPositions)->sortBy('openTime')->values()->all();
-
-            //here logic for check quanity sended from mobile to close positions according to it
-            $arrToClosePositionsPerQuantity = [];
-            $totalVolumePerQuantity = 0;
-            foreach($sortedObjects as $sorted){
-                $totalVolumePerQuantity += $sorted->volume;
-                if($totalVolumePerQuantity <= $data['volume']){
-                    array_push($arrToClosePositionsPerQuantity , $sorted);
-                }else{
-                    break;
+            if(count($dataOpenedPositions->positions) > 0){
+                foreach($dataOpenedPositions->positions as $d){
+                    $newObj = new \stdClass();
+                    $newObj->openTime = $d->openTime;
+                    $newObj->positionId = $d->id;
+                    $newObj->volume = $d->volume;
+                    $newObj->orderSide = $d->side;
+                    $newObj->instrument = $d->symbol;
+                    $arrClosedPositions[] = $newObj;
                 }
+                $sortedObjects = collect($arrClosedPositions)->sortBy('openTime')->values()->all();
+
+                //here logic for check quanity sended from mobile to close positions according to it
+                $arrToClosePositionsPerQuantity = [];
+                $totalVolumePerQuantity = 0;
+                $collectedNotClosed = 0;
+                $reminderVolume = 0;
+                $positionId = '';
+                // $arrNotClosedPartially = [];
+                foreach($sortedObjects as $sorted){
+                    $totalVolumePerQuantity += $sorted->volume;
+                    if($totalVolumePerQuantity <= $data['volume']){
+                        array_push($arrToClosePositionsPerQuantity , $sorted);
+                        $collectedNotClosed += $sorted->volume;
+                    }else{
+                        $reminderVolume = $data['volume'] - $collectedNotClosed;
+                        $positionId = $sorted->positionId;
+                        break;
+                        // array_push($arrNotClosedPartially , $sorted);
+                    }
+                }
+                // return $arrToClosePositionsPerQuantity;
+                return ['originalClose' => $arrToClosePositionsPerQuantity , 'reminder' => $reminderVolume , 'positionId' => $positionId];
+            }else{
+                return 0;
             }
-            return $arrToClosePositionsPerQuantity;
         }catch(\GuzzleHttp\Exception\BadResponseException $e){
             return $e->getResponse()->getBody()->getContents();
         }
     }
 
-    public function closePositionsByOrderDate($openedPositionsToClose , $user_id)
+    public function closePositionsByOrderDate($arrayOfPositionsToClose , $user_id)
     {
         try{
+            // dd($arrayOfPositionsToClose);
             $user = User::findOrFail($user_id);
             $client = new \GuzzleHttp\Client();
             $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/positions/close';
@@ -381,11 +395,34 @@ class MatchService {
                     'Auth-trading-api' => $user->trading_api_token,
                     'Cookie' => 'co-auth='. $user->co_auth
                 ],
-                'json' => $openedPositionsToClose,
+                // 'json' => $arrayOfPositionsToClose,
+                'json' => $arrayOfPositionsToClose['originalClose'],
             ]);
             $result = $response->getBody()->getContents();
             $decodedData = json_decode($result);
-            return $decodedData;
+            // return $decodedData;
+            if($decodedData->status == 'OK' && $arrayOfPositionsToClose['reminder'] != 0){
+                $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/position/close-partially';
+                $dataDahabToClosePartialy = new \stdClass();
+                $dataDahabToClosePartialy->instrument = 'GoldGram24c';
+                $dataDahabToClosePartialy->orderSide = 'BUY';
+                $dataDahabToClosePartialy->volume = $arrayOfPositionsToClose['reminder'];
+                $dataDahabToClosePartialy->positionId = $arrayOfPositionsToClose['positionId'];
+                $dataDahabToClosePartialy->isMobile = false;
+                $response = $client->request('POST', $url, [
+                    'headers' => [
+                        'co-auth' => $user->co_auth,
+                        'Auth-trading-api' => $user->trading_api_token,
+                        'Cookie' => 'co-auth='. $user->co_auth
+                    ],
+                    'json' => $dataDahabToClosePartialy,
+                ]);
+                $result = $response->getBody()->getContents();
+                $decodedData = json_decode($result);
+                return ['success partially ' => $decodedData];
+            }else{
+                return ['success total ' =>$decodedData];
+            }
 
         }catch(\GuzzleHttp\Exception\BadResponseException $e){
             return $e->getResponse()->getBody()->getContents();
