@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ActiveProductRequest;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Http\Resources\ProductAdminResource;
 use App\Http\Resources\ProductResource;
 use App\Repository\Interfaces\ProductRepositoryInterface;
 use App\Services\FileService;
@@ -28,7 +29,7 @@ class ProductController extends Controller
             //check if Product has relation
             $relations = ['orders'];
             $products = $this->productRepository->all($count , $paginate , $relations);
-            return ProductResource::collection($products);
+            return ProductAdminResource::collection($products);
         }catch(\Exception $e){
             return $e;
         }
@@ -54,7 +55,7 @@ class ProductController extends Controller
         try{
             $relations = ['orders'];
             $product = $this->productRepository->find($id , $relations);
-            return ProductResource::make($product);
+            return ProductAdminResource::make($product);
         }catch(\Exception $e){
             return $e;
         }

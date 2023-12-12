@@ -40,7 +40,7 @@ class ProductPolicy
         if($product->orders()->exists()){
             return Response::deny('You cant update product has already orders!');
         }
-    
+
         return true;
     }
 
@@ -52,7 +52,7 @@ class ProductPolicy
         if($product->orders()->exists()){
             return Response::deny('You cant delete product has already orders!');
         }
-    
+
         return true;
     }
 
