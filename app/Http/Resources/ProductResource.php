@@ -19,6 +19,7 @@ class ProductResource extends JsonResource
             'name' => $this->name ?? null,
             'gram' => $this->gram ?? null,
             'image' => $this->image ?? null,
+            'is_active' => $this->is_active ?? null
             // 'orders' => OrderResource::collection($this->whenLoaded('orders'))
         ];
     }
