@@ -18,7 +18,7 @@ class ProductAdminResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name ?? null,
             'gram' => $this->gram ?? null,
-            'image' => $this->when($this->image,env('APP_URL') .'/uploads/' . $this->image,null),
+            'image' => $this->image ?? null,
             'is_active' => $this->is_active ?? null,
             'orders' => OrderResource::collection($this->whenLoaded('orders'))
         ];
