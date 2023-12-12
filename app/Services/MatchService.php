@@ -339,9 +339,18 @@ class MatchService {
     public function getPositionsByOrder($dataOpenedPositions,$data)
     {
         try{
+            // dd($dataOpenedPositions);
+            $checkHasTotalVolume= 0;
             $arrClosedPositions = [];
-            if(count($dataOpenedPositions->positions) > 0){
+            foreach($dataOpenedPositions->positions as $d){
+                $checkHasTotalVolume += $d->volume;
+            }
+
+            if($data['volume'] > $checkHasTotalVolume){
+                return -1;
+            }else if(count($dataOpenedPositions->positions) > 0){
                 foreach($dataOpenedPositions->positions as $d){
+                    $checkHasTotalVolume += $d->volume;
                     $newObj = new \stdClass();
                     $newObj->openTime = $d->openTime;
                     $newObj->positionId = $d->id;
@@ -358,7 +367,6 @@ class MatchService {
                 $collectedNotClosed = 0;
                 $reminderVolume = 0;
                 $positionId = '';
-                // $arrNotClosedPartially = [];
                 foreach($sortedObjects as $sorted){
                     $totalVolumePerQuantity += $sorted->volume;
                     if($totalVolumePerQuantity <= $data['volume']){
@@ -368,10 +376,8 @@ class MatchService {
                         $reminderVolume = $data['volume'] - $collectedNotClosed;
                         $positionId = $sorted->positionId;
                         break;
-                        // array_push($arrNotClosedPartially , $sorted);
                     }
                 }
-                // return $arrToClosePositionsPerQuantity;
                 return ['originalClose' => $arrToClosePositionsPerQuantity , 'reminder' => $reminderVolume , 'positionId' => $positionId];
             }else{
                 return 0;
@@ -384,7 +390,6 @@ class MatchService {
     public function closePositionsByOrderDate($arrayOfPositionsToClose , $user_id)
     {
         try{
-            // dd($arrayOfPositionsToClose);
             $user = User::findOrFail($user_id);
             $client = new \GuzzleHttp\Client();
             $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/positions/close';
@@ -395,12 +400,10 @@ class MatchService {
                     'Auth-trading-api' => $user->trading_api_token,
                     'Cookie' => 'co-auth='. $user->co_auth
                 ],
-                // 'json' => $arrayOfPositionsToClose,
                 'json' => $arrayOfPositionsToClose['originalClose'],
             ]);
             $result = $response->getBody()->getContents();
             $decodedData = json_decode($result);
-            // return $decodedData;
             if($decodedData->status == 'OK' && $arrayOfPositionsToClose['reminder'] != 0){
                 $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/position/close-partially';
                 $dataDahabToClosePartialy = new \stdClass();
@@ -419,9 +422,9 @@ class MatchService {
                 ]);
                 $result = $response->getBody()->getContents();
                 $decodedData = json_decode($result);
-                return ['success partially ' => $decodedData];
+                return $decodedData;
             }else{
-                return ['success total ' =>$decodedData];
+                return $decodedData;
             }
 
         }catch(\GuzzleHttp\Exception\BadResponseException $e){

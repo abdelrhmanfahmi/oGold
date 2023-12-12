@@ -92,6 +92,8 @@ class ProductController extends Controller
                 $arrayOfPositionsToClose = $this->matchService->getPositionsByOrder($opendPositions,$data);
                 if($arrayOfPositionsToClose == 0){
                     return response()->json(['message' => 'you have not positions to close']);
+                }else if($arrayOfPositionsToClose == -1){
+                    return response()->json(['message' => 'you cannot sell gold smaller than you have']);
                 }else{
                     $order = $this->matchService->closePositionsByOrderDate($arrayOfPositionsToClose , Auth::id());
                     return response()->json(['data' => $order] , 200);
