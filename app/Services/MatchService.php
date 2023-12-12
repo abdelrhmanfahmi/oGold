@@ -336,11 +336,11 @@ class MatchService {
         }
     }
 
-    public function getPositionsByOrder($data)
+    public function getPositionsByOrder($dataOpenedPositions,$data)
     {
         try{
             $arrClosedPositions = [];
-            foreach($data->positions as $d){
+            foreach($dataOpenedPositions->positions as $d){
                 $newObj = new \stdClass();
                 $newObj->openTime = $d->openTime;
                 $newObj->positionId = $d->id;
@@ -350,7 +350,19 @@ class MatchService {
                 $arrClosedPositions[] = $newObj;
             }
             $sortedObjects = collect($arrClosedPositions)->sortBy('openTime')->values()->all();
-            return $sortedObjects;
+
+            //here logic for check quanity sended from mobile to close positions according to it
+            $arrToClosePositionsPerQuantity = [];
+            $totalVolumePerQuantity = 0;
+            foreach($sortedObjects as $sorted){
+                $totalVolumePerQuantity += $sorted->volume;
+                if($totalVolumePerQuantity <= $data['volume']){
+                    array_push($arrToClosePositionsPerQuantity , $sorted);
+                }else{
+                    break;
+                }
+            }
+            return $arrToClosePositionsPerQuantity;
         }catch(\GuzzleHttp\Exception\BadResponseException $e){
             return $e->getResponse()->getBody()->getContents();
         }
