@@ -22,7 +22,6 @@ class SellGoldRequestClient extends FormRequest
     public function rules(): array
     {
         return [
-            'symbol' => 'required|string',
             'volume' => 'required|integer|numeric'
         ];
     }

@@ -83,13 +83,19 @@ class ProductController extends Controller
         }
     }
 
-    public function sellGold()
+    public function sellGold(SellGoldRequestClient $request)
     {
         try{
+            $data = $request->validated();
             $opendPositions = $this->matchService->getOpenedPositions(Auth::id());
-            $getPositionsByOrder = $this->matchService->getPositionsByOrder($opendPositions);
-            $order = $this->matchService->closePositionsByOrderDate($getPositionsByOrder , Auth::id());
-            return response()->json(['data' => $order] , 200);
+            if(!is_string($opendPositions)){
+                $getPositionsByOrder = $this->matchService->getPositionsByOrder($opendPositions,$data);
+                $order = $this->matchService->closePositionsByOrderDate($getPositionsByOrder , Auth::id());
+                return response()->json(['data' => $order] , 200);
+            }else{
+                return response()->json(['message' => 'Authentication error'] , 401);
+            }
+
         }catch(\Exception $e){
             return $e;
         }
