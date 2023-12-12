@@ -436,7 +436,7 @@ class MatchService {
             $client = new \GuzzleHttp\Client();
             $dataWithdraw = new \stdClass();
             $dataWithdraw->paymentGatewayUuid = $paymentGateWay;
-            $dataWithdraw->tradingAccountUuid = '9c3e2a2b-9cc7-48c6-9747-9e14ac9f16c2';
+            $dataWithdraw->tradingAccountUuid = '06c339c2-8624-492c-850a-15b338a86b67';
             $dataWithdraw->currency = $data['currency'];
             $dataWithdraw->amount = $data['amount'];
             $dataWithdraw->netAmount = $data['amount'];
