@@ -37,6 +37,7 @@ class ProductPolicy
      */
     public function update(User $user, Product $product): Response
     {
+        //cannot update products if he has orders
         if($product->orders()->exists()){
             return Response::deny('You cant update product has already orders!');
         }
