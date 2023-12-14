@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BuyGoldRequestClient;
 use App\Http\Requests\ExchangeGoldRequest;
-use App\Http\Requests\GetClosePositionsRequest;
 use App\Http\Requests\SellGoldRequestClient;
 use App\Http\Requests\StoreDepositRequest;
 use App\Http\Requests\StoreWithdrawRequest;
