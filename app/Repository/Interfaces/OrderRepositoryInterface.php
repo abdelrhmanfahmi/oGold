@@ -24,6 +24,12 @@ interface OrderRepositoryInterface
     public function find(int $model_id , array $relations): ?object;
 
     /**
+     * @param int $user_id
+     * @return object
+     */
+    public function findByUserId(int $user_id): ?object;
+
+    /**
      * @param array $attributes
      * @return object
      */

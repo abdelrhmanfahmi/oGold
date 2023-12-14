@@ -87,13 +87,16 @@ class ProductController extends Controller
     {
         try{
             $data = $request->validated();
+            $totalGoldPending = $this->getTotalGoldPendingPerUser();
             $opendPositions = $this->matchService->getOpenedPositions(Auth::id());
             if(!is_string($opendPositions)){
-                $arrayOfPositionsToClose = $this->matchService->getPositionsByOrder($opendPositions,$data);
+                $arrayOfPositionsToClose = $this->matchService->getPositionsByOrder($opendPositions,$totalGoldPending,$data);
                 if($arrayOfPositionsToClose == 0){
                     return response()->json(['message' => 'you have not positions to close']);
                 }else if($arrayOfPositionsToClose == -1){
                     return response()->json(['message' => 'you cannot sell gold smaller than you have']);
+                }else if($arrayOfPositionsToClose == -2){
+                    return response()->json(['message' => 'you cannot sell gold bigger than your pending order gold, wait approve admin to see your net gold']);
                 }else{
                     $order = $this->matchService->closePositionsByOrderDate($arrayOfPositionsToClose , Auth::id());
                     return response()->json(['data' => $order] , 200);
@@ -148,9 +151,9 @@ class ProductController extends Controller
         try{
             $data = $request->validated();
             $data['user_id'] = Auth::id();
-            $token = $this->matchService->getAccessToken();
-            $paymentGateWayUUid = $this->matchService->getPayment($token);
-            $this->matchService->makeWithdraw($data , $token , $paymentGateWayUUid);
+            // $token = $this->matchService->getAccessToken();
+            // $paymentGateWayUUid = $this->matchService->getPayment($token);
+            // $this->matchService->makeWithdraw($data , $token , $paymentGateWayUUid);
             $this->withdrawRepository->create($data);
             return response()->json(['message' => 'Withdraw Order Created Successfully']);
         }catch(\Exception $e){
@@ -163,9 +166,9 @@ class ProductController extends Controller
         try{
             $data = $request->validated();
             $data['user_id'] = Auth::id();
-            $token = $this->matchService->getAccessToken();
-            $paymentGateWayUUid = $this->matchService->getPayment($token);
-            $this->matchService->makeDeposit($data , $token , $paymentGateWayUUid);
+            // $token = $this->matchService->getAccessToken();
+            // $paymentGateWayUUid = $this->matchService->getPayment($token);
+            // $this->matchService->makeDeposit($data , $token , $paymentGateWayUUid);
             $this->depositRepository->create($data);
             return response()->json(['message' => 'Deposit Order Created Successfully']);
         }catch(\Exception $e){
@@ -183,6 +186,21 @@ class ProductController extends Controller
                 return response()->json(['message' => 'authenticated error'] , 403);
             }
 
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    protected function getTotalGoldPendingPerUser()
+    {
+        try{
+            $totalGoldPending = $this->orderRepository->findByUserId(Auth::id());
+            $countTotalGold = 0;
+            foreach($totalGoldPending as $goldPending){
+                $countTotalGold += $goldPending->total;
+            }
+
+            return $countTotalGold;
         }catch(\Exception $e){
             return $e;
         }

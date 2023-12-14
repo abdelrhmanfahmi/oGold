@@ -24,6 +24,8 @@ $router->group(['prefix' => 'address_books' ,'namespace' => 'App\Http\Controller
 
 $router->group(['namespace' => 'App\Http\Controllers\Client'], function () use ($router) {
     $router->get('/get-open-positions', ['as' => 'products.open_positions', 'uses' => 'ProductController@getOpenPositions']);
+    $router->get('/list/orders/withdraws' , ['as' => 'orders.withdrawUser' , 'uses' => 'AccountUserController@listWithdraws']);
     $router->post('/withdraw', ['as' => 'withdraw.store', 'uses' => 'ProductController@storeWithdraw']);
+    $router->get('/list/orders/deposits' , ['as' => 'orders.DepositUser' , 'uses' => 'AccountUserController@listDeposits']);
     $router->post('/deposit', ['as' => 'deposit.store', 'uses' => 'ProductController@storeDeposit']);
 });

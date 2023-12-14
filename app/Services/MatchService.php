@@ -336,7 +336,7 @@ class MatchService {
         }
     }
 
-    public function getPositionsByOrder($dataOpenedPositions,$data)
+    public function getPositionsByOrder($dataOpenedPositions,$totalGoldPending,$data)
     {
         try{
             $checkHasTotalVolume= 0;
@@ -346,10 +346,16 @@ class MatchService {
                 $checkHasTotalVolume += $d->volume;
             }
 
-            if(count($dataOpenedPositions->positions) == 0){
+            //net gold that user can sell from them
+            $totalGoldCanSold = $checkHasTotalVolume - $totalGoldPending;
+
+            if(count($dataOpenedPositions->positions) == 0){ // check if user has positions to close
                 return 0;
-            }else if($data['volume'] > $checkHasTotalVolume ){
+            }else if($data['volume'] > $checkHasTotalVolume){ // check if user request to sell gold bigger than he has
                 return -1;
+            }else if($data['volume'] > $totalGoldCanSold){
+                // check if user request to sell gold that (total gold he has 200 gold but in order pending total 100 gold , then he can't sell bigger than 100 gold)
+                return -2;
             }else{
                 foreach($dataOpenedPositions->positions as $d){
                     $checkHasTotalVolume += $d->volume;
@@ -382,6 +388,44 @@ class MatchService {
                 }
                 return ['originalClose' => $arrToClosePositionsPerQuantity , 'reminder' => $reminderVolume , 'positionId' => $positionId];
             }
+        }catch(\GuzzleHttp\Exception\BadResponseException $e){
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function getPositionsByOrderAdminRefinaryRole($dataOpenedPositions,$totalGold)
+    {
+        try{
+            foreach($dataOpenedPositions->positions as $d){
+                $newObj = new \stdClass();
+                $newObj->openTime = $d->openTime;
+                $newObj->positionId = $d->id;
+                $newObj->volume = $d->volume;
+                $newObj->orderSide = $d->side;
+                $newObj->instrument = $d->symbol;
+                $arrClosedPositions[] = $newObj;
+            }
+            $sortedObjects = collect($arrClosedPositions)->sortBy('openTime')->values()->all();
+
+            //here logic for check quanity sended from mobile to close positions according to it
+            $arrToClosePositionsPerQuantity = [];
+            $totalVolumePerQuantity = 0;
+            $collectedNotClosed = 0;
+            $reminderVolume = 0;
+            $positionId = '';
+            foreach($sortedObjects as $sorted){
+                $totalVolumePerQuantity += $sorted->volume;
+                if($totalVolumePerQuantity <= $totalGold){
+                    array_push($arrToClosePositionsPerQuantity , $sorted);
+                    $collectedNotClosed += $sorted->volume;
+                }else{
+                    $reminderVolume = $totalGold - $collectedNotClosed;
+                    $positionId = $sorted->positionId;
+                    break;
+                }
+            }
+            return ['originalClose' => $arrToClosePositionsPerQuantity , 'reminder' => $reminderVolume , 'positionId' => $positionId];
+
         }catch(\GuzzleHttp\Exception\BadResponseException $e){
             return $e->getResponse()->getBody()->getContents();
         }
@@ -476,7 +520,7 @@ class MatchService {
             $client = new \GuzzleHttp\Client();
             $dataWithdraw = new \stdClass();
             $dataWithdraw->paymentGatewayUuid = $paymentGateWay;
-            $dataWithdraw->tradingAccountUuid = '06c339c2-8624-492c-850a-15b338a86b67';
+            $dataWithdraw->tradingAccountUuid = env('TRADINGACCOUNTUUID');
             $dataWithdraw->currency = $data['currency'];
             $dataWithdraw->amount = $data['amount'];
             $dataWithdraw->netAmount = $data['amount'];
@@ -505,7 +549,7 @@ class MatchService {
             $client = new \GuzzleHttp\Client();
             $dataDeposit = new \stdClass();
             $dataDeposit->paymentGatewayUuid = $paymentGateWay;
-            $dataDeposit->tradingAccountUuid = '9c3e2a2b-9cc7-48c6-9747-9e14ac9f16c2';
+            $dataDeposit->tradingAccountUuid = env('TRADINGACCOUNTUUID');
             $dataDeposit->currency = $data['currency'];
             $dataDeposit->amount = $data['amount'];
             $dataDeposit->netAmount = $data['amount'];

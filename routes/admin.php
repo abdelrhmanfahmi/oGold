@@ -43,4 +43,6 @@ $router->group(['prefix' => 'is_approved' ,'namespace' => 'App\Http\Controllers\
 
 $router->group(['namespace' => 'App\Http\Controllers\Admin'], function () use ($router) {
     $router->put('/is_active/product/{id}', ['as' => 'order_delivery.checkOrderDeliveryAdmin', 'uses' => 'ProductController@updateProduct']);
+    $router->put('/update/withdraw/status/{id}' , ['as' => 'withdraw.updateStatus', 'uses' => 'AccountController@updateWithdrawStatus']);
+    $router->put('/update/deposit/status/{id}' , ['as' => 'deposit.updateStatus', 'uses' => 'AccountController@updateDepositStatus']);
 });

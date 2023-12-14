@@ -44,6 +44,7 @@ class OrderRepository implements OrderRepositoryInterface
     {
         return $this->model->create($attributes);
     }
+
     /**
      * @param int $model_id
      * @param  array $relations
@@ -52,6 +53,16 @@ class OrderRepository implements OrderRepositoryInterface
     public function find($model_id , array $relations=[]): ?object
     {
         return $this->model->with($relations)->findOrFail($model_id);
+    }
+
+    /**
+     * @param int $model_id
+     * @param  array $relations
+     * @return object
+     */
+    public function findByUserId($user_id): ?object
+    {
+        return $this->model->where('user_id' , $user_id)->where('status' , 'pending')->get();
     }
 
     /**

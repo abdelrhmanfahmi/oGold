@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Models\Deposit;
 use App\Repository\Interfaces\DepositRepositoryInterface;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class DepositRepository implements DepositRepositoryInterface
 {
@@ -33,6 +34,21 @@ class DepositRepository implements DepositRepositoryInterface
              return $this->model->with($relations)->paginate($count);
          }
          return $this->model->with($relations)->get();
+     }
+
+     /**
+     *  @param int $count
+     *  @param bool $paginate
+     *  @param array $relations
+     * @return object
+     */
+
+     public function allForUsers(int $count, bool $paginate,array $relations): object
+     {
+         if ($paginate == true) {
+             return $this->model->with($relations)->where('user_id' , Auth::id())->paginate($count);
+         }
+         return $this->model->with($relations)->where('user_id' , Auth::id())->get();
      }
 
     /**
