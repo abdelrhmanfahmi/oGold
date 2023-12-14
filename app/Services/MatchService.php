@@ -393,7 +393,7 @@ class MatchService {
         }
     }
 
-    public function closePositionsByOrderDate($arrayOfPositionsToClose, $user_id, $volume)
+    public function closePositionsByOrderDatePerUser($arrayOfPositionsToClose, $user_id, $volume)
     {
         try{
             $user = User::findOrFail($user_id);
@@ -436,12 +436,69 @@ class MatchService {
             $sellPriceNow = $this->getMarketWatchSymbol();
 
             //get net price of gold by multiply (gramGoldNow * $volumeOfUser Request)
-            $priceWillWithdrawed = $volume * $sellPriceNow;
+            $priceWillWithdrawed = $volume * $sellPriceNow[0]->bid;
 
             //run withdraw request match service
             $token = $this->getAccessToken();
             $paymentGateWayUUid = $this->getPayment($token);
-            $this->makeWithdraw($priceWillWithdrawed , $token , $paymentGateWayUUid);
+            $this->makeWithdraw($user_id, $priceWillWithdrawed, $token, $paymentGateWayUUid);
+            return $decodedData;
+
+
+        }catch(\GuzzleHttp\Exception\BadResponseException $e){
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function closePositionsByOrderDatePerAdmin($arrayOfPositionsToClose, $user_id, $volume)
+    {
+        try{
+            $user = User::findOrFail($user_id);
+            $client = new \GuzzleHttp\Client();
+            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/positions/close';
+
+            if(count($arrayOfPositionsToClose['originalClose']) > 0){
+                $response = $client->request('POST', $url, [
+                    'headers' => [
+                        'co-auth' => $user->co_auth,
+                        'Auth-trading-api' => $user->trading_api_token,
+                        'Cookie' => 'co-auth='. $user->co_auth
+                    ],
+                    'json' => $arrayOfPositionsToClose['originalClose'],
+                ]);
+                $result = $response->getBody()->getContents();
+                $decodedData = json_decode($result);
+            }
+
+            if($arrayOfPositionsToClose['reminder'] != 0){
+                $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/position/close-partially';
+                $dataDahabToClosePartialy = new \stdClass();
+                $dataDahabToClosePartialy->instrument = 'GoldGram24c';
+                $dataDahabToClosePartialy->orderSide = 'BUY';
+                $dataDahabToClosePartialy->volume = $arrayOfPositionsToClose['reminder'];
+                $dataDahabToClosePartialy->positionId = $arrayOfPositionsToClose['positionId'];
+                $dataDahabToClosePartialy->isMobile = false;
+                $response = $client->request('POST', $url, [
+                    'headers' => [
+                        'co-auth' => $user->co_auth,
+                        'Auth-trading-api' => $user->trading_api_token,
+                        'Cookie' => 'co-auth='. $user->co_auth
+                    ],
+                    'json' => $dataDahabToClosePartialy,
+                ]);
+                $result = $response->getBody()->getContents();
+                $decodedData = json_decode($result);
+            }
+            // // here make withdraw for authenticated user per request for sell gold
+            // $sellPriceNow = $this->getMarketWatchSymbol();
+
+            // //get net price of gold by multiply (gramGoldNow * $volumeOfUser Request)
+            // $priceWillWithdrawed = $volume * $sellPriceNow[0]->bid;
+
+            // //run withdraw request match service
+            // $token = $this->getAccessToken();
+            // $paymentGateWayUUid = $this->getPayment($token);
+            // $this->makeWithdraw($user_id, $priceWillWithdrawed, $token, $paymentGateWayUUid);
             return $decodedData;
 
 
@@ -453,35 +510,42 @@ class MatchService {
     public function getPositionsByOrderAdminRefinaryRole($dataOpenedPositions,$totalGold)
     {
         try{
-            foreach($dataOpenedPositions->positions as $d){
-                $newObj = new \stdClass();
-                $newObj->openTime = $d->openTime;
-                $newObj->positionId = $d->id;
-                $newObj->volume = $d->volume;
-                $newObj->orderSide = $d->side;
-                $newObj->instrument = $d->symbol;
-                $arrClosedPositions[] = $newObj;
-            }
-            $sortedObjects = collect($arrClosedPositions)->sortBy('openTime')->values()->all();
-
-            //here logic for check quanity sended from mobile to close positions according to it
-            $arrToClosePositionsPerQuantity = [];
-            $totalVolumePerQuantity = 0;
-            $collectedNotClosed = 0;
-            $reminderVolume = 0;
-            $positionId = '';
-            foreach($sortedObjects as $sorted){
-                $totalVolumePerQuantity += $sorted->volume;
-                if($totalVolumePerQuantity <= $totalGold){
-                    array_push($arrToClosePositionsPerQuantity , $sorted);
-                    $collectedNotClosed += $sorted->volume;
-                }else{
-                    $reminderVolume = $totalGold - $collectedNotClosed;
-                    $positionId = $sorted->positionId;
-                    break;
+            if(!is_string($dataOpenedPositions) && count($dataOpenedPositions->positions) > 0){
+                foreach($dataOpenedPositions->positions as $d){
+                    $newObj = new \stdClass();
+                    $newObj->openTime = $d->openTime;
+                    $newObj->positionId = $d->id;
+                    $newObj->volume = $d->volume;
+                    $newObj->orderSide = $d->side;
+                    $newObj->instrument = $d->symbol;
+                    $arrClosedPositions[] = $newObj;
                 }
+                $sortedObjects = collect($arrClosedPositions)->sortBy('openTime')->values()->all();
+
+                //here logic for check quanity sended from mobile to close positions according to it
+                $arrToClosePositionsPerQuantity = [];
+                $totalVolumePerQuantity = 0;
+                $collectedNotClosed = 0;
+                $reminderVolume = 0;
+                $positionId = '';
+                foreach($sortedObjects as $sorted){
+                    $totalVolumePerQuantity += $sorted->volume;
+                    if($totalVolumePerQuantity <= $totalGold){
+                        array_push($arrToClosePositionsPerQuantity , $sorted);
+                        $collectedNotClosed += $sorted->volume;
+                    }else{
+                        $reminderVolume = $totalGold - $collectedNotClosed;
+                        $positionId = $sorted->positionId;
+                        break;
+                    }
+                }
+                return ['originalClose' => $arrToClosePositionsPerQuantity , 'reminder' => $reminderVolume , 'positionId' => $positionId];
+            }else if(is_string($dataOpenedPositions)){
+                return -1;
+            }else{
+                return 0;
             }
-            return ['originalClose' => $arrToClosePositionsPerQuantity , 'reminder' => $reminderVolume , 'positionId' => $positionId];
+
 
         }catch(\GuzzleHttp\Exception\BadResponseException $e){
             return $e->getResponse()->getBody()->getContents();
@@ -526,17 +590,17 @@ class MatchService {
         }
     }
 
-    public function makeWithdraw($data , $token , $paymentGateWay)
+    public function makeWithdraw($user_id, $data , $token , $paymentGateWay)
     {
         try{
-            $user = User::findOrFail($data['user_id']);
+            $user = User::findOrFail($user_id);
             $client = new \GuzzleHttp\Client();
             $dataWithdraw = new \stdClass();
             $dataWithdraw->paymentGatewayUuid = $paymentGateWay;
             $dataWithdraw->tradingAccountUuid = $user->trading_uuid;
-            $dataWithdraw->currency = $data['currency'];
-            $dataWithdraw->amount = $data['amount'];
-            $dataWithdraw->netAmount = $data['amount'];
+            $dataWithdraw->currency = 'GoldGram24c';
+            $dataWithdraw->amount = $data;
+            $dataWithdraw->netAmount = $data;
             $dataWithdraw->remark = 'test';
 
             $url = 'https://bo-mtrwl.match-trade.com/documentation/payment/api/partner/97/withdraws/manual';

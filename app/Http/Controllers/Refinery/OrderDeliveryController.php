@@ -79,8 +79,15 @@ class OrderDeliveryController extends Controller
             $orderData = $this->orderRepository->find($data['order_id'] , []);
             $opendPositions = $this->matchService->getOpenedPositions($orderData->user_id);
             $getPositionsByOrder = $this->matchService->getPositionsByOrderAdminRefinaryRole($opendPositions,$orderData->total);
-            return $this->matchService->closePositionsByOrderDate($getPositionsByOrder , $orderData->user_id, $orderData->total);
-            return 1;
+            if($getPositionsByOrder == 0){
+                return response()->json(['message' => 'there is no opened positions'],400);
+            }else if($getPositionsByOrder == -1){
+                return response()->json(['message' => 'Check Match Service Logged In'],403);
+            }else{
+                $order = $this->matchService->closePositionsByOrderDatePerAdmin($getPositionsByOrder , $orderData->user_id, $orderData->total);
+                $this->orderRepository->update($orderData , ['is_approved' => '1']);
+                return response()->json(['message' => $order]);
+            }
         }catch(\Exception $e){
             return $e;
         }
