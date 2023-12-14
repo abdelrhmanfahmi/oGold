@@ -5,15 +5,16 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BuyGoldRequestClient;
 use App\Http\Requests\ExchangeGoldRequest;
+use App\Http\Requests\GetClosePositionsRequest;
 use App\Http\Requests\SellGoldRequestClient;
 use App\Http\Requests\StoreDepositRequest;
 use App\Http\Requests\StoreWithdrawRequest;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\SymbolResource;
-use App\Repository\Interfaces\DeliveryRepositoryInterface;
 use App\Repository\Interfaces\DepositRepositoryInterface;
 use App\Repository\Interfaces\OrderRepositoryInterface;
 use App\Repository\Interfaces\ProductRepositoryInterface;
+use App\Repository\Interfaces\SettingRepositoryInterface;
 use App\Repository\Interfaces\WithdrawRepositoryInterface;
 use App\Services\FileService;
 use App\Services\MatchService;
@@ -32,7 +33,8 @@ class ProductController extends Controller
         private TotalVolumesService $totalVolumesService,
         private WithdrawRepositoryInterface $withdrawRepository,
         private DepositRepositoryInterface $depositRepository,
-        private TotalGramService $totalGramService
+        private TotalGramService $totalGramService,
+        private SettingRepositoryInterface $settingRepository
         )
     {
         $this->middleware('auth:api');
@@ -136,7 +138,9 @@ class ProductController extends Controller
             $totalVolumes = $this->totalVolumesService->getTotalVolumes($getOpenedPositions);
             $balanceDataInMatch = $this->matchService->getBalanceMatch();
             if(!is_string($balanceDataInMatch)){
+                $keyImage = $this->settingRepository->findByKey()->first();
                 $balanceDataInMatch->totalVolumes = $totalVolumes;
+                $balanceDataInMatch->imageKey = $keyImage->key;
                 return response()->json(['data' => $balanceDataInMatch]);
             }else{
                 return response()->json($balanceDataInMatch , 401);

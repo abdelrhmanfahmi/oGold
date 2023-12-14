@@ -70,7 +70,7 @@ class MatchService {
             $result = $response->getBody()->getContents();
             $decodedData = json_decode($result);
             $authUser = Auth::user();
-            $authUser->update(['co_auth' => $decodedData->token , 'trading_api_token' => $decodedData->accounts[0]->tradingApiToken]);
+            $authUser->update(['co_auth' => $decodedData->token , 'trading_api_token' => $decodedData->accounts[0]->tradingApiToken , 'trading_uuid' => $decodedData->accounts[0]->uuid]);
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
         }
@@ -517,10 +517,11 @@ class MatchService {
     public function makeWithdraw($data , $token , $paymentGateWay)
     {
         try{
+            $user = User::findOrFail($data['user_id']);
             $client = new \GuzzleHttp\Client();
             $dataWithdraw = new \stdClass();
             $dataWithdraw->paymentGatewayUuid = $paymentGateWay;
-            $dataWithdraw->tradingAccountUuid = env('TRADINGACCOUNTUUID');
+            $dataWithdraw->tradingAccountUuid = $user->trading_uuid;
             $dataWithdraw->currency = $data['currency'];
             $dataWithdraw->amount = $data['amount'];
             $dataWithdraw->netAmount = $data['amount'];
@@ -546,10 +547,11 @@ class MatchService {
     public function makeDeposit($data , $token , $paymentGateWay)
     {
         try{
+            $user = User::findOrFail($data['user_id']);
             $client = new \GuzzleHttp\Client();
             $dataDeposit = new \stdClass();
             $dataDeposit->paymentGatewayUuid = $paymentGateWay;
-            $dataDeposit->tradingAccountUuid = env('TRADINGACCOUNTUUID');
+            $dataDeposit->tradingAccountUuid = $user->trading_uuid;
             $dataDeposit->currency = $data['currency'];
             $dataDeposit->amount = $data['amount'];
             $dataDeposit->netAmount = $data['amount'];
