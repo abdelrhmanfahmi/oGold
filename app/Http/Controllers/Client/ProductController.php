@@ -10,10 +10,12 @@ use App\Http\Requests\StoreDepositRequest;
 use App\Http\Requests\StoreWithdrawRequest;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\SymbolResource;
-use App\Repository\Interfaces\DeliveryRepositoryInterface;
+use App\Repository\Interfaces\BuyGoldRepositoryInterface;
 use App\Repository\Interfaces\DepositRepositoryInterface;
 use App\Repository\Interfaces\OrderRepositoryInterface;
 use App\Repository\Interfaces\ProductRepositoryInterface;
+use App\Repository\Interfaces\SellGoldRepositoryInterface;
+use App\Repository\Interfaces\SettingRepositoryInterface;
 use App\Repository\Interfaces\WithdrawRepositoryInterface;
 use App\Services\FileService;
 use App\Services\MatchService;
@@ -32,7 +34,10 @@ class ProductController extends Controller
         private TotalVolumesService $totalVolumesService,
         private WithdrawRepositoryInterface $withdrawRepository,
         private DepositRepositoryInterface $depositRepository,
-        private TotalGramService $totalGramService
+        private TotalGramService $totalGramService,
+        private SettingRepositoryInterface $settingRepository,
+        private BuyGoldRepositoryInterface $buyGoldRepository,
+        private SellGoldRepositoryInterface $sellGoldRepository
         )
     {
         $this->middleware('auth:api');
@@ -75,8 +80,13 @@ class ProductController extends Controller
     {
         try{
             $data = $request->validated();
+            $data['user_id'] = Auth::id();
             $order = $this->matchService->openPosition($data);
-
+            if(!is_string($order)){
+                $this->buyGoldRepository->create($data);
+            }else{
+                return response()->json(['message' => 'Authentication error'] , 401);
+            }
             return response()->json(['data' => $order] , 200);
         }catch(\Exception $e){
             return $e;
@@ -87,15 +97,26 @@ class ProductController extends Controller
     {
         try{
             $data = $request->validated();
+            $data['user_id'] = Auth::id();
+            $data['symbol'] = 'GoldGram24c';
+            $totalGoldPending = $this->getTotalGoldPendingPerUser();
             $opendPositions = $this->matchService->getOpenedPositions(Auth::id());
             if(!is_string($opendPositions)){
-                $arrayOfPositionsToClose = $this->matchService->getPositionsByOrder($opendPositions,$data);
+                $arrayOfPositionsToClose = $this->matchService->getPositionsByOrder($opendPositions,$totalGoldPending,$data);
                 if($arrayOfPositionsToClose == 0){
                     return response()->json(['message' => 'you have not positions to close']);
                 }else if($arrayOfPositionsToClose == -1){
                     return response()->json(['message' => 'you cannot sell gold smaller than you have']);
+                }else if($arrayOfPositionsToClose == -2){
+                    return response()->json(['message' => 'you cannot sell gold bigger than your pending order gold, wait approve admin to see your net gold']);
                 }else{
                     $order = $this->matchService->closePositionsByOrderDate($arrayOfPositionsToClose , Auth::id());
+                    if($order->status == 'OK'){
+                        $this->sellGoldRepository->create($data);
+                    }else{
+                        return response()->json(['message' => 'something wrong!'] , 500);
+                    }
+
                     return response()->json(['data' => $order] , 200);
                 }
             }else{
@@ -133,7 +154,9 @@ class ProductController extends Controller
             $totalVolumes = $this->totalVolumesService->getTotalVolumes($getOpenedPositions);
             $balanceDataInMatch = $this->matchService->getBalanceMatch();
             if(!is_string($balanceDataInMatch)){
+                $keyImage = $this->settingRepository->findByKey()->first();
                 $balanceDataInMatch->totalVolumes = $totalVolumes;
+                $balanceDataInMatch->imageKey = $keyImage->key;
                 return response()->json(['data' => $balanceDataInMatch]);
             }else{
                 return response()->json($balanceDataInMatch , 401);
@@ -148,9 +171,9 @@ class ProductController extends Controller
         try{
             $data = $request->validated();
             $data['user_id'] = Auth::id();
-            $token = $this->matchService->getAccessToken();
-            $paymentGateWayUUid = $this->matchService->getPayment($token);
-            $this->matchService->makeWithdraw($data , $token , $paymentGateWayUUid);
+            // $token = $this->matchService->getAccessToken();
+            // $paymentGateWayUUid = $this->matchService->getPayment($token);
+            // $this->matchService->makeWithdraw($data , $token , $paymentGateWayUUid);
             $this->withdrawRepository->create($data);
             return response()->json(['message' => 'Withdraw Order Created Successfully']);
         }catch(\Exception $e){
@@ -163,9 +186,9 @@ class ProductController extends Controller
         try{
             $data = $request->validated();
             $data['user_id'] = Auth::id();
-            $token = $this->matchService->getAccessToken();
-            $paymentGateWayUUid = $this->matchService->getPayment($token);
-            $this->matchService->makeDeposit($data , $token , $paymentGateWayUUid);
+            // $token = $this->matchService->getAccessToken();
+            // $paymentGateWayUUid = $this->matchService->getPayment($token);
+            // $this->matchService->makeDeposit($data , $token , $paymentGateWayUUid);
             $this->depositRepository->create($data);
             return response()->json(['message' => 'Deposit Order Created Successfully']);
         }catch(\Exception $e){
@@ -183,6 +206,21 @@ class ProductController extends Controller
                 return response()->json(['message' => 'authenticated error'] , 403);
             }
 
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    protected function getTotalGoldPendingPerUser()
+    {
+        try{
+            $totalGoldPending = $this->orderRepository->findByUserId(Auth::id());
+            $countTotalGold = 0;
+            foreach($totalGoldPending as $goldPending){
+                $countTotalGold += $goldPending->total;
+            }
+
+            return $countTotalGold;
         }catch(\Exception $e){
             return $e;
         }

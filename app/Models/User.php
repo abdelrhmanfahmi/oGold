@@ -38,7 +38,8 @@ class User extends Authenticatable implements JWTSubject
         'accountName',
         'type',
         'co_auth',
-        'trading_api_token'
+        'trading_api_token',
+        'trading_uuid'
     ];
 
     /**
@@ -94,6 +95,16 @@ class User extends Authenticatable implements JWTSubject
     public function deposits()
     {
         return $this->hasMany(Deposit::class);
+    }
+
+    public function buy_golds()
+    {
+        return $this->hasMany(BuyGold::class);
+    }
+
+    public function sell_golds()
+    {
+        return $this->hasMany(SellGold::class);
     }
 
     public function address_books()

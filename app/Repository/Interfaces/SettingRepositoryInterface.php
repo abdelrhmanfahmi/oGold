@@ -22,6 +22,11 @@ interface SettingRepositoryInterface
     public function find(int $model_id): ?object;
 
     /**
+     * @return object
+     */
+    public function findByKey(): ?object;
+
+    /**
      * @param array $attributes
      * @return object
      */

@@ -25,6 +25,12 @@ use App\Repository\WithdrawRepository;
 use App\Repository\Interfaces\DepositRepositoryInterface;
 use App\Repository\DepositRepository;
 
+use App\Repository\Interfaces\BuyGoldRepositoryInterface;
+use App\Repository\BuyGoldRepository;
+
+use App\Repository\Interfaces\SellGoldRepositoryInterface;
+use App\Repository\SellGoldRepository;
+
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
@@ -41,5 +47,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(AddressBookRepositoryInterface::class, AddressBookRepository::class);
         $this->app->bind(WithdrawRepositoryInterface::class, WithdrawRepository::class);
         $this->app->bind(DepositRepositoryInterface::class, DepositRepository::class);
+        $this->app->bind(BuyGoldRepositoryInterface::class, BuyGoldRepository::class);
+        $this->app->bind(SellGoldRepositoryInterface::class, SellGoldRepository::class);
     }
 }

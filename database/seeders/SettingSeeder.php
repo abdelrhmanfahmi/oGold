@@ -18,23 +18,25 @@ class SettingSeeder extends Seeder
             'value' => '',
             'image' => ''
         ]);
-
         Setting::create([
             'key' => 'terms',
             'value' => '',
             'image' => ''
         ]);
-
         Setting::create([
             'key' => 'privacy',
             'value' => '',
             'image' => ''
         ]);
-
         Setting::create([
             'key' => 'about',
             'value' => '',
             'image' => ''
+        ]);
+        Setting::create([
+            'key' => 'image-home-page',
+            'value' => '',
+            'image' => asset('/uploads/ahly.png')
         ]);
     }
 }

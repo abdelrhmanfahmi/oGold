@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Filters\OrderFilter;
 use App\Repository\Interfaces\OrderRepositoryInterface;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class OrderRepository implements OrderRepositoryInterface
 {
@@ -37,6 +38,21 @@ class OrderRepository implements OrderRepositoryInterface
     }
 
     /**
+     *  @param int $count
+     *  @param bool $paginate
+     *  @param array $relations
+     * @return object
+     */
+    public function allForUsers(int $count, bool $paginate,array $relations): object
+    {
+        // $filter = new OrderFilter(Request());
+        if ($paginate == true) {
+            return $this->model->with($relations)->where('user_id' , Auth::id())->paginate($count);
+        }
+        return $this->model->with($relations)->where('user_id' , Auth::id())->get();
+    }
+
+    /**
      * @param array $attributes
      * @return object
      */
@@ -44,6 +60,7 @@ class OrderRepository implements OrderRepositoryInterface
     {
         return $this->model->create($attributes);
     }
+
     /**
      * @param int $model_id
      * @param  array $relations
@@ -52,6 +69,16 @@ class OrderRepository implements OrderRepositoryInterface
     public function find($model_id , array $relations=[]): ?object
     {
         return $this->model->with($relations)->findOrFail($model_id);
+    }
+
+    /**
+     * @param int $model_id
+     * @param  array $relations
+     * @return object
+     */
+    public function findByUserId($user_id): ?object
+    {
+        return $this->model->where('user_id' , $user_id)->where('status' , 'pending')->get();
     }
 
     /**

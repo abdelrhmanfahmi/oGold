@@ -2,21 +2,21 @@
 
 namespace App\Repository;
 
-use App\Models\Deposit;
-use App\Repository\Interfaces\DepositRepositoryInterface;
+use App\Models\BuyGold;
+use App\Repository\Interfaces\BuyGoldRepositoryInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
-class DepositRepository implements DepositRepositoryInterface
+class BuyGoldRepository implements BuyGoldRepositoryInterface
 {
     private $model;
 
     /**
      * SettingRepository constructor.
      *
-     * @param Deposit $model
+     * @param BuyGold $model
      */
-    public function __construct(Deposit $model)
+    public function __construct(BuyGold $model)
     {
         $this->model = $model;
     }
@@ -69,11 +69,11 @@ class DepositRepository implements DepositRepositoryInterface
     }
 
     /**
-     * @param Deposit  $model
+     * @param BuyGold  $model
      * @param array $attributes
      * @return object
      */
-    public function update(Deposit $model, array $attributes): object
+    public function update(BuyGold $model, array $attributes): object
     {
         $model->update($attributes);
         return $model;

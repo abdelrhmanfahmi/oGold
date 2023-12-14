@@ -18,6 +18,14 @@ interface WithdrawRepositoryInterface
     public function all(int $count, bool $paginate,array $relations);
 
     /**
+     * @param int $count
+     * @param bool $paginate
+     * @param array $relations
+     * @return object
+     */
+    public function allForUsers(int $count, bool $paginate,array $relations);
+
+    /**
      * @param int $model_id
      * @return object
      */

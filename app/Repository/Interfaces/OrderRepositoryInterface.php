@@ -17,11 +17,25 @@ interface OrderRepositoryInterface
     public function all(int $count, bool $paginate , array $relations);
 
     /**
+     * @param int $count
+     * @param bool $paginate
+     * * @param array $relations
+     * @return object
+     */
+    public function allForUsers(int $count, bool $paginate , array $relations);
+
+    /**
      * @param int $model_id
      * @param  array $relations
      * @return object
      */
     public function find(int $model_id , array $relations): ?object;
+
+    /**
+     * @param int $user_id
+     * @return object
+     */
+    public function findByUserId(int $user_id): ?object;
 
     /**
      * @param array $attributes

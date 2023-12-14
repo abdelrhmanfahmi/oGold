@@ -2,11 +2,11 @@
 
 namespace App\Repository\Interfaces;
 
-use App\Models\Deposit;
+use App\Models\SellGold;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-interface DepositRepositoryInterface
+interface SellGoldRepositoryInterface
 {
 
     /**
@@ -38,11 +38,11 @@ interface DepositRepositoryInterface
     public function create(array $attributes): ?object;
 
     /**
-     * @param Deposit  $model
+     * @param SellGold  $model
      * @param array $attributes
      * @return object
      */
-    public function update(Deposit $model, array $attribute): object;
+    public function update(SellGold $model, array $attribute): object;
 
     /**
      * @param int $model_id

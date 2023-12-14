@@ -43,6 +43,7 @@ class SettingRepository implements SettingRepositoryInterface
     {
         return $this->model->create($attributes);
     }
+
     /**
      * @param int $model_id
      * @return object
@@ -50,6 +51,14 @@ class SettingRepository implements SettingRepositoryInterface
     public function find($model_id): ?object
     {
         return $this->model->findOrFail($model_id);
+    }
+
+    /**
+     * @return object
+     */
+    public function findByKey(): ?object
+    {
+        return $this->model->where('key' , 'image-home-page');
     }
 
     /**

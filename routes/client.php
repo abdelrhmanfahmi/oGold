@@ -26,4 +26,5 @@ $router->group(['namespace' => 'App\Http\Controllers\Client'], function () use (
     $router->get('/get-open-positions', ['as' => 'products.open_positions', 'uses' => 'ProductController@getOpenPositions']);
     $router->post('/withdraw', ['as' => 'withdraw.store', 'uses' => 'ProductController@storeWithdraw']);
     $router->post('/deposit', ['as' => 'deposit.store', 'uses' => 'ProductController@storeDeposit']);
+    $router->get('/orders/list' , ['as' => 'index.ordersUsers' , 'uses' => 'OrderController@index']);
 });
