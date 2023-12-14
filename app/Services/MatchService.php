@@ -393,7 +393,7 @@ class MatchService {
         }
     }
 
-    public function closePositionsByOrderDate($arrayOfPositionsToClose , $user_id)
+    public function closePositionsByOrderDate($arrayOfPositionsToClose, $user_id, $volume)
     {
         try{
             $user = User::findOrFail($user_id);
@@ -431,10 +431,19 @@ class MatchService {
                 ]);
                 $result = $response->getBody()->getContents();
                 $decodedData = json_decode($result);
-                return $decodedData;
-            }else{
-                return $decodedData;
             }
+            // here make withdraw for authenticated user per request for sell gold
+            $sellPriceNow = $this->getMarketWatchSymbol();
+
+            //get net price of gold by multiply (gramGoldNow * $volumeOfUser Request)
+            $priceWillWithdrawed = $volume * $sellPriceNow;
+
+            //run withdraw request match service
+            $token = $this->getAccessToken();
+            $paymentGateWayUUid = $this->getPayment($token);
+            $this->makeWithdraw($priceWillWithdrawed , $token , $paymentGateWayUUid);
+            return $decodedData;
+
 
         }catch(\GuzzleHttp\Exception\BadResponseException $e){
             return $e->getResponse()->getBody()->getContents();
