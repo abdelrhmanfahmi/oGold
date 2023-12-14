@@ -82,8 +82,11 @@ class ProductController extends Controller
             $data = $request->validated();
             $data['user_id'] = Auth::id();
             $order = $this->matchService->openPosition($data);
-            if(!is_string($order)){
+            $dataDecoded = json_decode($order);
+            if(!is_string($order) && $dataDecoded->status == 'OK'){
                 $this->buyGoldRepository->create($data);
+            }else if($dataDecoded->status == 'REJECTED'){
+                return response()->json(['message' => $dataDecoded->errorMessage] , 500);
             }else{
                 return response()->json(['message' => 'Authentication error'] , 401);
             }
@@ -110,7 +113,7 @@ class ProductController extends Controller
                 }else if($arrayOfPositionsToClose == -2){
                     return response()->json(['message' => 'you cannot sell gold bigger than your pending order gold, wait approve admin to see your net gold']);
                 }else{
-                    $order = $this->matchService->closePositionsByOrderDate($arrayOfPositionsToClose , Auth::id());
+                    $order = $this->matchService->closePositionsByOrderDate($arrayOfPositionsToClose , Auth::id(), $data['volume']);
                     if($order->status == 'OK'){
                         $this->sellGoldRepository->create($data);
                     }else{

@@ -8,6 +8,7 @@ use App\Http\Resources\SellGoldResource;
 use App\Http\Resources\ClientDepositResource;
 use App\Http\Resources\ClientWithdrawResource;
 use App\Http\Resources\OrderResource;
+use App\Http\Resources\OrderUserResource;
 use App\Repository\Interfaces\BuyGoldRepositoryInterface;
 use App\Repository\Interfaces\DepositRepositoryInterface;
 use App\Repository\Interfaces\OrderRepositoryInterface;
@@ -48,7 +49,7 @@ class OrderController extends Controller
             if($request->type == 'delivery'){
                 $relations = ['products' , 'address_book'];
                 $orders = $this->orderRepository->allForUsers($count , $paginate , $relations);
-                return OrderResource::collection($orders);
+                return OrderUserResource::collection($orders);
             }
 
             if($request->type == 'buy_golds'){

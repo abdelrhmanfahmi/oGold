@@ -5,11 +5,15 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
+use App\Http\Resources\BuyGoldResourceAdmin;
 use App\Http\Resources\DepositOrderResource;
 use App\Http\Resources\OrderResource;
+use App\Http\Resources\SellGoldResourceAdmin;
 use App\Http\Resources\WithdrawOrderResource;
+use App\Repository\Interfaces\BuyGoldRepositoryInterface;
 use App\Repository\Interfaces\DepositRepositoryInterface;
 use App\Repository\Interfaces\OrderRepositoryInterface;
+use App\Repository\Interfaces\SellGoldRepositoryInterface;
 use App\Repository\Interfaces\WithdrawRepositoryInterface;
 use App\Services\TotalGramService;
 use Illuminate\Http\Request;
@@ -20,7 +24,9 @@ class OrderController extends Controller
         private OrderRepositoryInterface $orderRepository,
         private WithdrawRepositoryInterface $withdrawRepository,
         private DepositRepositoryInterface $depositRepository,
-        private TotalGramService $totalGramService
+        private TotalGramService $totalGramService,
+        private BuyGoldRepositoryInterface $buyGoldRepository,
+        private SellGoldRepositoryInterface $sellGoldRepository
     )
     {
         $this->middleware('auth:api');
@@ -48,6 +54,18 @@ class OrderController extends Controller
                 $relations = ['products' , 'client' , 'address_book'];
                 $orders = $this->orderRepository->all($count , $paginate , $relations);
                 return OrderResource::collection($orders);
+            }
+
+            if($request->type == 'buy_golds'){
+                $relations = ['client'];
+                $orders = $this->buyGoldRepository->all($count , $paginate , $relations);
+                return BuyGoldResourceAdmin::collection($orders);
+            }
+
+            if($request->type == 'sell_golds'){
+                $relations = ['client'];
+                $orders = $this->sellGoldRepository->all($count , $paginate , $relations);
+                return SellGoldResourceAdmin::collection($orders);
             }
 
 
