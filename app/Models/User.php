@@ -97,6 +97,16 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Deposit::class);
     }
 
+    public function buy_golds()
+    {
+        return $this->hasMany(BuyGold::class);
+    }
+
+    public function sell_golds()
+    {
+        return $this->hasMany(SellGold::class);
+    }
+
     public function address_books()
     {
         return $this->hasMany(AddressBook::class);
