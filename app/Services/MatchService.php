@@ -240,6 +240,27 @@ class MatchService {
         }
     }
 
+    public function getMarketWatchSymbolPerUser($user_id)
+    {
+        try{
+            $user = User::findOrFail($user_id);
+            $client = new \GuzzleHttp\Client();
+            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/quotations?symbols=GoldGram24c';
+            $response = $client->request('GET', $url, [
+                'headers' => [
+                    'co-auth' => $user->co_auth,
+                    'Auth-trading-api' => $user->trading_api_token,
+                    'Cookie' => 'co-auth='. $user->co_auth
+                ],
+            ]);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+            return $decodedData;
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
     public function openPosition($data)
     {
         try{
@@ -490,17 +511,16 @@ class MatchService {
                 $decodedData = json_decode($result);
             }
             // // here make withdraw for authenticated user per request for sell gold
-            // $sellPriceNow = $this->getMarketWatchSymbol();
+            $sellPriceNow = $this->getMarketWatchSymbolPerUser($user_id);
 
-            // //get net price of gold by multiply (gramGoldNow * $volumeOfUser Request)
-            // $priceWillWithdrawed = $volume * $sellPriceNow[0]->bid;
+            //get net price of gold by multiply (gramGoldNow * $volumeOfUser Request)
+            $priceWillWithdrawed = $volume * $sellPriceNow[0]->bid;
 
-            // //run withdraw request match service
-            // $token = $this->getAccessToken();
-            // $paymentGateWayUUid = $this->getPayment($token);
-            // $this->makeWithdraw($user_id, $priceWillWithdrawed, $token, $paymentGateWayUUid);
+            //run withdraw request match service
+            $token = $this->getAccessToken();
+            $paymentGateWayUUid = $this->getPayment($token);
+            $this->makeWithdraw($user_id, $priceWillWithdrawed, $token, $paymentGateWayUUid);
             return $decodedData;
-
 
         }catch(\GuzzleHttp\Exception\BadResponseException $e){
             return $e->getResponse()->getBody()->getContents();
