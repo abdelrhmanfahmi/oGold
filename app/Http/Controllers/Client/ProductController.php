@@ -156,7 +156,7 @@ class ProductController extends Controller
             if(!is_string($balanceDataInMatch)){
                 $keyImage = $this->settingRepository->findByKey()->first();
                 $balanceDataInMatch->totalVolumes = $totalVolumes;
-                $balanceDataInMatch->imageKey = $keyImage->key;
+                $balanceDataInMatch->imageKey = env('APP_URL').'/uploads/'.$keyImage->image;
                 return response()->json(['data' => $balanceDataInMatch]);
             }else{
                 return response()->json($balanceDataInMatch , 401);

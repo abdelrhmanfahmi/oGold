@@ -36,7 +36,7 @@ class SettingSeeder extends Seeder
         Setting::create([
             'key' => 'image-home-page',
             'value' => '',
-            'image' => asset('/uploads/ahly.png')
+            'image' => 'ahly.png'
         ]);
     }
 }
