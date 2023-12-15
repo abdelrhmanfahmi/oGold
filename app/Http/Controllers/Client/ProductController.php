@@ -83,11 +83,12 @@ class ProductController extends Controller
             $data['user_id'] = Auth::id();
             $order = $this->matchService->openPosition($data);
             if(!is_string($order)){
+                $data['buy_price'] = $order['buy_price'];
                 $this->buyGoldRepository->create($data);
             }else{
                 return response()->json(['message' => 'Check Match Service Logged In !'] , 403);
             }
-            return response()->json(['data' => $order] , 200);
+            return response()->json(['data' => $order['buyResponse']] , 200);
         }catch(\Exception $e){
             return $e;
         }
@@ -111,13 +112,14 @@ class ProductController extends Controller
                     return response()->json(['message' => 'you cannot sell gold bigger than your pending order gold, wait approve admin to see your net gold']);
                 }else{
                     $order = $this->matchService->closePositionsByOrderDatePerUser($arrayOfPositionsToClose , Auth::id(), $data['volume']);
-                    if($order->status == 'OK'){
+                    if($order['sellResponse']->status == 'OK'){
+                        $data['sell_price'] = $order['sellPrice'];
                         $this->sellGoldRepository->create($data);
                     }else{
                         return response()->json(['message' => 'something wrong!'] , 500);
                     }
 
-                    return response()->json(['data' => $order] , 200);
+                    return response()->json(['data' => $order['sellResponse']] , 200);
                 }
             }else{
                 return response()->json(['message' => 'Authentication error'] , 401);

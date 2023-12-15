@@ -17,7 +17,9 @@ class BuyGoldResource extends JsonResource
         return [
             'id' => $this->id ?? null,
             'volume' => $this->volume ?? null,
-            'symbol' => $this->symbol ?? null
+            'symbol' => $this->symbol ?? null,
+            'buy_price' => $this->buy_price ?? null,
+            'price_usd' => $this->when($this->buy_price , $this->volume * $this->buy_price , null),
         ];
     }
 }

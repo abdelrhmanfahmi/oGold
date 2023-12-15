@@ -283,7 +283,8 @@ class MatchService {
             ]);
             $result = $response->getBody()->getContents();
             $decodedData = json_decode($result);
-            return $decodedData;
+            $buyPrice = $this->getMarketWatchSymbol();
+            return ['buyResponse' => $decodedData , 'buy_price' => $buyPrice[0]->ask];
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
         }
@@ -463,7 +464,8 @@ class MatchService {
             $token = $this->getAccessToken();
             $paymentGateWayUUid = $this->getPayment($token);
             $this->makeWithdraw($user_id, $priceWillWithdrawed, $token, $paymentGateWayUUid);
-            return $decodedData;
+            $sellPrice = $this->getMarketWatchSymbol();
+            return ['sellResponse' => $decodedData, 'sellPrice' => $sellPrice[0]->bid];
 
 
         }catch(\GuzzleHttp\Exception\BadResponseException $e){

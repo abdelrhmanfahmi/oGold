@@ -78,7 +78,7 @@ class OrderRepository implements OrderRepositoryInterface
      */
     public function findByUserId($user_id): ?object
     {
-        return $this->model->where('user_id' , $user_id)->where('status' , 'pending')->get();
+        return $this->model->where('user_id' , $user_id)->where('is_approved' , '0')->get();
     }
 
     /**
