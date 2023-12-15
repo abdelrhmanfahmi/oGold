@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class SellGold extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id' , 'volume' , 'symbol'];
+    protected $fillable = ['user_id' , 'volume' , 'symbol' , 'sell_price'];
 
     public function client()
     {
