@@ -23,8 +23,7 @@ class StoreDepositRequest extends FormRequest
     {
         return [
             'amount' => 'required|numeric|min:1',
-            'currency' => 'required|string',
-            'status' => 'required|in:pending,approved,rejected'
+            'currency' => 'required|string'
         ];
     }
 }
