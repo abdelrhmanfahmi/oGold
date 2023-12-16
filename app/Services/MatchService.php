@@ -464,8 +464,7 @@ class MatchService {
             $token = $this->getAccessToken();
             $paymentGateWayUUid = $this->getPayment($token);
             $this->makeWithdraw($user_id, $priceWillWithdrawed, $token, $paymentGateWayUUid);
-            $sellPrice = $this->getMarketWatchSymbol();
-            return ['sellResponse' => $decodedData, 'sellPrice' => $sellPrice[0]->bid];
+            return ['sellResponse' => $decodedData, 'sellPrice' => $sellPriceNow[0]->bid];
 
 
         }catch(\GuzzleHttp\Exception\BadResponseException $e){

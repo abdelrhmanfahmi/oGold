@@ -86,7 +86,7 @@ class ProductController extends Controller
                 $data['buy_price'] = $order['buy_price'];
                 $this->buyGoldRepository->create($data);
             }else{
-                return response()->json(['message' => 'Check Match Service Logged In !'] , 403);
+                return response()->json(['message' => 'Authentication Error And May Session Closed For Buy Golds! '] , 403);
             }
             return response()->json(['data' => $order['buyResponse']] , 200);
         }catch(\Exception $e){
@@ -112,13 +112,16 @@ class ProductController extends Controller
                     return response()->json(['message' => 'you cannot sell gold bigger than your pending order gold, wait approve admin to see your net gold']);
                 }else{
                     $order = $this->matchService->closePositionsByOrderDatePerUser($arrayOfPositionsToClose , Auth::id(), $data['volume']);
+                    if($order == 'Qfx response exception: while closing positions, status: 3, response: Failed to close any position!'){
+                        return response()->json(['message' => 'Cannot Close Any Positions Right Now']);
+                    }
+
                     if($order['sellResponse']->status == 'OK'){
                         $data['sell_price'] = $order['sellPrice'];
                         $this->sellGoldRepository->create($data);
                     }else{
                         return response()->json(['message' => 'something wrong!'] , 500);
                     }
-
                     return response()->json(['data' => $order['sellResponse']] , 200);
                 }
             }else{
@@ -173,6 +176,7 @@ class ProductController extends Controller
         try{
             $data = $request->validated();
             $data['user_id'] = Auth::id();
+            $data['status'] = 'pending';
             // $token = $this->matchService->getAccessToken();
             // $paymentGateWayUUid = $this->matchService->getPayment($token);
             // $this->matchService->makeWithdraw($data , $token , $paymentGateWayUUid);
@@ -188,6 +192,7 @@ class ProductController extends Controller
         try{
             $data = $request->validated();
             $data['user_id'] = Auth::id();
+            $data['status'] = 'pending';
             // $token = $this->matchService->getAccessToken();
             // $paymentGateWayUUid = $this->matchService->getPayment($token);
             // $this->matchService->makeDeposit($data , $token , $paymentGateWayUUid);

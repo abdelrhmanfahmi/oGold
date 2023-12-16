@@ -14,6 +14,13 @@ class BuyGoldResourceAdmin extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id ?? null,
+            'client' => UserResource::make($this->whenLoaded('client')),
+            'volume' => $this->volume ?? null,
+            'symbol' => $this->symbol ?? null,
+            'buy_price' => $this->buy_price ?? null,
+            'price_usd' => $this->when($this->buy_price , $this->volume * $this->buy_price , null),
+        ];
     }
 }
