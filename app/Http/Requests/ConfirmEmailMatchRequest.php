@@ -22,7 +22,7 @@ class ConfirmEmailMatchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email|min:3|max:100',
+            'email' => 'required|email|min:3|max:100|exists:users,email',
             'code' => 'required'
         ];
     }

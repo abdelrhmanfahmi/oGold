@@ -28,9 +28,10 @@ class OrderDeliveryController extends Controller
             if($getPositionsByOrder == 0){
                 return response()->json(['message' => 'there is no opened positions'],400);
             }else if($getPositionsByOrder == -1){
-                return response()->json(['message' => 'Check Match Service Logged In'],403);
+                return response()->json(['message' => 'Authentication Error Or May Be Cannot Close Any Positions Right Now !'],403);
             }else{
                 $order = $this->matchService->closePositionsByOrderDatePerAdmin($getPositionsByOrder , $orderData->user_id, $orderData->total);
+                $this->orderRepository->update($orderData,['status' => 'ready_to_picked']);
                 return response()->json(['message' => $order]);
             }
         }catch(\Exception $e){

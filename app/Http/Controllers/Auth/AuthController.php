@@ -108,7 +108,7 @@ class AuthController extends Controller
             if($isVerified){
                 return response()->json(['message' => 'Email Verified Successfully'], 200);
             }else{
-                return response()->json(['message' => 'something went wrong'], 500);
+                return response()->json(['message' => 'code is not valid'], 500);
             }
 
         }catch(\Exception $e){
