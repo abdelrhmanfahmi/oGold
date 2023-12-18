@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ApproveOrderRequest;
 use App\Http\Resources\BuyGoldResourceAdmin;
 use App\Http\Resources\DepositOrderResource;
+use App\Http\Resources\OrderDateResource;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\SellGoldResourceAdmin;
 use App\Http\Resources\WithdrawOrderResource;
@@ -72,6 +73,29 @@ class OrderDeliveryController extends Controller
         }
     }
 
+    public function indexByData()
+    {
+        try{
+            $count = Request()->count ?? 10;
+            $paginate = Request()->paginate ?? true;
+            $ordersByDate = $this->orderRepository->getDataByOrdersDate($count, $paginate, []);
+            return OrderDateResource::collection($ordersByDate);
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function getOrdersPerDate(Request $request)
+    {
+        try{
+            $relations = ['client','products','address_book'];
+            $ordersPerDate = $this->orderRepository->getOrdersPerSpecificDate($request->date,$relations);
+            return OrderResource::collection($ordersPerDate);
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
     public function checkOrderApproved(ApproveOrderRequest $request)
     {
         try{
@@ -85,7 +109,6 @@ class OrderDeliveryController extends Controller
                 return response()->json(['message' => 'Check Match Service Logged In'],403);
             }else{
                 $order = $this->matchService->closePositionsByOrderDatePerAdmin($getPositionsByOrder , $orderData->user_id, $orderData->total);
-                $this->orderRepository->update($orderData , ['is_approved' => '1']);
                 return response()->json(['message' => $order]);
             }
         }catch(\Exception $e){

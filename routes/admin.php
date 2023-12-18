@@ -41,6 +41,11 @@ $router->group(['prefix' => 'is_approved' ,'namespace' => 'App\Http\Controllers\
     $router->post('/order', ['as' => 'order_delivery.checkOrderDeliveryAdmin', 'uses' => 'OrderDeliveryController@checkOrderApproved']);
 });
 
+$router->group(['prefix' => 'ordersByDate' ,'namespace' => 'App\Http\Controllers\Admin'], function () use ($router) {
+    $router->get('/', ['as' => 'orders.ibdexByDate', 'uses' => 'OrderController@indexByData']);
+    $router->get('/specific-date', ['as' => 'orders.ibdexByDate', 'uses' => 'OrderController@getOrdersPerDate']);
+});
+
 $router->group(['namespace' => 'App\Http\Controllers\Admin'], function () use ($router) {
     $router->put('/is_active/product/{id}', ['as' => 'order_delivery.checkOrderDeliveryAdmin', 'uses' => 'ProductController@updateProduct']);
     $router->put('/update/withdraw/status/{id}' , ['as' => 'withdraw.updateStatus', 'uses' => 'AccountController@updateWithdrawStatus']);

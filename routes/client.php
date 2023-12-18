@@ -27,4 +27,5 @@ $router->group(['namespace' => 'App\Http\Controllers\Client'], function () use (
     $router->post('/withdraw', ['as' => 'withdraw.store', 'uses' => 'ProductController@storeWithdraw']);
     $router->post('/deposit', ['as' => 'deposit.store', 'uses' => 'ProductController@storeDeposit']);
     $router->get('/orders/list' , ['as' => 'index.ordersUsers' , 'uses' => 'OrderController@index']);
+    $router->put('/cancel-order' , ['as' => 'cancel.order' , 'uses' => 'OrderController@cancelOrder']);
 });
