@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id' , 'address_book_id' , 'status' , 'is_approved' , 'total'];
+    protected $fillable = ['user_id' , 'address_book_id' , 'status' , 'total'];
 
     public function scopeFilter($query, Filters $filter)
     {

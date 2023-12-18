@@ -31,7 +31,6 @@ class OrderDeliveryController extends Controller
                 return response()->json(['message' => 'Check Match Service Logged In'],403);
             }else{
                 $order = $this->matchService->closePositionsByOrderDatePerAdmin($getPositionsByOrder , $orderData->user_id, $orderData->total);
-                $this->orderRepository->update($orderData , ['is_approved' => '1']);
                 return response()->json(['message' => $order]);
             }
         }catch(\Exception $e){

@@ -25,6 +25,21 @@ interface OrderRepositoryInterface
     public function allForUsers(int $count, bool $paginate , array $relations);
 
     /**
+     * @param int $count
+     * @param bool $paginate
+     * * @param array $relations
+     * @return object
+     */
+    public function getDataByOrdersDate(int $count, bool $paginate, array $relations);
+
+    /**
+     * * @param date $date
+     *  * @param array $relations
+     * @return object
+     */
+    public function getOrdersPerSpecificDate($date,$relations);
+
+    /**
      * @param int $model_id
      * @param  array $relations
      * @return object

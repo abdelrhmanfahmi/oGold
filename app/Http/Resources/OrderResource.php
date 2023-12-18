@@ -15,11 +15,11 @@ class OrderResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id ?? null,
             'address_book' => AddressBookResource::make($this->whenLoaded('address_book')),
             'client' => UserResource::make($this->whenLoaded('client')),
             'products' => ProductResource::collection($this->whenLoaded('products')),
             'status' => $this->status ?? null,
-            'is_approved' => $this->is_approved ?? null,
             'total' => $this->total ?? null,
         ];
     }

@@ -7,6 +7,7 @@ use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
 use App\Http\Resources\BuyGoldResourceAdmin;
 use App\Http\Resources\DepositOrderResource;
+use App\Http\Resources\OrderDateResource;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\SellGoldResourceAdmin;
 use App\Http\Resources\WithdrawOrderResource;
@@ -69,6 +70,29 @@ class OrderController extends Controller
             }
 
 
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function indexByData()
+    {
+        try{
+            $count = Request()->count ?? 10;
+            $paginate = Request()->paginate ?? true;
+            $ordersByDate = $this->orderRepository->getDataByOrdersDate($count, $paginate, []);
+            return OrderDateResource::collection($ordersByDate);
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function getOrdersPerDate(Request $request)
+    {
+        try{
+            $relations = ['client','products','address_book'];
+            $ordersPerDate = $this->orderRepository->getOrdersPerSpecificDate($request->date,$relations);
+            return OrderResource::collection($ordersPerDate);
         }catch(\Exception $e){
             return $e;
         }

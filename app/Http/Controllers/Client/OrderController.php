@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CancelOrderRequest;
 use App\Http\Resources\BuyGoldResource;
 use App\Http\Resources\SellGoldResource;
 use App\Http\Resources\ClientDepositResource;
@@ -15,6 +16,7 @@ use App\Repository\Interfaces\OrderRepositoryInterface;
 use App\Repository\Interfaces\SellGoldRepositoryInterface;
 use App\Repository\Interfaces\WithdrawRepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -61,6 +63,19 @@ class OrderController extends Controller
                 $orders = $this->sellGoldRepository->allForUsers($count , $paginate , []);
                 return SellGoldResource::collection($orders);
             }
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function cancelOrder(CancelOrderRequest $request)
+    {
+        try{
+            $data = $request->validated();
+            $model = $this->orderRepository->find($data['order_id'],[]);
+            $this->authorize('update',$model);
+            $this->orderRepository->update($model,['status' => 'canceled']);
+            return response()->json(['message' => 'Order Canceled Successfully']);
         }catch(\Exception $e){
             return $e;
         }

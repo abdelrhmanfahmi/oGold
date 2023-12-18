@@ -7,6 +7,7 @@ use App\Filters\OrderFilter;
 use App\Repository\Interfaces\OrderRepositoryInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class OrderRepository implements OrderRepositoryInterface
 {
@@ -53,6 +54,38 @@ class OrderRepository implements OrderRepositoryInterface
     }
 
     /**
+     *  @param int $count
+     *  @param bool $paginate
+     *  @param array $relations
+     * @return object
+     */
+    public function getDataByOrdersDate(int $count, bool $paginate,array $relations): object
+    {
+        if ($paginate == true) {
+            $ordersByDate = DB::table('orders')
+            ->select(
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('sum(total) as Total_Gram'),
+            )->groupBy('date')
+            ->paginate($count);
+        }else{
+            $ordersByDate = DB::table('orders')
+            ->select(
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('sum(total) as Total_Gram'),
+            )->groupBy('date')
+            ->get();
+        }
+        return $ordersByDate;
+    }
+
+
+    public function getOrdersPerSpecificDate($date,$relations)
+    {
+        return $this->model->with($relations)->whereDate('created_at' , $date)->get();
+    }
+
+    /**
      * @param array $attributes
      * @return object
      */
@@ -78,7 +111,7 @@ class OrderRepository implements OrderRepositoryInterface
      */
     public function findByUserId($user_id): ?object
     {
-        return $this->model->where('user_id' , $user_id)->where('is_approved' , '0')->get();
+        return $this->model->where('user_id' , $user_id)->where('status' , 'pending')->get();
     }
 
     /**
