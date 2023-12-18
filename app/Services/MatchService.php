@@ -164,7 +164,7 @@ class MatchService {
         try{
             $client = new \GuzzleHttp\Client();
             $account = new \stdClass();
-            $account->partnerId = 97;
+            $account->partnerId = env('BROKERID');
             $account->email = $data['email'];
             $account->systemLink = "https://platform.ogold.app/change-password";
             $url = 'https://platform.ogold.app/manager/user/request-password-reset';
@@ -207,7 +207,7 @@ class MatchService {
     {
         try{
             $client = new \GuzzleHttp\Client();
-            $url = 'https://bo-mtrwl.match-trade.com/documentation/process/api/accounts?email='. $model->email.'&partnerId=97';
+            $url = 'https://bo-mtrwl.match-trade.com/documentation/process/api/accounts?email='. $model->email.'&partnerId='.env('BROKERID');
             $response = $client->request('PUT', $url, [
                 'json' => $data,
                 'headers' => ['Content-Type' => 'application/json' , 'Authorization' => 'Bearer '. $token->access_token]
@@ -224,7 +224,7 @@ class MatchService {
     {
         try{
             $client = new \GuzzleHttp\Client();
-            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/quotations?symbols=GoldGram24c';
+            $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/quotations?symbols=GoldGram24c';
             $response = $client->request('GET', $url, [
                 'headers' => [
                     'co-auth' => Auth::user()->co_auth,
@@ -245,7 +245,7 @@ class MatchService {
         try{
             $user = User::findOrFail($user_id);
             $client = new \GuzzleHttp\Client();
-            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/quotations?symbols=GoldGram24c';
+            $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/quotations?symbols=GoldGram24c';
             $response = $client->request('GET', $url, [
                 'headers' => [
                     'co-auth' => $user->co_auth,
@@ -272,7 +272,7 @@ class MatchService {
             $dataDahab->slPrice = 0;
             $dataDahab->tpPrice = 0;
             $dataDahab->isMobile = true;
-            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/position/open';
+            $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/position/open';
             $response = $client->request('POST', $url, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -300,7 +300,7 @@ class MatchService {
             $dataDahab->volume = $data['volume'];
 //            $dataDahab->positionId = $data['positionId'];
 
-            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/positions/close';
+            $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/positions/close';
             $response = $client->request('POST', $url, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -321,7 +321,7 @@ class MatchService {
     {
         try{
             $client = new \GuzzleHttp\Client();
-            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/balance';
+            $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/balance';
             $response = $client->request('GET', $url, [
                 'headers' => [
                     'co-auth' => Auth::user()->co_auth,
@@ -342,7 +342,7 @@ class MatchService {
         try{
             $user = User::findOrFail($user_id);
             $client = new \GuzzleHttp\Client();
-            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/open-positions';
+            $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/open-positions';
             $response = $client->request('GET', $url, [
                 'headers' => [
                     'co-auth' => $user->co_auth,
@@ -420,7 +420,7 @@ class MatchService {
         try{
             $user = User::findOrFail($user_id);
             $client = new \GuzzleHttp\Client();
-            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/positions/close';
+            $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/positions/close';
 
             if(count($arrayOfPositionsToClose['originalClose']) > 0){
                 $response = $client->request('POST', $url, [
@@ -436,7 +436,7 @@ class MatchService {
             }
 
             if($arrayOfPositionsToClose['reminder'] != 0){
-                $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/position/close-partially';
+                $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/position/close-partially';
                 $dataDahabToClosePartialy = new \stdClass();
                 $dataDahabToClosePartialy->instrument = 'GoldGram24c';
                 $dataDahabToClosePartialy->orderSide = 'BUY';
@@ -477,7 +477,7 @@ class MatchService {
         try{
             $user = User::findOrFail($user_id);
             $client = new \GuzzleHttp\Client();
-            $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/positions/close';
+            $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/positions/close';
 
             if(count($arrayOfPositionsToClose['originalClose']) > 0){
                 $response = $client->request('POST', $url, [
@@ -493,7 +493,7 @@ class MatchService {
             }
 
             if($arrayOfPositionsToClose['reminder'] != 0){
-                $url = 'https://platform.ogold.app/mtr-api/7d0f0ade-3dc0-4c0e-884e-08d7b7961926/position/close-partially';
+                $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/position/close-partially';
                 $dataDahabToClosePartialy = new \stdClass();
                 $dataDahabToClosePartialy->instrument = 'GoldGram24c';
                 $dataDahabToClosePartialy->orderSide = 'BUY';
@@ -595,7 +595,7 @@ class MatchService {
     {
         try{
             $client = new \GuzzleHttp\Client();
-            $url = 'https://bo-mtrwl.match-trade.com/documentation/payment/partner/97/payment-gateways';
+            $url = 'https://bo-mtrwl.match-trade.com/documentation/payment/partner/'.env('BROKERID').'/payment-gateways';
             $response = $client->request('GET', $url, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -624,7 +624,7 @@ class MatchService {
             $dataWithdraw->netAmount = $data;
             $dataWithdraw->remark = 'test';
 
-            $url = 'https://bo-mtrwl.match-trade.com/documentation/payment/api/partner/97/withdraws/manual';
+            $url = 'https://bo-mtrwl.match-trade.com/documentation/payment/api/partner/'.env('BROKERID').'/withdraws/manual';
             $response = $client->request('POST', $url, [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -654,7 +654,7 @@ class MatchService {
             $dataDeposit->netAmount = $data['amount'];
             $dataDeposit->remark = 'test';
 
-            $url = 'https://bo-mtrwl.match-trade.com/documentation/payment/api/partner/97/deposits/manual';
+            $url = 'https://bo-mtrwl.match-trade.com/documentation/payment/api/partner/'.env('BROKERID').'/deposits/manual';
             $response = $client->request('POST', $url, [
                 'headers' => [
                     'Accept' => 'application/json',
