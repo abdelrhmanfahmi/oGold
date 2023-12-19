@@ -39,7 +39,7 @@ class OrderPolicy
     public function update(User $user, Order $order)
     {
         if($user->id == $order->user_id && $order->status == 'pending'){
-            return true;
+            return Response::allow();
         }
         return Response::deny('You cannot update order Not Pending Or Not Assigned To You!')->withStatus(400);
     }

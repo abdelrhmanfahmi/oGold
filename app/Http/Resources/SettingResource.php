@@ -18,7 +18,7 @@ class SettingResource extends JsonResource
             'id' => $this->id,
             'key' => $this->key ?? null,
             'value' => $this->value ?? null,
-            'image' => $this->image ?? null,
+            'image' => $this->when($this->image,env('APP_URL') .'/uploads/' . $this->image,null),
         ];
     }
 }

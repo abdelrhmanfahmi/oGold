@@ -19,7 +19,9 @@ class WithdrawOrderResource extends JsonResource
             'client' => UserResource::make($this->whenLoaded('client')),
             'amount' => $this->amount ?? null,
             'currency' => $this->currency ?? null,
-            'status' => $this->status ?? null
+            'status' => $this->status ?? null,
+            'created_at' => $this->created_at ?? null,
+            'updated_at' => $this->updated_at ?? null
         ];
     }
 }

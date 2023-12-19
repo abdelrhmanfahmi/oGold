@@ -21,6 +21,8 @@ class SellGoldResourceAdmin extends JsonResource
             'symbol' => $this->symbol ?? null,
             'sell_price' => $this->sell_price ?? null,
             'price_usd' => $this->when($this->sell_price , $this->volume * $this->sell_price , null),
+            'created_at' => $this->created_at ?? null,
+            'updated_at' => $this->updated_at ?? null,
         ];
     }
 }

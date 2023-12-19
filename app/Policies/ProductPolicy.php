@@ -42,7 +42,7 @@ class ProductPolicy
             return Response::deny('You cant update product has already orders!');
         }
 
-        return true;
+        return Response::allow();
     }
 
     /**
@@ -54,7 +54,7 @@ class ProductPolicy
             return Response::deny('You cant delete product has already orders!');
         }
 
-        return true;
+        return Response::allow();
     }
 
     /**

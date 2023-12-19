@@ -67,6 +67,7 @@ class OrderRepository implements OrderRepositoryInterface
                 DB::raw('DATE(created_at) as date'),
                 DB::raw('sum(total) as Total_Gram'),
             )->groupBy('date')
+            ->orderBy('date','desc')
             ->paginate($count);
         }else{
             $ordersByDate = DB::table('orders')
@@ -74,6 +75,7 @@ class OrderRepository implements OrderRepositoryInterface
                 DB::raw('DATE(created_at) as date'),
                 DB::raw('sum(total) as Total_Gram'),
             )->groupBy('date')
+            ->orderBy('date','desc')
             ->get();
         }
         return $ordersByDate;
