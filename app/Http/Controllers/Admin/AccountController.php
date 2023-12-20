@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ApproveDeleteAccountRequest;
 use App\Http\Requests\UpdateStatusDepositRequest;
 use App\Http\Requests\UpdateStatusWithdrawRequest;
+use App\Http\Resources\DeletionAprroveResource;
 use App\Models\DeleteRequest;
 use App\Models\User;
 use App\Repository\Interfaces\DepositRepositoryInterface;
@@ -39,6 +40,16 @@ class AccountController extends Controller
             $model = $this->depositRepository->find($id);
             $this->depositRepository->update($model,$data);
             return response()->json(['message' => 'Deposit Status Updated Successfully'],200);
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function indexApproveDeletionRequest()
+    {
+        try{
+            $approveRequestDelation = DeleteRequest::with('client')->get();
+            return DeletionAprroveResource::collection($approveRequestDelation);
         }catch(\Exception $e){
             return $e;
         }
