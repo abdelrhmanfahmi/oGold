@@ -207,7 +207,7 @@ class MatchService {
                 'headers' => [
                     'Accept' => 'application/json' ,
                     'Content-Type' => 'application/json' ,
-                    'Cookie' =>  'rt=' . Auth::user()->co_auth,
+                    'Cookie' =>  'rt=' . Auth::user()->co_auth.';co-auth='.Auth::user()->co_auth,
                 ]
             ]);
             $response->getBody()->getContents();
