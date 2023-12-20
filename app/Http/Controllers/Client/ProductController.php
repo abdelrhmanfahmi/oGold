@@ -105,27 +105,47 @@ class ProductController extends Controller
             if(!is_string($opendPositions)){
                 $arrayOfPositionsToClose = $this->matchService->getPositionsByOrder($opendPositions,$totalGoldPending,$data);
                 if($arrayOfPositionsToClose == 0){
-                    return response()->json(['message' => 'you have not positions to close']);
+                    $data =  [
+                        'status' => true,
+                        'message' => 'you have not positions to close',
+                    ];
+                    return response()->json($data , 400);
                 }else if($arrayOfPositionsToClose == -1){
-                    return response()->json(['message' => 'you cannot sell gold smaller than you have']);
+                    $data =  [
+                        'status' => true,
+                        'message' => 'you cannot sell gold smaller than you have',
+                    ];
+                    return response()->json($data, 400);
                 }else if($arrayOfPositionsToClose == -2){
-                    return response()->json(['message' => 'you cannot sell gold bigger than your pending order gold, wait approve admin to see your net gold']);
+                    $data =  [
+                        'status' => true,
+                        'message' => 'you cannot sell gold bigger than your pending order gold, wait approve admin to see your net gold',
+                    ];
+                    return response()->json($data , 400);
                 }else{
                     $order = $this->matchService->closePositionsByOrderDatePerUser($arrayOfPositionsToClose , Auth::id(), $data['volume']);
                     if($order == 'Qfx response exception: while closing positions, status: 3, response: Failed to close any position!'){
-                        return response()->json(['message' => 'Cannot Close Any Positions Right Now']);
+                        $data =  [
+                            'status' => true,
+                            'message' => 'Cannot Close Any Positions Right Now',
+                        ];
+                        return response()->json($data , 400);
                     }
 
                     if($order['sellResponse']->status == 'OK'){
                         $data['sell_price'] = $order['sellPrice'];
                         $this->sellGoldRepository->create($data);
                     }else{
-                        return response()->json(['message' => 'something wrong!'] , 500);
+                        $data =  [
+                            'status' => true,
+                            'message' => 'something wrong!',
+                        ];
+                        return response()->json($data , 500);
                     }
                     return response()->json(['data' => $order['sellResponse']] , 200);
                 }
             }else{
-                return response()->json(['message' => 'Authentication error'] , 401);
+                return response()->json(['data' => 'Authentication error'] , 401);
             }
 
         }catch(\Exception $e){
@@ -146,7 +166,7 @@ class ProductController extends Controller
             $updatedOrder = $this->orderRepository->find($order->id ,[]);
             $this->orderRepository->update($updatedOrder , ['total' => $data['total']]);
 
-            return response()->json(['message' => 'Transaction Done Successfully'] , 200);
+            return response()->json(['message' => 'Transaction Done Successfully, Wait For Order Approval From Admin'] , 200);
         }catch(\Exception $e){
             return $e;
         }

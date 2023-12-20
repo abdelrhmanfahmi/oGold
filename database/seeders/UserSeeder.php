@@ -25,11 +25,6 @@ class UserSeeder extends Seeder
             'state' => 'Alex',
             'city' => 'Alasfra',
             'address' => 'address test one',
-            'bankName' => 'bank name',
-            'bankAddress' => 'bank address',
-            'bankSwiftCode' => 'bank swift code data',
-            'bankAccount' => 'bank account data',
-            'accountName' => 'account name data',
             'type' => 'admin'
         ]);
 
@@ -46,11 +41,6 @@ class UserSeeder extends Seeder
             'state' => 'Alex',
             'city' => 'Sidibishr',
             'address' => 'address test two',
-            'bankName' => 'bank name two',
-            'bankAddress' => 'bank address two',
-            'bankSwiftCode' => 'bank swift code data two',
-            'bankAccount' => 'bank account data two',
-            'accountName' => 'account name data two',
             'type' => 'client'
         ]);
 
@@ -67,11 +57,6 @@ class UserSeeder extends Seeder
             'state' => 'Alex',
             'city' => 'Almandra',
             'address' => 'address test three',
-            'bankName' => 'bank name three',
-            'bankAddress' => 'bank address three',
-            'bankSwiftCode' => 'bank swift code data three',
-            'bankAccount' => 'bank account data three',
-            'accountName' => 'account name data three',
             'type' => 'refinery'
         ]);
 

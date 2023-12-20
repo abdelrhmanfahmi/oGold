@@ -24,11 +24,6 @@ return new class extends Migration
             $table->string('state')->nullable();
             $table->string('city')->nullable();
             $table->string('address')->nullable();
-            $table->string('bankName')->nullable();
-            $table->string('bankAddress')->nullable();
-            $table->string('bankSwiftCode')->nullable();
-            $table->string('bankAccount')->nullable();
-            $table->string('accountName')->nullable();
             $table->enum('type' , ['admin' , 'client' , 'refinery']);
             $table->text('co_auth')->nullable();
             $table->text('trading_api_token')->nullable();

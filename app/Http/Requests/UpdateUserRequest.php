@@ -32,11 +32,6 @@ class UpdateUserRequest extends FormRequest
             'state' => 'string',
             'city' => 'string',
             'address' => 'nullable|string',
-            'bankName' => 'nullable|string',
-            'bankAddress' => 'nullable|string',
-            'bankSwiftCode' => 'nullable|string',
-            'bankAccount' => 'nullable|string',
-            'accountName' => 'nullable|string',
             'type' => 'in:admin,client,provider'
         ];
     }
