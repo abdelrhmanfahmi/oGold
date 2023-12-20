@@ -10,10 +10,11 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles , SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -26,10 +27,6 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'password',
         'dateOfBirth',
-        'country',
-        'state',
-        'city',
-        'address',
         'phone',
         'type',
         'co_auth',
@@ -110,5 +107,10 @@ class User extends Authenticatable implements JWTSubject
     public function bank_details()
     {
         return $this->hasMany(BankDetails::class);
+    }
+
+    public function delete_requests()
+    {
+        return $this->hasOne(DeleteRequest::class);
     }
 }

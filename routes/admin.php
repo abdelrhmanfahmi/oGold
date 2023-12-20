@@ -51,3 +51,5 @@ $router->group(['namespace' => 'App\Http\Controllers\Admin'], function () use ($
     $router->put('/update/withdraw/status/{id}' , ['as' => 'withdraw.updateStatus', 'uses' => 'AccountController@updateWithdrawStatus']);
     $router->put('/update/deposit/status/{id}' , ['as' => 'deposit.updateStatus', 'uses' => 'AccountController@updateDepositStatus']);
 });
+
+$router->put('/approve-delete-request/{id}' , ['as' => 'admin.approve_delete_request', 'uses' => 'App\Http\Controllers\Admin\AccountController@approveRequestDeletion']);

@@ -21,10 +21,6 @@ class UserSeeder extends Seeder
             'password' => Hash::make('12345678'),
             'phone' => '01123635566',
             'dateOfBirth' => '1999-01-20',
-            'country' => 'Egypt',
-            'state' => 'Alex',
-            'city' => 'Alasfra',
-            'address' => 'address test one',
             'type' => 'admin'
         ]);
 
@@ -37,10 +33,6 @@ class UserSeeder extends Seeder
             'password' => Hash::make('12345678'),
             'phone' => '01287888477',
             'dateOfBirth' => '1999-04-20',
-            'country' => 'Egypt',
-            'state' => 'Alex',
-            'city' => 'Sidibishr',
-            'address' => 'address test two',
             'type' => 'client'
         ]);
 
@@ -53,10 +45,6 @@ class UserSeeder extends Seeder
             'password' => Hash::make('12345678'),
             'phone' => '01228343407',
             'dateOfBirth' => '1999-09-20',
-            'country' => 'Egypt',
-            'state' => 'Alex',
-            'city' => 'Almandra',
-            'address' => 'address test three',
             'type' => 'refinery'
         ]);
 
