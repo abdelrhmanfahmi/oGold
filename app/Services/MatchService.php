@@ -88,10 +88,6 @@ class MatchService {
             $account->surname = $data['surname'];
             $account->phone = $data['phone'];
             // $account->dateOfBirth = $data['dateOfBirth'];
-            $account->country = $data['country'];
-            $account->state = $data['state'];
-            $account->city = $data['city'];
-            $account->address = $data['address'];
             $account->password = $data['password'];
             $account->role = "ROLE_USER";
             // $account->clientType = "Professional";

@@ -20,10 +20,6 @@ return new class extends Migration
             $table->string('password');
             $table->date('dateOfBirth')->nullable();
             $table->string('phone')->nullable();
-            $table->string('country')->nullable();
-            $table->string('state')->nullable();
-            $table->string('city')->nullable();
-            $table->string('address')->nullable();
             $table->enum('type' , ['admin' , 'client' , 'refinery']);
             $table->text('co_auth')->nullable();
             $table->text('trading_api_token')->nullable();

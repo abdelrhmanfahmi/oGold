@@ -37,3 +37,5 @@ $router->group(['namespace' => 'App\Http\Controllers\Client'], function () use (
     $router->get('/orders/list' , ['as' => 'index.ordersUsers' , 'uses' => 'OrderController@index']);
     $router->put('/cancel-order' , ['as' => 'cancel.order' , 'uses' => 'OrderController@cancelOrder']);
 });
+
+$router->post('/delete-request' , ['as' => 'user.delete_request', 'uses' => 'App\Http\Controllers\Client\UserController@deleteAccount']);

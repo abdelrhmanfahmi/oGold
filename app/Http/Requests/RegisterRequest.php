@@ -28,10 +28,6 @@ class RegisterRequest extends FormRequest
             'password' => 'required|min:7|confirmed',
             'phone' => 'nullable|numeric',
             'dateOfBirth' => 'nullable|date',
-            'country' => 'nullable|string',
-            'state' => 'nullable|string',
-            'city' => 'nullable|string',
-            'address' => 'nullable|string',
             'type' => 'required|in:admin,client,refinery'
         ];
     }
