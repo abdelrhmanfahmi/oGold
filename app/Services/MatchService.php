@@ -92,11 +92,6 @@ class MatchService {
             $account->state = $data['state'];
             $account->city = $data['city'];
             $account->address = $data['address'];
-            $account->bankAddress = $data['bankAddress'];
-            $account->bankSwiftCode = $data['bankSwiftCode'];
-            $account->bankAccount = $data['bankAccount'];
-            $account->bankName = $data['bankName'];
-            $account->accountName = $data['accountName'];
             $account->password = $data['password'];
             $account->role = "ROLE_USER";
             // $account->clientType = "Professional";
@@ -195,6 +190,25 @@ class MatchService {
                     'Cookie' =>  'co-auth=' . Auth::user()->co_auth,
                 ],
                 'json' => $account,
+            ]);
+            $response->getBody()->getContents();
+            return true;
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function refreshTokenInMatch()
+    {
+        try{
+            $client = new \GuzzleHttp\Client();
+            $url = 'https://platform.ogold.app/manager/refresh-token';
+            $response = $client->request('POST', $url, [
+                'headers' => [
+                    'Accept' => 'application/json' ,
+                    'Content-Type' => 'application/json' ,
+                    'Cookie' =>  'rt=' . Auth::user()->co_auth,
+                ]
             ]);
             $response->getBody()->getContents();
             return true;

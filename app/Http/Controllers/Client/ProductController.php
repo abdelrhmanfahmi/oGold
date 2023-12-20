@@ -105,15 +105,15 @@ class ProductController extends Controller
             if(!is_string($opendPositions)){
                 $arrayOfPositionsToClose = $this->matchService->getPositionsByOrder($opendPositions,$totalGoldPending,$data);
                 if($arrayOfPositionsToClose == 0){
-                    return response()->json(['message' => 'you have not positions to close']);
+                    return response()->json(['message' => 'you have not positions to close'] , 400);
                 }else if($arrayOfPositionsToClose == -1){
-                    return response()->json(['message' => 'you cannot sell gold smaller than you have']);
+                    return response()->json(['message' => 'you cannot sell gold smaller than you have'] , 400);
                 }else if($arrayOfPositionsToClose == -2){
-                    return response()->json(['message' => 'you cannot sell gold bigger than your pending order gold, wait approve admin to see your net gold']);
+                    return response()->json(['message' => 'you cannot sell gold bigger than your pending order gold, wait approve admin to see your net gold'] , 400);
                 }else{
                     $order = $this->matchService->closePositionsByOrderDatePerUser($arrayOfPositionsToClose , Auth::id(), $data['volume']);
                     if($order == 'Qfx response exception: while closing positions, status: 3, response: Failed to close any position!'){
-                        return response()->json(['message' => 'Cannot Close Any Positions Right Now']);
+                        return response()->json(['message' => 'Cannot Close Any Positions Right Now'] , 400);
                     }
 
                     if($order['sellResponse']->status == 'OK'){
@@ -146,7 +146,7 @@ class ProductController extends Controller
             $updatedOrder = $this->orderRepository->find($order->id ,[]);
             $this->orderRepository->update($updatedOrder , ['total' => $data['total']]);
 
-            return response()->json(['message' => 'Transaction Done Successfully'] , 200);
+            return response()->json(['message' => 'Transaction Done Successfully, Wait For Order Approval From Admin'] , 200);
         }catch(\Exception $e){
             return $e;
         }

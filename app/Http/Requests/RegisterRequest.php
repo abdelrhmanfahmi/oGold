@@ -32,11 +32,6 @@ class RegisterRequest extends FormRequest
             'state' => 'nullable|string',
             'city' => 'nullable|string',
             'address' => 'nullable|string',
-            'bankName' => 'nullable|string',
-            'bankAddress' => 'nullable|string',
-            'bankSwiftCode' => 'nullable|string',
-            'bankAccount' => 'nullable|string',
-            'accountName' => 'nullable|string',
             'type' => 'required|in:admin,client,refinery'
         ];
     }

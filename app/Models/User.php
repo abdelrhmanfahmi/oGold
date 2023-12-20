@@ -31,11 +31,6 @@ class User extends Authenticatable implements JWTSubject
         'city',
         'address',
         'phone',
-        'bankName',
-        'bankAddress',
-        'bankSwiftCode',
-        'bankAccount',
-        'accountName',
         'type',
         'co_auth',
         'trading_api_token',
@@ -110,5 +105,10 @@ class User extends Authenticatable implements JWTSubject
     public function address_books()
     {
         return $this->hasMany(AddressBook::class);
+    }
+
+    public function bank_details()
+    {
+        return $this->hasMany(BankDetails::class);
     }
 }

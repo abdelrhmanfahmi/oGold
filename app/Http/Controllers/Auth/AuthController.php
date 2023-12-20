@@ -200,12 +200,24 @@ class AuthController extends Controller
         ]);
     }
 
+    // public function refresh()
+    // {
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'user' => Auth::user(),
+    //         'token' => Auth::refresh()
+    //     ]);
+    // }
+
     public function refresh()
     {
-        return response()->json([
-            'status' => 'success',
-            'user' => Auth::user(),
-            'token' => Auth::refresh()
-        ]);
+        try{
+            $isRefreshed = $this->matchService->refreshTokenInMatch();
+            if($isRefreshed){
+                return response()->json(['message' => 'token Refreshed Successfully'],200);
+            }
+        }catch(\Exception $e){
+            return $e;
+        }
     }
 }

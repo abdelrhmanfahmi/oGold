@@ -22,6 +22,14 @@ $router->group(['prefix' => 'address_books' ,'namespace' => 'App\Http\Controller
     $router->put('/{id}', ['as' => 'address_books.update', 'uses' => 'AddressBookController@update']);
 });
 
+$router->group(['prefix' => 'bank-details' ,'namespace' => 'App\Http\Controllers\Client'], function () use ($router) {
+    $router->get('/', ['as' => 'bank-details.index', 'uses' => 'BankController@index']);
+    $router->post('/', ['as' => 'bank-details.store', 'uses' => 'BankController@store']);
+    $router->get('/{id}', ['as' => 'bank-details.show', 'uses' => 'BankController@show']);
+    $router->put('/{id}', ['as' => 'bank-details.update', 'uses' => 'BankController@update']);
+    $router->delete('/{id}', ['as' => 'bank-details.delete', 'uses' => 'BankController@delete']);
+});
+
 $router->group(['namespace' => 'App\Http\Controllers\Client'], function () use ($router) {
     $router->get('/get-open-positions', ['as' => 'products.open_positions', 'uses' => 'ProductController@getOpenPositions']);
     $router->post('/withdraw', ['as' => 'withdraw.store', 'uses' => 'ProductController@storeWithdraw']);
