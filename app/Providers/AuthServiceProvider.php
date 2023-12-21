@@ -5,9 +5,13 @@ namespace App\Providers;
 // use Illuminate\Support\Facades\Gate;
 
 use App\Models\DeleteRequest;
+use App\Models\Deposit;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Withdraw;
 use App\Policies\AccountPolicy;
+use App\Policies\BankDepositPolicy;
+use App\Policies\BankPolicy;
 use App\Policies\OrderPolicy;
 use App\Policies\ProductPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -22,7 +26,9 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Product::class => ProductPolicy::class,
         Order::class => OrderPolicy::class,
-        DeleteRequest::class => AccountPolicy::class
+        DeleteRequest::class => AccountPolicy::class,
+        Withdraw::class => BankPolicy::class,
+        Deposit::class => BankDepositPolicy::class
     ];
 
     /**

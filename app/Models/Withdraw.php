@@ -8,10 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class Withdraw extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id' , 'amount' , 'currency' , 'status'];
+    protected $fillable = ['user_id' , 'amount' , 'currency' , 'status' , 'bank_details_id'];
 
     public function client()
     {
         return $this->belongsTo(User::class , 'user_id');
+    }
+
+    public function bank_details()
+    {
+        return $this->belongsTo(BankDetails::class , 'bank_details_id');
     }
 }

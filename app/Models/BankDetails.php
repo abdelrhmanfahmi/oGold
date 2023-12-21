@@ -14,4 +14,14 @@ class BankDetails extends Model
     {
         return $this->belongsTo(User::class , 'user_id');
     }
+
+    public function withdraws()
+    {
+        return $this->hasMany(Withdraw::class);
+    }
+
+    public function deposits()
+    {
+        return $this->hasMany(Deposit::class);
+    }
 }

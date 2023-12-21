@@ -40,13 +40,13 @@ class OrderController extends Controller
             $count = Request()->count ?? 10;
 
             if($request->type == 'withdraws'){
-                $relations = ['client'];
+                $relations = ['client' , 'bank_details'];
                 $withdraws = $this->withdrawRepository->all($count , $paginate , $relations);
                 return WithdrawOrderResource::collection($withdraws);
             }
 
             if($request->type == 'deposits'){
-                $relations = ['client'];
+                $relations = ['client' , 'bank_details'];
                 $deposits = $this->depositRepository->all($count , $paginate , $relations);
                 return DepositOrderResource::collection($deposits);
             }

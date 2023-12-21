@@ -10,6 +10,8 @@ use App\Http\Requests\StoreDepositRequest;
 use App\Http\Requests\StoreWithdrawRequest;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\SymbolResource;
+use App\Models\Deposit;
+use App\Models\Withdraw;
 use App\Repository\Interfaces\BuyGoldRepositoryInterface;
 use App\Repository\Interfaces\DepositRepositoryInterface;
 use App\Repository\Interfaces\OrderRepositoryInterface;
@@ -174,6 +176,7 @@ class ProductController extends Controller
     public function storeWithdraw(StoreWithdrawRequest $request)
     {
         try{
+            $this->authorize('store' , Withdraw::class);
             $data = $request->validated();
             $data['user_id'] = Auth::id();
             $data['status'] = 'pending';
@@ -190,6 +193,7 @@ class ProductController extends Controller
     public function storeDeposit(StoreDepositRequest $request)
     {
         try{
+            $this->authorize('store' , Deposit::class);
             $data = $request->validated();
             $data['user_id'] = Auth::id();
             $data['status'] = 'pending';

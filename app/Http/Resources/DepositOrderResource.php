@@ -20,6 +20,7 @@ class DepositOrderResource extends JsonResource
             'amount' => $this->amount ?? null,
             'currency' => $this->currency ?? null,
             'status' => $this->status ?? null,
+            'bank_details' => BankResource::make($this->whenLoaded('bank_details')),
             'created_at' => $this->created_at ?? null,
             'updated_at' => $this->updated_at ?? null
         ];

@@ -23,7 +23,8 @@ class StoreWithdrawRequest extends FormRequest
     {
         return [
             'amount' => 'required|numeric|min:1',
-            'currency' => 'required|string'
+            'currency' => 'required|string',
+            'bank_details_id' => 'required|exists:bank_details,id'
         ];
     }
 }
