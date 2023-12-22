@@ -16,7 +16,11 @@ class ApiController extends Controller
         try{
             $data = $request->validated();
             $user = $this->userRepository->findByPhone($data['phone']);
-            return UserResource::make($user);
+            $data = [
+                'id' => $user->id,
+                'name' => $user->name
+            ];
+            return response()->json(['data' => $data] , 200);
         }catch(\Exception $e){
             return $e;
         }

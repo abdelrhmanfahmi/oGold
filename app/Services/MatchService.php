@@ -687,11 +687,11 @@ class MatchService {
             $user = Auth::user();
             $client = new \GuzzleHttp\Client();
             if($data['type'] == 'front'){
-                $url = 'https://platform.ogold.app/manager/verification/document?path=assets/'.env('BROKERID').'/account/'.env('ACCOUNT_KYC').'/verification/'.env('FILE_KYC_FRONT');
+                $url = 'https://platform.ogold.app/manager/verification/document?path=assets/'.env('BROKERID').'/account/f45e40cb-b533-4867-b9b0-fc08917e4329/verification/'.env('FILE_KYC_FRONT');
             }else if($data['type'] == 'back'){
-                $url = 'https://platform.ogold.app/manager/verification/document?path=assets/'.env('BROKERID').'/account/'.env('ACCOUNT_KYC').'/verification/'.env('FILE_KYC_BACK');
+                $url = 'https://platform.ogold.app/manager/verification/document?path=assets/'.env('BROKERID').'/account/f45e40cb-b533-4867-b9b0-fc08917e4329/verification/'.env('FILE_KYC_BACK');
             }else{
-                $url = 'https://platform.ogold.app/manager/verification/document?path=assets/'.env('BROKERID').'/account/'.env('ACCOUNT_KYC').'/verification/'.env('FILE_KYC_PROOF');
+                $url = 'https://platform.ogold.app/manager/verification/document?path=assets/'.env('BROKERID').'/account/f45e40cb-b533-4867-b9b0-fc08917e4329/verification/'.env('FILE_KYC_PROOF');
             }
             $response = $client->request('POST', $url, [
                 'headers' => [
