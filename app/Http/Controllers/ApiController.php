@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CheckUserExistsRequest;
+use App\Http\Resources\GiftUserResource;
 use App\Http\Resources\UserResource;
 use App\Repository\Interfaces\UserRepositoryInterface;
 use Illuminate\Http\Request;
@@ -16,11 +17,7 @@ class ApiController extends Controller
         try{
             $data = $request->validated();
             $user = $this->userRepository->findByPhone($data['phone']);
-            $data = [
-                'id' => $user->id,
-                'name' => $user->name
-            ];
-            return response()->json(['data' => $data] , 200);
+            return GiftUserResource::make($user);
         }catch(\Exception $e){
             return $e;
         }
