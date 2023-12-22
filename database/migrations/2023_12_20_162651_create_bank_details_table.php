@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('bank_name');
             $table->string('bank_address');
-            $table->string('bank_swift_code');
-            $table->string('bank_account_num');
             $table->string('bank_account_name');
             $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();

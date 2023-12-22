@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DeleteAccountRequest;
 use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Requests\UploadFileKYCRequest;
 use App\Models\DeleteRequest;
 use App\Repository\Interfaces\UserRepositoryInterface;
 use App\Services\MatchService;
@@ -57,7 +58,21 @@ class UserController extends Controller
                 $user->delete();
                 return response()->json(['message' => 'Account Deleted Successfully'], 200);
             }
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
 
+    public function UploadKYCFile(UploadFileKYCRequest $request)
+    {
+        try{
+            $data = $request->validated();
+            $result = $this->matchService->uploadFileKYC($data);
+            if($result != ''){
+                return response()->json(['data' => $result],200);
+            }else{
+                return response()->json(['message' => 'Authentication Error'] , 401);
+            }
 
         }catch(\Exception $e){
             return $e;

@@ -18,8 +18,7 @@ class BankResource extends JsonResource
             'id' => $this->id ?? null,
             'bank_name' => $this->bank_name ?? null,
             'bank_address' => $this->bank_address ?? null,
-            'bank_swift_code' => $this->bank_swift_code ?? null,
-            'bank_account_num' => $this->bank_account_num ?? null,
+            'Iban' => $this->Iban ?? null,
             'bank_account_name' => $this->bank_account_name ?? null,
             'client' => UserResource::make($this->whenLoaded('client')),
         ];

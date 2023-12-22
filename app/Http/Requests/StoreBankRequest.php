@@ -24,8 +24,7 @@ class StoreBankRequest extends FormRequest
         return [
             'bank_name' => 'required|min:3|max:100|string',
             'bank_address' => 'required|min:3',
-            'bank_swift_code' => 'required',
-            'bank_account_num' => 'required|numeric|min:1',
+            'Iban' => 'required|string|max:255',
             'bank_account_name' => 'required'
         ];
     }

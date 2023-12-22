@@ -26,7 +26,7 @@ class RegisterRequest extends FormRequest
             'surname' => 'nullable|min:2|max:100|string',
             'email' => 'required|min:3|max:50|email|unique:users,email',
             'password' => 'required|min:7|confirmed',
-            'phone' => 'nullable|numeric',
+            'phone' => 'nullable|numeric|unique:users,phone',
             'dateOfBirth' => 'nullable|date',
             'type' => 'required|in:admin,client,refinery'
         ];

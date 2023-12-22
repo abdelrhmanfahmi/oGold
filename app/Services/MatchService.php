@@ -680,4 +680,36 @@ class MatchService {
             return $e->getResponse()->getBody()->getContents();
         }
     }
+
+    public function uploadFileKYC($data)
+    {
+        try{
+            $user = Auth::user();
+            $client = new \GuzzleHttp\Client();
+            if($data['type'] == 'front'){
+                $url = 'https://platform.ogold.app/manager/verification/document?path=assets/'.env('BROKERID').'/account/'.env('ACCOUNT_KYC').'/verification/'.env('FILE_KYC_FRONT');
+            }else if($data['type'] == 'back'){
+                $url = 'https://platform.ogold.app/manager/verification/document?path=assets/'.env('BROKERID').'/account/'.env('ACCOUNT_KYC').'/verification/'.env('FILE_KYC_BACK');
+            }else{
+                $url = 'https://platform.ogold.app/manager/verification/document?path=assets/'.env('BROKERID').'/account/'.env('ACCOUNT_KYC').'/verification/'.env('FILE_KYC_PROOF');
+            }
+            $response = $client->request('POST', $url, [
+                'headers' => [
+                    'Cookie' => 'co-auth=' . $user->co_auth
+                ],
+                'multipart' => [
+                    [
+                        'name' => 'file',
+                        'contents' => fopen($data['file']->getPathname(), 'r'),
+                        'filename' => $data['file']->getClientOriginalName(),
+                    ],
+                ],
+            ]);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+            return $decodedData;
+        }catch(\GuzzleHttp\Exception\BadResponseException $e){
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
 }

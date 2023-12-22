@@ -22,6 +22,12 @@ interface UserRepositoryInterface
      */
     public function find(int $model_id): ?object;
 
+    /**
+     * @param int $phone
+     * @return object
+     */
+    public function findByPhone(string $phone): ?object;
+
 
     /**
      * @param int $model_id

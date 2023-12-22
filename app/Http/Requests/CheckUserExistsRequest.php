@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateBankRequest extends FormRequest
+class CheckUserExistsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +22,7 @@ class UpdateBankRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'bank_name' => 'nullable|min:3|max:100|string',
-            'bank_address' => 'nullable|min:3',
-            'Iban' => 'nullable|string|max:255',
-            'bank_account_name' => 'nullable'
+            'phone' => 'required|numeric|exists:users,phone'
         ];
     }
 }
