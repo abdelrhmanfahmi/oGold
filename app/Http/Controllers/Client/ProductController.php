@@ -180,6 +180,7 @@ class ProductController extends Controller
             $data = $request->validated();
             $data['user_id'] = Auth::id();
             $data['status'] = 'pending';
+            $data['currency'] = 'AED';
             // $token = $this->matchService->getAccessToken();
             // $paymentGateWayUUid = $this->matchService->getPayment($token);
             // $this->matchService->makeWithdraw($data , $token , $paymentGateWayUUid);
@@ -196,6 +197,7 @@ class ProductController extends Controller
             $data = $request->validated();
             $data['user_id'] = Auth::id();
             $data['status'] = 'pending';
+            $data['currency'] = 'AED';
             // $token = $this->matchService->getAccessToken();
             // $paymentGateWayUUid = $this->matchService->getPayment($token);
             // $this->matchService->makeDeposit($data , $token , $paymentGateWayUUid);
