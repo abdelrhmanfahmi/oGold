@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('deposits', function (Blueprint $table) {
-            $table->foreignId('bank_details_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+        Schema::table('bank_details', function (Blueprint $table) {
+            $table->string('Iban');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('deposits', function (Blueprint $table) {
+        Schema::table('bank_details', function (Blueprint $table) {
             //
         });
     }

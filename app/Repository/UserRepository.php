@@ -44,6 +44,7 @@ class UserRepository implements UserRepositoryInterface
     {
         return $this->model->create($attributes);
     }
+
     /**
      * @param int $model_id
      * @return object
@@ -51,6 +52,15 @@ class UserRepository implements UserRepositoryInterface
     public function find($model_id): ?object
     {
         return $this->model->findOrFail($model_id);
+    }
+
+    /**
+     * @param int $phone
+     * @return object
+     */
+    public function findByPhone($phone): ?object
+    {
+        return $this->model->where('phone' , $phone)->first();
     }
 
     /**

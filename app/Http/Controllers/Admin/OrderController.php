@@ -46,7 +46,7 @@ class OrderController extends Controller
             }
 
             if($request->type == 'deposits'){
-                $relations = ['client' , 'bank_details'];
+                $relations = ['client'];
                 $deposits = $this->depositRepository->all($count , $paginate , $relations);
                 return DepositOrderResource::collection($deposits);
             }

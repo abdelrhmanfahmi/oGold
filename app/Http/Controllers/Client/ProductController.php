@@ -193,7 +193,6 @@ class ProductController extends Controller
     public function storeDeposit(StoreDepositRequest $request)
     {
         try{
-            $this->authorize('store' , Deposit::class);
             $data = $request->validated();
             $data['user_id'] = Auth::id();
             $data['status'] = 'pending';
