@@ -7,6 +7,7 @@ use App\Http\Requests\DeleteAccountRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\UploadFileKYCRequest;
 use App\Models\DeleteRequest;
+use App\Models\KYC;
 use App\Repository\Interfaces\UserRepositoryInterface;
 use App\Services\MatchService;
 use App\Services\TotalVolumesService;
@@ -67,9 +68,18 @@ class UserController extends Controller
     {
         try{
             $data = $request->validated();
+            $data['user_id'] = Auth::id();
             $result = $this->matchService->uploadFileKYC($data);
             if($result != ''){
-                return response()->json(['data' => $result],200);
+                $kycFile = KYC::updateOrCreate([
+                    'user_id' => $data['user_id'],
+                    'type' => $data['type']
+                ],[
+                    'type' => $data['type'],
+                    'user_id' => $data['user_id'],
+                    'file' => env('EXTERNAL_PATH_KYC').'/'.$result->fileUrl
+                ]);
+                return response()->json(['data' => $kycFile],200);
             }else{
                 return response()->json(['message' => 'Authentication Error'] , 401);
             }

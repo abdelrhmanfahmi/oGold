@@ -113,4 +113,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(DeleteRequest::class);
     }
+
+    public function kyc()
+    {
+        return $this->hasMany(KYC::class);
+    }
 }

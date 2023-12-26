@@ -482,6 +482,60 @@ class MatchService {
         }
     }
 
+    public function closePositionsByOrderDateForGift($arrayOfPositionsToClose, $user_id, $volume)
+    {
+        try{
+            $user = User::findOrFail($user_id);
+            $client = new \GuzzleHttp\Client();
+            $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/positions/close';
+
+            if(count($arrayOfPositionsToClose['originalClose']) > 0){
+                $response = $client->request('POST', $url, [
+                    'headers' => [
+                        'co-auth' => $user->co_auth,
+                        'Auth-trading-api' => $user->trading_api_token,
+                        'Cookie' => 'co-auth='. $user->co_auth
+                    ],
+                    'json' => $arrayOfPositionsToClose['originalClose'],
+                ]);
+                $result = $response->getBody()->getContents();
+                $decodedData = json_decode($result);
+            }
+
+            if($arrayOfPositionsToClose['reminder'] != 0){
+                $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/position/close-partially';
+                $dataDahabToClosePartialy = new \stdClass();
+                $dataDahabToClosePartialy->instrument = 'GoldGram24c';
+                $dataDahabToClosePartialy->orderSide = 'BUY';
+                $dataDahabToClosePartialy->volume = $arrayOfPositionsToClose['reminder'];
+                $dataDahabToClosePartialy->positionId = $arrayOfPositionsToClose['positionId'];
+                $dataDahabToClosePartialy->isMobile = false;
+                $response = $client->request('POST', $url, [
+                    'headers' => [
+                        'co-auth' => $user->co_auth,
+                        'Auth-trading-api' => $user->trading_api_token,
+                        'Cookie' => 'co-auth='. $user->co_auth
+                    ],
+                    'json' => $dataDahabToClosePartialy,
+                ]);
+                $result = $response->getBody()->getContents();
+                $decodedData = json_decode($result);
+            }
+            // here make withdraw for authenticated user per request for sell gold
+            $sellPriceNow = $this->getMarketWatchSymbol();
+
+            //get net price of gold by multiply (gramGoldNow * $volumeOfUser Request)
+            $priceWillSentForGift = $volume * $sellPriceNow[0]->bid;
+
+            dd($priceWillSentForGift);
+            return ['sellResponse' => $decodedData, 'sellPrice' => $sellPriceNow[0]->bid];
+
+
+        }catch(\GuzzleHttp\Exception\BadResponseException $e){
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
     public function closePositionsByOrderDatePerAdmin($arrayOfPositionsToClose, $user_id, $volume)
     {
         try{

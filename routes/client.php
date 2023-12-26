@@ -38,5 +38,13 @@ $router->group(['namespace' => 'App\Http\Controllers\Client'], function () use (
     $router->put('/cancel-order' , ['as' => 'cancel.order' , 'uses' => 'OrderController@cancelOrder']);
 });
 
+$router->group(['prefix' => 'gifts' , 'namespace' => 'App\Http\Controllers\Client'], function () use ($router) {
+    $router->post('/send-gift', ['as' => 'gift.send', 'uses' => 'GiftController@sendGift']);
+});
+
+$router->group(['namespace' => 'App\Http\Controllers\Client'], function () use ($router) {
+    $router->get('/settings' , ['as' => 'index.settings' , 'uses' => 'SettingController@index']);
+});
+
 $router->post('/delete-request' , ['as' => 'user.delete_request', 'uses' => 'App\Http\Controllers\Client\UserController@deleteAccount']);
 $router->post('/upload-kyc-file' , ['as' => 'user.kyc', 'uses' => 'App\Http\Controllers\Client\UserController@UploadKYCFile']);
