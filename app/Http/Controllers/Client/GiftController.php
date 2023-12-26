@@ -24,7 +24,7 @@ class GiftController extends Controller
         try{
             $data = $request->validated();
             $totalGoldPending = $this->getTotalGoldPendingPerUser($data['sent_user_id']);
-            $opendPositions = $this->matchService->getOpenedPositions($data['sent_user_id']);
+            $opendPositions = $this->matchService->getOpenedPositions($data['sender_user_id']);
             // dd($opendPositions);
             if(!is_string($opendPositions)){
                 $arrayOfPositionsToClose = $this->matchService->getPositionsByOrder($opendPositions,$totalGoldPending,$data);
@@ -35,15 +35,23 @@ class GiftController extends Controller
                 }else if($arrayOfPositionsToClose == -2){
                     return response()->json(['message' => 'you cannot sell gold bigger than your pending order gold, wait approve admin to see your net gold'] , 400);
                 }else{
-                    $order = $this->matchService->closePositionsByOrderDateForGift($arrayOfPositionsToClose , $data['sent_user_id'], $data['volume']);
+                    $order = $this->matchService->closePositionsByOrderDateForGift($arrayOfPositionsToClose , $data['sender_user_id'], $data['volume']);
                     if($order == 'Qfx response exception: while closing positions, status: 3, response: Failed to close any position!'){
                         return response()->json(['message' => 'Cannot Close Any Positions Right Now'] , 400);
                     }
 
                     if($order['sellResponse']->status == 'OK'){
-                        dd('hi');
-                        // $data['sell_price'] = $order['sellPrice'];
-                        // $this->sellGoldRepository->create($data);
+                        // start credit out
+                        $prcieCreditOut = $order['priceCreditOut'] + ($order['priceCreditOut'] * 0.5);
+                        $returnedData = $this->matchService->creditOut($prcieCreditOut);
+                        if($returnedData->status == 'OPERATION_SUCCESS'){
+                            //start credit in
+                            $dataCreditIn = $this->matchService->creditIn($prcieCreditOut,$data['recieved_user_id']);
+                            if($dataCreditIn->status == 'OPERATION_SUCCESS'){
+                                //start buy gold
+
+                            }
+                        }
                     }else{
                         return response()->json(['message' => 'something wrong!'] , 500);
                     }

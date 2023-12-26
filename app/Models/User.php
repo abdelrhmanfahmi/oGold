@@ -31,7 +31,8 @@ class User extends Authenticatable implements JWTSubject
         'type',
         'co_auth',
         'trading_api_token',
-        'trading_uuid'
+        'trading_uuid',
+        'client_trading_id'
     ];
 
     /**
