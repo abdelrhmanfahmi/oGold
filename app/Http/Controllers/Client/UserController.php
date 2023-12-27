@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DeleteAccountRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\UploadFileKYCRequest;
+use App\Http\Resources\KycResource;
 use App\Models\DeleteRequest;
 use App\Models\KYC;
 use App\Repository\Interfaces\UserRepositoryInterface;
@@ -59,6 +60,16 @@ class UserController extends Controller
                 $user->delete();
                 return response()->json(['message' => 'Account Deleted Successfully'], 200);
             }
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function getFileUrls()
+    {
+        try{
+            $data = KYC::where('user_id' , Auth::id())->get();
+            return KycResource::collection($data);
         }catch(\Exception $e){
             return $e;
         }

@@ -302,6 +302,36 @@ class MatchService {
         }
     }
 
+    public function openPositionForUser($data)
+    {
+        try{
+            $client = new \GuzzleHttp\Client();
+            $userRecieved = User::findOrFail($data['recieved_user_id']);
+            $dataDahab = new \stdClass();
+            $dataDahab->instrument = 'GoldGram24c';
+            $dataDahab->orderSide = 'BUY';
+            $dataDahab->volume = $data['volume'];
+            $dataDahab->slPrice = 0;
+            $dataDahab->tpPrice = 0;
+            $dataDahab->isMobile = true;
+            $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/position/open';
+            $response = $client->request('POST', $url, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Auth-trading-api' => $userRecieved->trading_api_token,
+                    'Cookie' => 'co-auth=' . $userRecieved->co_auth
+                ],
+                'json' => $dataDahab,
+            ]);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+            $buyPrice = $this->getMarketWatchSymbol();
+            return ['buyResponse' => $decodedData , 'buy_price' => $buyPrice[0]->ask];
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
     public function closePosition($data)
     {
         try{
@@ -624,14 +654,8 @@ class MatchService {
                 $result = $response->getBody()->getContents();
                 $decodedData = json_decode($result);
             }
-            // here make withdraw for authenticated user per request for sell gold
-            $sellPriceNow = $this->getMarketWatchSymbol();
 
-            //get net price of gold by multiply (gramGoldNow * $volumeOfUser Request)
-            $priceWillSentForGift = $volume * $sellPriceNow[0]->bid;
-
-            return ['sellResponse' => $decodedData, 'priceCreditOut' => $priceWillSentForGift];
-
+            return ['sellResponse' => $decodedData];
         }catch(\GuzzleHttp\Exception\BadResponseException $e){
             return $e->getResponse()->getBody()->getContents();
         }
@@ -664,25 +688,20 @@ class MatchService {
     {
         try{
             $dataToken = $this->loginAsManager();
-            $client = new \GuzzleHttp\Client();
-            $creditOutData = new \stdClass();
-            $creditOutData->comment = 'string';
-            $creditOutData->auth = new \stdClass();
-            $creditOutData->auth->managerID = env('MANAGER_ID');
-            $creditOutData->auth->token = $dataToken->token;
-            $creditOutData->amount = $price;
-            $creditOutData->clientId = Auth::user()->client_trading_id;
-            $url = 'https://grpc-mtrwl.match-trade.com/v1/balance/creditOut';
-            $response = $client->request('POST', $url, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json'
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])->post("https://grpc-mtrwl.match-trade.com/v1/balance/creditOut", [
+                "auth" => [
+                    "managerID" => env('MANAGER_ID'),
+                    "token" => $dataToken->token
                 ],
-                'json' => $creditOutData
+                "comment" => 'string',
+                "amount" => (int) ceil($price),
+                "clientId" => Auth::user()->client_trading_id
             ]);
-            $result = $response->getBody()->getContents();
-            $decodedData = json_decode($result);
-            return $decodedData;
+
+            return $response->json();
 
         }catch(\GuzzleHttp\Exception\BadResponseException $e){
             return $e->getResponse()->getBody()->getContents();
@@ -694,26 +713,20 @@ class MatchService {
         try{
             $dataToken = $this->loginAsManager();
             $userRecieved = User::findOrFail($recieved_id);
-            $client = new \GuzzleHttp\Client();
-            $creditOutData = new \stdClass();
-            $creditOutData->comment = 'string';
-            $creditOutData->auth = new \stdClass();
-            $creditOutData->auth->managerID = env('MANAGER_ID');
-            $creditOutData->auth->token = $dataToken->token;
-            $creditOutData->amount = $price;
-            $creditOutData->clientId = $userRecieved->client_trading_id;
-            $url = 'https://grpc-mtrwl.match-trade.com/v1/balance/creditIn';
-            $response = $client->request('POST', $url, [
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json'
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])->post("https://grpc-mtrwl.match-trade.com/v1/balance/creditIn", [
+                "auth" => [
+                    "managerID" => env('MANAGER_ID'),
+                    "token" => $dataToken->token
                 ],
-                'json' => $creditOutData
+                "comment" => 'string',
+                "amount" => (int) ceil($price),
+                "clientId" => $userRecieved->client_trading_id
             ]);
-            $result = $response->getBody()->getContents();
-            $decodedData = json_decode($result);
-            return $decodedData;
 
+            return $response->json();
         }catch(\GuzzleHttp\Exception\BadResponseException $e){
             return $e->getResponse()->getBody()->getContents();
         }

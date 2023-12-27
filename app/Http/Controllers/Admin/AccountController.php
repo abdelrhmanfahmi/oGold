@@ -7,6 +7,7 @@ use App\Http\Requests\ApproveDeleteAccountRequest;
 use App\Http\Requests\UpdateStatusDepositRequest;
 use App\Http\Requests\UpdateStatusWithdrawRequest;
 use App\Http\Resources\DeletionAprroveResource;
+use App\Http\Resources\UserResource;
 use App\Models\DeleteRequest;
 use App\Models\User;
 use App\Repository\Interfaces\DepositRepositoryInterface;
@@ -48,7 +49,9 @@ class AccountController extends Controller
     public function indexApproveDeletionRequest()
     {
         try{
-            $approveRequestDelation = DeleteRequest::with('client')->get();
+            $approveRequestDelation = DeleteRequest::with(['client' => function($q){
+                return $q->withTrashed();
+            }])->get();
             return DeletionAprroveResource::collection($approveRequestDelation);
         }catch(\Exception $e){
             return $e;
@@ -59,16 +62,29 @@ class AccountController extends Controller
     {
         try{
             $data = $request->validated();
+            $user_id = DeleteRequest::whereId($deleteRequestId)->value('user_id');
             if($data['status'] == 'approved'){
-                $user_id = DeleteRequest::whereId($deleteRequestId)->value('user_id');
                 $user = User::whereId($user_id)->first();
                 if($user){
                     $user->delete();
                     DeleteRequest::whereId($deleteRequestId)->update(['status' => $data['status']]);
+                    return response()->json(['message' => 'Account Deleted Successfully'] , 200);
                 }
-                return response()->json(['message' => 'Account Deleted Successfully'] , 200);
             }
+            $user = User::onlyTrashed()->where('id' , $user_id)->first();
+            $user->restore();
+            DeleteRequest::where('id' , $deleteRequestId)->update(['status' => $data['status']]);
             return response()->json(['message' => 'Account Still Pending Or Request Rejected'] , 200);
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function getUserTrashed()
+    {
+        try{
+            $usersDeleted = User::onlyTrashed()->get();
+            return UserResource::collection($usersDeleted);
         }catch(\Exception $e){
             return $e;
         }

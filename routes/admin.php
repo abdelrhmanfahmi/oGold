@@ -54,3 +54,4 @@ $router->group(['namespace' => 'App\Http\Controllers\Admin'], function () use ($
 
 $router->get('/approve-delete-request' , ['as' => 'admin.get_approve_request', 'uses' => 'App\Http\Controllers\Admin\AccountController@indexApproveDeletionRequest']);
 $router->put('/approve-delete-request/{id}' , ['as' => 'admin.approve_delete_request', 'uses' => 'App\Http\Controllers\Admin\AccountController@approveRequestDeletion']);
+$router->get('/get-users-deleted' , ['as' => 'admin.users_deleted', 'uses' => 'App\Http\Controllers\Admin\AccountController@getUserTrashed']);
