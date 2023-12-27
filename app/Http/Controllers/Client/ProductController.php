@@ -117,7 +117,10 @@ class ProductController extends Controller
                     if($order == 'Qfx response exception: while closing positions, status: 3, response: Failed to close any position!'){
                         return response()->json(['message' => 'Cannot Close Any Positions Right Now'] , 400);
                     }
-
+                    if(is_string($order)){
+                        $returnedError = json_decode($order);
+                        return response()->json(['message' => $returnedError->errorMessage] , 400);
+                    }
                     if($order['sellResponse']->status == 'OK'){
                         $data['sell_price'] = $order['sellPrice'];
                         $this->sellGoldRepository->create($data);
