@@ -8,5 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class Gift extends Model
 {
     use HasFactory;
-    protected $fillable = [];
+    protected $fillable = ['volume' , 'sender_user_id' , 'recieved_user_id'];
+
+    public function sender()
+    {
+        return $this->belongsTo(User::class , 'sender_user_id');
+    }
+
+    public function recieved()
+    {
+        return $this->belongsTo(User::class , 'recieved_user_id');
+    }
 }

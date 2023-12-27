@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\MatchSymbol;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
+use stdClass;
 
 class MatchService {
 
@@ -70,7 +72,7 @@ class MatchService {
             $result = $response->getBody()->getContents();
             $decodedData = json_decode($result);
             $authUser = Auth::user();
-            $authUser->update(['co_auth' => $decodedData->token , 'trading_api_token' => $decodedData->accounts[0]->tradingApiToken , 'trading_uuid' => $decodedData->accounts[0]->uuid]);
+            $authUser->update(['co_auth' => $decodedData->token , 'trading_api_token' => $decodedData->accounts[0]->tradingApiToken , 'trading_uuid' => $decodedData->accounts[0]->uuid , 'client_trading_id' => $decodedData->accounts[0]->tradingAccountId]);
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
         }
@@ -300,6 +302,36 @@ class MatchService {
         }
     }
 
+    public function openPositionForUser($data)
+    {
+        try{
+            $client = new \GuzzleHttp\Client();
+            $userRecieved = User::findOrFail($data['recieved_user_id']);
+            $dataDahab = new \stdClass();
+            $dataDahab->instrument = 'GoldGram24c';
+            $dataDahab->orderSide = 'BUY';
+            $dataDahab->volume = $data['volume'];
+            $dataDahab->slPrice = 0;
+            $dataDahab->tpPrice = 0;
+            $dataDahab->isMobile = true;
+            $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/position/open';
+            $response = $client->request('POST', $url, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Auth-trading-api' => $userRecieved->trading_api_token,
+                    'Cookie' => 'co-auth=' . $userRecieved->co_auth
+                ],
+                'json' => $dataDahab,
+            ]);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+            $buyPrice = $this->getMarketWatchSymbol();
+            return ['buyResponse' => $decodedData , 'buy_price' => $buyPrice[0]->ask];
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
     public function closePosition($data)
     {
         try{
@@ -482,60 +514,6 @@ class MatchService {
         }
     }
 
-    public function closePositionsByOrderDateForGift($arrayOfPositionsToClose, $user_id, $volume)
-    {
-        try{
-            $user = User::findOrFail($user_id);
-            $client = new \GuzzleHttp\Client();
-            $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/positions/close';
-
-            if(count($arrayOfPositionsToClose['originalClose']) > 0){
-                $response = $client->request('POST', $url, [
-                    'headers' => [
-                        'co-auth' => $user->co_auth,
-                        'Auth-trading-api' => $user->trading_api_token,
-                        'Cookie' => 'co-auth='. $user->co_auth
-                    ],
-                    'json' => $arrayOfPositionsToClose['originalClose'],
-                ]);
-                $result = $response->getBody()->getContents();
-                $decodedData = json_decode($result);
-            }
-
-            if($arrayOfPositionsToClose['reminder'] != 0){
-                $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/position/close-partially';
-                $dataDahabToClosePartialy = new \stdClass();
-                $dataDahabToClosePartialy->instrument = 'GoldGram24c';
-                $dataDahabToClosePartialy->orderSide = 'BUY';
-                $dataDahabToClosePartialy->volume = $arrayOfPositionsToClose['reminder'];
-                $dataDahabToClosePartialy->positionId = $arrayOfPositionsToClose['positionId'];
-                $dataDahabToClosePartialy->isMobile = false;
-                $response = $client->request('POST', $url, [
-                    'headers' => [
-                        'co-auth' => $user->co_auth,
-                        'Auth-trading-api' => $user->trading_api_token,
-                        'Cookie' => 'co-auth='. $user->co_auth
-                    ],
-                    'json' => $dataDahabToClosePartialy,
-                ]);
-                $result = $response->getBody()->getContents();
-                $decodedData = json_decode($result);
-            }
-            // here make withdraw for authenticated user per request for sell gold
-            $sellPriceNow = $this->getMarketWatchSymbol();
-
-            //get net price of gold by multiply (gramGoldNow * $volumeOfUser Request)
-            $priceWillSentForGift = $volume * $sellPriceNow[0]->bid;
-
-            dd($priceWillSentForGift);
-            return ['sellResponse' => $decodedData, 'sellPrice' => $sellPriceNow[0]->bid];
-
-
-        }catch(\GuzzleHttp\Exception\BadResponseException $e){
-            return $e->getResponse()->getBody()->getContents();
-        }
-    }
-
     public function closePositionsByOrderDatePerAdmin($arrayOfPositionsToClose, $user_id, $volume)
     {
         try{
@@ -632,6 +610,123 @@ class MatchService {
             }
 
 
+        }catch(\GuzzleHttp\Exception\BadResponseException $e){
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function closePositionsByOrderDateForGift($arrayOfPositionsToClose, $user_id, $volume)
+    {
+        try{
+            $user = User::findOrFail($user_id);
+            $client = new \GuzzleHttp\Client();
+            $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/positions/close';
+
+            if(count($arrayOfPositionsToClose['originalClose']) > 0){
+                $response = $client->request('POST', $url, [
+                    'headers' => [
+                        'co-auth' => $user->co_auth,
+                        'Auth-trading-api' => $user->trading_api_token,
+                        'Cookie' => 'co-auth='. $user->co_auth
+                    ],
+                    'json' => $arrayOfPositionsToClose['originalClose'],
+                ]);
+                $result = $response->getBody()->getContents();
+                $decodedData = json_decode($result);
+            }
+
+            if($arrayOfPositionsToClose['reminder'] != 0){
+                $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/position/close-partially';
+                $dataDahabToClosePartialy = new \stdClass();
+                $dataDahabToClosePartialy->instrument = 'GoldGram24c';
+                $dataDahabToClosePartialy->orderSide = 'BUY';
+                $dataDahabToClosePartialy->volume = $arrayOfPositionsToClose['reminder'];
+                $dataDahabToClosePartialy->positionId = $arrayOfPositionsToClose['positionId'];
+                $dataDahabToClosePartialy->isMobile = false;
+                $response = $client->request('POST', $url, [
+                    'headers' => [
+                        'co-auth' => $user->co_auth,
+                        'Auth-trading-api' => $user->trading_api_token,
+                        'Cookie' => 'co-auth='. $user->co_auth
+                    ],
+                    'json' => $dataDahabToClosePartialy,
+                ]);
+                $result = $response->getBody()->getContents();
+                $decodedData = json_decode($result);
+            }
+
+            return ['sellResponse' => $decodedData];
+        }catch(\GuzzleHttp\Exception\BadResponseException $e){
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function loginAsManager()
+    {
+        try{
+            $client = new \GuzzleHttp\Client();
+            $manager = new \stdClass();
+            $manager->password = env('MANAGER_PASSWORD');
+            $manager->managerID = env('MANAGER_ID');
+            $url = 'https://grpc-mtrwl.match-trade.com/v1/register/register';
+            $response = $client->request('POST', $url, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json'
+                ],
+                'json' => $manager
+            ]);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+            return $decodedData;
+        }catch(\GuzzleHttp\Exception\BadResponseException $e){
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function creditOut($price)
+    {
+        try{
+            $dataToken = $this->loginAsManager();
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])->post("https://grpc-mtrwl.match-trade.com/v1/balance/creditOut", [
+                "auth" => [
+                    "managerID" => env('MANAGER_ID'),
+                    "token" => $dataToken->token
+                ],
+                "comment" => 'string',
+                "amount" => (int) ceil($price),
+                "clientId" => Auth::user()->client_trading_id
+            ]);
+
+            return $response->json();
+
+        }catch(\GuzzleHttp\Exception\BadResponseException $e){
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function creditIn($price,$recieved_id)
+    {
+        try{
+            $dataToken = $this->loginAsManager();
+            $userRecieved = User::findOrFail($recieved_id);
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])->post("https://grpc-mtrwl.match-trade.com/v1/balance/creditIn", [
+                "auth" => [
+                    "managerID" => env('MANAGER_ID'),
+                    "token" => $dataToken->token
+                ],
+                "comment" => 'string',
+                "amount" => (int) ceil($price),
+                "clientId" => $userRecieved->client_trading_id
+            ]);
+
+            return $response->json();
         }catch(\GuzzleHttp\Exception\BadResponseException $e){
             return $e->getResponse()->getBody()->getContents();
         }
