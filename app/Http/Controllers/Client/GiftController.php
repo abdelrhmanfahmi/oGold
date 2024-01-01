@@ -44,6 +44,89 @@ class GiftController extends Controller
     public function sendGift(SendGiftRequest $request)
     {
         try{
+            // $data = $request->validated();
+            // $totalGoldPending = $this->getTotalGoldPendingPerUser($data['sender_user_id']);
+            // $opendPositions = $this->matchService->getOpenedPositions($data['sender_user_id']);
+            // $userBalance = $this->matchService->getBalanceMatch();
+            // $sellPriceNow = $this->matchService->getMarketWatchSymbol();
+
+            // if(!is_string($opendPositions) && !is_string($userBalance) && !is_string($sellPriceNow)){
+            //     $priceWillSentForGift = $data['volume'] * $sellPriceNow[0]->bid;
+            //     if($priceWillSentForGift <= $userBalance->balance){ //check if user has much price in his balance to send gift
+            //         $arrayOfPositionsToClose = $this->matchService->getPositionsByOrder($opendPositions,$totalGoldPending,$data);
+            //         if($arrayOfPositionsToClose == 0){
+            //             return response()->json(['message' => 'you have not positions to close'] , 400);
+            //         }else if($arrayOfPositionsToClose == -1){
+            //             return response()->json(['message' => 'you cannot sell gold smaller than you have'] , 400);
+            //         }else if($arrayOfPositionsToClose == -2){
+            //             return response()->json(['message' => 'you cannot sell gold bigger than your pending order gold, wait approve admin to see your net gold'] , 400);
+            //         }else{
+            //             $order = $this->matchService->closePositionsByOrderDateForGift($arrayOfPositionsToClose , $data['sender_user_id'], $data['volume']);
+            //             if($order == 'Qfx response exception: while closing positions, status: 3, response: Failed to close any position!'){
+            //                 return response()->json(['message' => 'Cannot Close Any Positions Right Now'] , 400);
+            //             }
+            //             if(is_string($order)){
+            //                 $returnedError = json_decode($order);
+            //                 return response()->json(['message' => $returnedError->errorMessage] , 400);
+            //             }
+            //             if($order['sellResponse']->status == 'OK'){
+            //                 // start credit out
+            //                 $priceCreditOut = $priceWillSentForGift + ($priceWillSentForGift * 0.5);
+            //                 $token = $this->matchService->getAccessToken();
+            //                 $paymentGateWayUUid = $this->matchService->getPayment($token);
+            //                 $returnedData = $this->matchService->makeWithdraw(Auth::id(), $priceCreditOut, $token, $paymentGateWayUUid);
+            //                 // $returnedData = $this->matchService->creditOut($priceCreditOut);
+
+
+            //                 // here handling exception of withdraw that account now is demo
+            //                 if($returnedData['status'] == 500){
+            //                     return response()->json(['message' => $returnedData['message']] , 400);
+            //                 }else{
+            //                     //start credit in
+            //                     $dataCreditIn = $this->matchService->creditIn($priceCreditOut,$data['recieved_user_id']);
+            //                     if($dataCreditIn['status'] == 500){
+            //                         return response()->json(['message' => $dataCreditIn['message']] , 400);
+            //                     }else{
+            //                         //start buy gold
+            //                         $buyGoldResponse = $this->matchService->openPositionForUser($data);
+
+            //                         //here check if price will be deducted from price credit in user or not
+            //                         $buyPriceWithVolume = $buyGoldResponse['buy_price'] * $data['volume'];
+            //                         if($priceCreditOut > $buyPriceWithVolume){
+            //                             $priceWillBeDeducted = $priceCreditOut - $buyPriceWithVolume;
+
+            //                             //start credit out commission of company
+            //                             $res = $this->matchService->creditOut($priceWillBeDeducted);
+            //                             if($res['status'] == 500){
+            //                                 return response()->json(['message' => $dataCreditIn['message'] .' in deduction commision'] , 400);
+            //                             }
+            //                         }
+
+            //                         if($buyGoldResponse['buyResponse']->status == 'OK'){
+            //                             Gift::create([
+            //                                 'volume' => $data['volume'],
+            //                                 'sender_user_id' => $data['sender_user_id'],
+            //                                 'recieved_user_id' => $data['recieved_user_id']
+            //                             ]);
+            //                             return response()->json(['message' => 'Gift Send Successfully'] , 200);
+            //                         }else{
+            //                             return response()->json(['message' => 'something wrong in buy gold!'] , 500);
+            //                         }
+            //                     }
+            //                 }
+            //             }else{
+            //                 return response()->json(['message' => 'something wrong in sell gold!'] , 500);
+            //             }
+            //             return response()->json(['data' => $order['sellResponse']] , 200);
+            //         }
+            //     }else{
+            //         return response()->json(['message' => 'you dont have much money to credit out to send to gift'] , 400);
+            //     }
+            // }else{
+            //     return response()->json(['message' => 'Authentication error'] , 401);
+            // }
+
+
             $data = $request->validated();
             $totalGoldPending = $this->getTotalGoldPendingPerUser($data['sender_user_id']);
             $opendPositions = $this->matchService->getOpenedPositions($data['sender_user_id']);
@@ -69,45 +152,51 @@ class GiftController extends Controller
                             $returnedError = json_decode($order);
                             return response()->json(['message' => $returnedError->errorMessage] , 400);
                         }
+
                         if($order['sellResponse']->status == 'OK'){
                             // start credit out
                             $priceCreditOut = $priceWillSentForGift + ($priceWillSentForGift * 0.5);
-                            $returnedData = $this->matchService->creditOut($priceCreditOut);
-                            if($returnedData['status'] == 500){
-                                return response()->json(['message' => $returnedData['message']] , 400);
-                            }else{
-                                //start credit in
-                                $dataCreditIn = $this->matchService->creditIn($priceCreditOut,$data['recieved_user_id']);
-                                if($dataCreditIn['status'] == 500){
-                                    return response()->json(['message' => $dataCreditIn['message']] , 400);
-                                }else{
-                                    //start buy gold
-                                    $buyGoldResponse = $this->matchService->openPositionForUser($data);
-
-                                    //here check if price will be deducted from price credit in user or not
-                                    $buyPriceWithVolume = $buyGoldResponse['buy_price'] * $data['volume'];
-                                    if($priceCreditOut > $buyPriceWithVolume){
-                                        $priceWillBeDeducted = $priceCreditOut - $buyPriceWithVolume;
-
-                                        //start credit out commission of company
-                                        $res = $this->matchService->creditOut($priceWillBeDeducted);
-                                        if($res['status'] == 500){
-                                            return response()->json(['message' => $dataCreditIn['message'] .' in deduction commision'] , 400);
-                                        }
-                                    }
-
-                                    if($buyGoldResponse['buyResponse']->status == 'OK'){
-                                        Gift::create([
-                                            'volume' => $data['volume'],
-                                            'sender_user_id' => $data['sender_user_id'],
-                                            'recieved_user_id' => $data['recieved_user_id']
-                                        ]);
-                                        return response()->json(['message' => 'Gift Send Successfully'] , 200);
-                                    }else{
-                                        return response()->json(['message' => 'something wrong in buy gold!'] , 500);
-                                    }
-                                }
+                            $token = $this->matchService->getAccessToken();
+                            $paymentGateWayUUid = $this->matchService->getPayment($token);
+                            try{
+                                $this->matchService->makeWithdraw(Auth::id(), $priceCreditOut, $token, $paymentGateWayUUid);
+                            }catch(\Exception $e){
+                                // nothing
                             }
+                            // $returnedData = $this->matchService->creditOut($priceCreditOut);
+
+                            try{
+                                $this->matchService->creditIn($priceCreditOut,$data['recieved_user_id']);
+                            }catch(\Exception $e){
+                                // nothing
+                            }
+
+                            try{
+                                $this->matchService->openPositionForUser($data);
+                            }catch(\Exception $e){
+                                // nothing
+                            }
+
+                            //here check if price will be deducted from price credit in user or not
+                            $buyPriceWithVolume = $sellPriceNow[0]->ask * $data['volume'];
+                            if($priceCreditOut > $buyPriceWithVolume){
+                                $priceWillBeDeducted = $priceCreditOut - $buyPriceWithVolume;
+
+                                //start credit out commission of company
+                                try{
+                                    $this->matchService->makeWithdraw(Auth::id(), $priceWillBeDeducted, $token, $paymentGateWayUUid);
+                                }catch(\Exception $e){
+                                    // nothing
+                                }
+
+                                Gift::create([
+                                    'volume' => $data['volume'],
+                                    'sender_user_id' => $data['sender_user_id'],
+                                    'recieved_user_id' => $data['recieved_user_id']
+                                ]);
+                                return response()->json(['message' => 'Gift Send Successfully'] , 200);
+                            }
+
                         }else{
                             return response()->json(['message' => 'something wrong in sell gold!'] , 500);
                         }
@@ -119,6 +208,7 @@ class GiftController extends Controller
             }else{
                 return response()->json(['message' => 'Authentication error'] , 401);
             }
+
         }catch(\Exception $e){
             return $e;
         }
