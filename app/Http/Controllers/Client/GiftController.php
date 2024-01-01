@@ -21,14 +21,21 @@ class GiftController extends Controller
         $this->middleware('auth:api');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         try{
-            $gifts = Gift::where('sender_user_id' , Auth::id())
-            ->orWhere('recieved_user_id' , Auth::id())
-            ->with('sender','recieved')
-            ->get();
-            return GiftResource::collection($gifts);
+            if($request->type == 'sender'){
+                $gifts = Gift::where('sender_user_id' , Auth::id())
+                ->with('sender')
+                ->get();
+                return GiftResource::collection($gifts);
+            }else{
+                $gifts = Gift::where('recieved_user_id' , Auth::id())
+                ->with('recieved')
+                ->get();
+                return GiftResource::collection($gifts);
+            }
+
         }catch(\Exception $e){
             return $e;
         }
