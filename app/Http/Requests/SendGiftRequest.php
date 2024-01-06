@@ -24,7 +24,8 @@ class SendGiftRequest extends FormRequest
         return [
             'volume' => 'required|min:1|integer',
             'sender_user_id' => 'required|integer|exists:users,id',
-            'recieved_user_id' => 'required|integer|exists:users,id'
+            'recieved_user_id' => 'required|integer|exists:users,id',
+            'message' => 'nullable|min:3',
         ];
     }
 }

@@ -71,8 +71,14 @@ class MatchService {
             ]);
             $result = $response->getBody()->getContents();
             $decodedData = json_decode($result);
+
+            //get refresh token
+            $headers = $response->getHeaders();
+            $stringCuts = $headers['Set-Cookie'][1];
+            $refreshToken = substr($stringCuts,3 , -122);
+
             $authUser = Auth::user();
-            $authUser->update(['co_auth' => $decodedData->token , 'trading_api_token' => $decodedData->accounts[0]->tradingApiToken , 'trading_uuid' => $decodedData->accounts[0]->uuid , 'client_trading_id' => $decodedData->accounts[0]->tradingAccountId]);
+            $authUser->update(['refresh_token_id' => $refreshToken , 'co_auth' => $decodedData->token , 'trading_api_token' => $decodedData->accounts[0]->tradingApiToken , 'trading_uuid' => $decodedData->accounts[0]->uuid , 'client_trading_id' => $decodedData->accounts[0]->tradingAccountId]);
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
         }
@@ -205,10 +211,16 @@ class MatchService {
                 'headers' => [
                     'Accept' => 'application/json' ,
                     'Content-Type' => 'application/json' ,
-                    'Cookie' =>  'rt=' . Auth::user()->co_auth.';co-auth='.Auth::user()->co_auth,
+                    'Cookie' =>  'rt=' . Auth::user()->refresh_token_id.';co-auth='.Auth::user()->co_auth,
                 ]
             ]);
-            $response->getBody()->getContents();
+            $headers = $response->getHeaders();
+            $stringCutsCoAuth = $headers['Set-Cookie'][0];
+            $stringCutsRefreshToken = $headers['Set-Cookie'][1];
+            $newCoAuth = substr($stringCutsCoAuth,8 , -79);
+            $refreshToken = substr($stringCutsRefreshToken,3 , -122);
+            $authUser = Auth::user();
+            $authUser->update(['refresh_token_id' => $refreshToken , 'co_auth' => $newCoAuth]);
             return true;
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
@@ -237,6 +249,26 @@ class MatchService {
         try{
             $client = new \GuzzleHttp\Client();
             $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/quotations?symbols=GoldGram24c';
+            $response = $client->request('GET', $url, [
+                'headers' => [
+                    'co-auth' => Auth::user()->co_auth,
+                    'Auth-trading-api' => Auth::user()->trading_api_token,
+                    'Cookie' => 'co-auth='. Auth::user()->co_auth
+                ],
+            ]);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+            return $decodedData;
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function getMarketWatchSymbolMarkup()
+    {
+        try{
+            $client = new \GuzzleHttp\Client();
+            $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/quotations?symbols=GoldGram24c&applyMarkup=true';
             $response = $client->request('GET', $url, [
                 'headers' => [
                     'co-auth' => Auth::user()->co_auth,
@@ -295,7 +327,7 @@ class MatchService {
             ]);
             $result = $response->getBody()->getContents();
             $decodedData = json_decode($result);
-            $buyPrice = $this->getMarketWatchSymbol();
+            $buyPrice = $this->getMarketWatchSymbolMarkup();
             return ['buyResponse' => $decodedData , 'buy_price' => $buyPrice[0]->ask];
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
@@ -325,8 +357,36 @@ class MatchService {
             ]);
             $result = $response->getBody()->getContents();
             $decodedData = json_decode($result);
-            $buyPrice = $this->getMarketWatchSymbol();
+            $buyPrice = $this->getMarketWatchSymbolMarkup();
             return ['buyResponse' => $decodedData , 'buy_price' => $buyPrice[0]->ask];
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function makeOrderSubmitForBuyGold($orderStringId,$data)
+    {
+        try{
+            $dataToken = $this->loginAsManager();
+            $userRecieved = User::findOrFail($data['recieved_user_id']);
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])->post("https://grpc-mtrwl.match-trade.com/v1/order/submit", [
+                "auth" => [
+                    "managerID" => env('MANAGER_ID'),
+                    "token" => $dataToken->token
+                ],
+                "orderMask" => [
+                    "symbol"=> "GoldGram24c",
+                    "clientId" => $userRecieved->client_trading_id,
+                    "clientOrderId"=> $orderStringId,
+                    "ordType"=> 0,
+                    "volume"=> $data['volume']
+                ]
+            ]);
+
+            return $response->json();
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
         }
@@ -496,17 +556,7 @@ class MatchService {
                 $result = $response->getBody()->getContents();
                 $decodedData = json_decode($result);
             }
-            // here make withdraw for authenticated user per request for sell gold
-            $sellPriceNow = $this->getMarketWatchSymbol();
-
-            //get net price of gold by multiply (gramGoldNow * $volumeOfUser Request)
-            $priceWillWithdrawed = $volume * $sellPriceNow[0]->bid;
-
-            //run withdraw request match service
-            $token = $this->getAccessToken();
-            $paymentGateWayUUid = $this->getPayment($token);
-            $this->makeWithdraw($user_id, $priceWillWithdrawed, $token, $paymentGateWayUUid);
-            return ['sellResponse' => $decodedData, 'sellPrice' => $sellPriceNow[0]->bid];
+            return ['sellResponse' => $decodedData];
 
 
         }catch(\GuzzleHttp\Exception\BadResponseException $e){
@@ -723,6 +773,51 @@ class MatchService {
                 ],
                 "comment" => 'string',
                 "amount" => (int) ceil($price),
+                "clientId" => $userRecieved->client_trading_id
+            ]);
+
+            return $response->json();
+        }catch(\GuzzleHttp\Exception\BadResponseException $e){
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function withdrawMoneyManager($price)
+    {
+        try{
+            $dataToken = $this->loginAsManager();
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])->post("https://grpc-mtrwl.match-trade.com/v1/balance/withdrawMoney", [
+                "auth" => [
+                    "managerID" => env('MANAGER_ID'),
+                    "token" => $dataToken->token
+                ],
+                "amount" => (int) ceil($price)*100,
+                "clientId" => Auth::user()->client_trading_id
+            ]);
+
+            return $response->json();
+        }catch(\GuzzleHttp\Exception\BadResponseException $e){
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function depositMoneyManager($price,$recieved_id)
+    {
+        try{
+            $dataToken = $this->loginAsManager();
+            $userRecieved = User::findOrFail($recieved_id);
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])->post("https://grpc-mtrwl.match-trade.com/v1/balance/depositMoney", [
+                "auth" => [
+                    "managerID" => env('MANAGER_ID'),
+                    "token" => $dataToken->token
+                ],
+                "amount" => (int) ceil($price) * 100,
                 "clientId" => $userRecieved->client_trading_id
             ]);
 

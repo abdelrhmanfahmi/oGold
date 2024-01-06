@@ -66,7 +66,7 @@ class ProductController extends Controller
     public function getMarketWatch()
     {
         try{
-            $symbols = $this->matchService->getMarketWatchSymbol();
+            $symbols = $this->matchService->getMarketWatchSymbolMarkup();
             if(!is_string($symbols)){
                 $this->matchService->saveSymbols($symbols);
                 return SymbolResource::collection($symbols);
