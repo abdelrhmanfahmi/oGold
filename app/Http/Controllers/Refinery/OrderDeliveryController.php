@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Refinery;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApproveDateRequest;
 use App\Http\Requests\ApproveOrderRequest;
+use App\Http\Requests\CancelOrderRequest;
+use App\Http\Requests\UpdateOrderDeliveryRequest;
 use App\Http\Resources\BuyGoldResourceAdmin;
 use App\Http\Resources\DepositOrderResource;
 use App\Http\Resources\OrderDateResource;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\SellGoldResourceAdmin;
+use App\Http\Resources\UserResource;
 use App\Http\Resources\WithdrawOrderResource;
 use App\Repository\Interfaces\BuyGoldRepositoryInterface;
 use App\Repository\Interfaces\DepositRepositoryInterface;
@@ -18,6 +21,7 @@ use App\Repository\Interfaces\SellGoldRepositoryInterface;
 use App\Repository\Interfaces\WithdrawRepositoryInterface;
 use App\Services\MatchService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrderDeliveryController extends Controller
 {
@@ -144,6 +148,39 @@ class OrderDeliveryController extends Controller
             $getPositionsByOrder = $this->matchService->getPositionsByOrderAdminRefinaryRole($opendPositions,$orderData->total);
             $this->matchService->closePositionsByOrderDatePerAdmin($getPositionsByOrder , $orderData->user_id, $orderData->total);
             $this->orderRepository->update($orderData,['status' => 'ready_to_picked']);
+        }
+    }
+
+    public function getUserInfo()
+    {
+        try{
+            return UserResource::make(Auth::user());
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function cancelOrderDeliveryRefinary(CancelOrderRequest $request)
+    {
+        try{
+            $data = $request->validated();
+            $orderData = $this->orderRepository->find($data['order_id'] , []);
+            $this->orderRepository->update($orderData , ['status' => 'canceled']);
+            return response()->json(['message' => 'Order Cancelled Successfully'] , 200);
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function updateOrderDeliveryStatusRefinary(UpdateOrderDeliveryRequest $request , $order_id)
+    {
+        try{
+            $data = $request->validated();
+            $orderData = $this->orderRepository->find($order_id , []);
+            $this->orderRepository->update($orderData , ['status' => $data['status']]);
+            return response()->json(['message' => 'Order Updated Successfully'] , 200);
+        }catch(\Exception $e){
+            return $e;
         }
     }
 }

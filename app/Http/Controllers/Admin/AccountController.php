@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Repository\Interfaces\DepositRepositoryInterface;
 use App\Repository\Interfaces\WithdrawRepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AccountController extends Controller
 {
@@ -36,7 +37,6 @@ class AccountController extends Controller
     public function updateDepositStatus(UpdateStatusDepositRequest $request ,$id)
     {
         try{
-            $data = $request->validated();
             $data = $request->validated();
             $model = $this->depositRepository->find($id);
             $this->depositRepository->update($model,$data);
@@ -85,6 +85,15 @@ class AccountController extends Controller
         try{
             $usersDeleted = User::onlyTrashed()->get();
             return UserResource::collection($usersDeleted);
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function getUserInfo()
+    {
+        try{
+            return UserResource::make(Auth::user());
         }catch(\Exception $e){
             return $e;
         }

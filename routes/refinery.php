@@ -10,7 +10,13 @@ $router->group(['prefix' => 'is_approved' ,'namespace' => 'App\Http\Controllers\
 
 $router->get('/index/orders' , ['as' => 'order_index.refinery', 'uses' => 'App\Http\Controllers\Refinery\OrderDeliveryController@indexOrders']);
 
-$router->group(['prefix' => 'ordersByDate' ,'namespace' => 'App\Http\Controllers\Admin'], function () use ($router) {
+$router->group(['prefix' => 'ordersByDate' ,'namespace' => 'App\Http\Controllers\Refinery'], function () use ($router) {
     $router->get('/', ['as' => 'orders.ibdexByDate', 'uses' => 'OrderController@indexByData']);
     $router->get('/specific-date', ['as' => 'orders.ibdexByDate', 'uses' => 'OrderController@getOrdersPerDate']);
 });
+
+$router->group(['namespace' => 'App\Http\Controllers\Refinery'], function () use ($router) {
+    $router->put('/update/order/delivery/status/{id}' , ['as' => 'update.orderDeliveryRefinary', 'uses' => 'OrderDeliveryController@updateOrderDeliveryStatusRefinary']);
+    $router->post('/order/refinary/cancel' , ['as' => 'order.cancelSingleRefinary', 'uses' => 'OrderDeliveryController@cancelOrderDeliveryRefinary']);
+});
+$router->get('/user/info' , ['as' => 'refinary.userInfo', 'uses' => 'App\Http\Controllers\Refinery\OrderDeliveryController@getUserInfo']);
