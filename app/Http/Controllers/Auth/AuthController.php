@@ -215,7 +215,7 @@ class AuthController extends Controller
         try{
             $isRefreshed = $this->matchService->refreshTokenInMatch();
             if($isRefreshed){
-                return response()->json(['message' => 'token Refreshed Successfully' , 'data' => UserResource::make(Auth::user())],200);
+                return response()->json(['message' => 'token Refreshed Successfully' , 'data' => Auth::user()],200);
             }
         }catch(\Exception $e){
             return $e;
