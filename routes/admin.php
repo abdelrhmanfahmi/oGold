@@ -51,6 +51,8 @@ $router->group(['namespace' => 'App\Http\Controllers\Admin'], function () use ($
     $router->put('/is_active/product/{id}', ['as' => 'order_delivery.checkOrderDeliveryAdmin', 'uses' => 'ProductController@updateProduct']);
     $router->put('/update/withdraw/status/{id}' , ['as' => 'withdraw.updateStatus', 'uses' => 'AccountController@updateWithdrawStatus']);
     $router->put('/update/deposit/status/{id}' , ['as' => 'deposit.updateStatus', 'uses' => 'AccountController@updateDepositStatus']);
+    $router->put('/update/order/delivery/status/{id}' , ['as' => 'update.orderDelivery', 'uses' => 'OrderController@updateOrderDeliveryStatus']);
+    $router->post('/order/cancel' , ['as' => 'order.cancelSingle', 'uses' => 'OrderDeliveryController@cancelOrderDelivery']);
 });
 
 $router->group(['prefix' => 'gifts' ,'namespace' => 'App\Http\Controllers\Admin'], function () use ($router) {

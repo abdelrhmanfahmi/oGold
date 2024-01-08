@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
+use App\Http\Requests\UpdateOrderDeliveryRequest;
 use App\Http\Requests\UpdateOrderRequest;
 use App\Http\Resources\BuyGoldResourceAdmin;
 use App\Http\Resources\DepositOrderResource;
@@ -148,6 +149,18 @@ class OrderController extends Controller
         try{
             $this->orderRepository->delete($id);
             return response()->json(['message' => 'Order Deleted Successfully']);
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function updateOrderDeliveryStatus(UpdateOrderDeliveryRequest $request , $order_id)
+    {
+        try{
+            $data = $request->validated();
+            $orderData = $this->orderRepository->find($order_id , []);
+            $this->orderRepository->update($orderData , ['status' => $data['status']]);
+            return response()->json(['message' => 'Order Updated Successfully'] , 200);
         }catch(\Exception $e){
             return $e;
         }

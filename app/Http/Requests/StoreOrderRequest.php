@@ -26,7 +26,7 @@ class StoreOrderRequest extends FormRequest
             'products' => 'required|array|min:1',
             'products.*.product_id' => 'required|integer|exists:products,id',
             'products.*.quantity' => 'required|integer',
-            'status' => 'required|in:pending,ready_to_picked,ready_to_shipped,delivered',
+            'status' => 'required|in:pending,ready_to_picked,ready_to_shipped,picked,delivered,canceled',
         ];
     }
 }
