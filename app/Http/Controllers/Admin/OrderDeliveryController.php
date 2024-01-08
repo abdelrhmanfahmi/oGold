@@ -24,7 +24,8 @@ class OrderDeliveryController extends Controller
         try{
             $data = $request->validated();
             $orderData = $this->orderRepository->find($data['order_id'] , []);
-            $opendPositions = $this->matchService->getOpenedPositions($orderData->user_id);
+            // $opendPositions = $this->matchService->getOpenedPositions($orderData->user_id);
+            $opendPositions = $this->matchService->getAllPositionForAuthUser($orderData->user_id);
             $getPositionsByOrder = $this->matchService->getPositionsByOrderAdminRefinaryRole($opendPositions,$orderData->total);
             if($getPositionsByOrder == 0){
                 return response()->json(['message' => 'there is no opened positions'],400);

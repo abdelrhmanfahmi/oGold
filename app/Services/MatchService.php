@@ -567,14 +567,14 @@ class MatchService {
     public function getPositionsByOrderAdminRefinaryRole($dataOpenedPositions,$totalGold)
     {
         try{
-            if(!is_string($dataOpenedPositions) && count($dataOpenedPositions->positions) > 0){
-                foreach($dataOpenedPositions->positions as $d){
+            if(!is_string($dataOpenedPositions) && count($dataOpenedPositions['positionInfo']) > 0){
+                foreach($dataOpenedPositions['positionInfo'] as $d){
                     $newObj = new \stdClass();
-                    $newObj->openTime = $d->openTime;
-                    $newObj->positionId = $d->id;
-                    $newObj->volume = $d->volume;
-                    $newObj->orderSide = $d->side;
-                    $newObj->instrument = $d->symbol;
+                    $newObj->openTime = $d['openTime'];
+                    $newObj->positionId = $d['rMask']['simple']['clientOrderId'];
+                    $newObj->volume = $d['volume'];
+                    $newObj->orderSide = 'BUY';
+                    $newObj->instrument = 'GoldGram24c';
                     $arrClosedPositions[] = $newObj;
                 }
                 $sortedObjects = collect($arrClosedPositions)->sortBy('openTime')->values()->all();
