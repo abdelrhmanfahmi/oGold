@@ -87,6 +87,11 @@ class OrderRepository implements OrderRepositoryInterface
         return $this->model->with($relations)->whereDate('created_at' , $date)->get();
     }
 
+    public function getOrdersIdsByDate($date)
+    {
+        return $this->model->whereDate('created_at' , $date)->pluck('id')->toArray();
+    }
+
     /**
      * @param array $attributes
      * @return object

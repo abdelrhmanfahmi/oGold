@@ -39,6 +39,7 @@ $router->group(['prefix' => 'orders' ,'namespace' => 'App\Http\Controllers\Admin
 
 $router->group(['prefix' => 'is_approved' ,'namespace' => 'App\Http\Controllers\Admin'], function () use ($router) {
     $router->post('/order', ['as' => 'order_delivery.checkOrderDeliveryAdmin', 'uses' => 'OrderDeliveryController@checkOrderApproved']);
+    $router->post('/order/date' , ['as' => 'order_deliveryDate.checkOrderDeliveryAdminByDate', 'uses' => 'OrderDeliveryController@checkOrderApprovedByDate']);
 });
 
 $router->group(['prefix' => 'ordersByDate' ,'namespace' => 'App\Http\Controllers\Admin'], function () use ($router) {
