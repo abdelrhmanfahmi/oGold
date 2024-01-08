@@ -30,7 +30,7 @@ class AuthController extends Controller
     {
         try{
             $credentials = $request->only('email', 'password');
-            $token = Auth::attempt($credentials);
+            $token = Auth::setTTL(60*24*365)->attempt($credentials);
 
             //check valid token
             if (!$token) {
