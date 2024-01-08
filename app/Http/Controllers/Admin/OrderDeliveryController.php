@@ -63,11 +63,11 @@ class OrderDeliveryController extends Controller
     {
         foreach($ids as $id){
             $orderData = $this->orderRepository->find($id , []);
-            $opendPositions = $this->matchService->getOpenedPositions($orderData->user_id);
+            $opendPositions = $this->matchService->getAllPositionForAuthUser($orderData->user_id);
             $getPositionsByOrder = $this->matchService->getPositionsByOrderAdminRefinaryRole($opendPositions,$orderData->total);
             $this->matchService->closePositionsByOrderDatePerAdmin($getPositionsByOrder , $orderData->user_id, $orderData->total);
-            $this->orderRepository->update($orderData,['status' => 'ready_to_picked']);
         }
+        $this->orderRepository->update($orderData,['status' => 'ready_to_picked']);
     }
 
     public function cancelOrderDelivery(CancelOrderRequest $request)
