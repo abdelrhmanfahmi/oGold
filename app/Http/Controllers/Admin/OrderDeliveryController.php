@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApproveDateRequest;
 use App\Http\Requests\ApproveOrderRequest;
+use App\Http\Requests\CancelOrderRequest;
 use App\Repository\Interfaces\OrderRepositoryInterface;
 use App\Services\MatchService;
 use Illuminate\Http\Request;
@@ -66,6 +67,18 @@ class OrderDeliveryController extends Controller
             $getPositionsByOrder = $this->matchService->getPositionsByOrderAdminRefinaryRole($opendPositions,$orderData->total);
             $this->matchService->closePositionsByOrderDatePerAdmin($getPositionsByOrder , $orderData->user_id, $orderData->total);
             $this->orderRepository->update($orderData,['status' => 'ready_to_picked']);
+        }
+    }
+
+    public function cancelOrderDelivery(CancelOrderRequest $request)
+    {
+        try{
+            $data = $request->validated();
+            $orderData = $this->orderRepository->find($data['order_id'] , []);
+            $this->orderRepository->update($orderData , ['status' => 'canceled']);
+            return response()->json(['message' => 'Order Cancelled Successfully'] , 200);
+        }catch(\Exception $e){
+            return $e;
         }
     }
 }
