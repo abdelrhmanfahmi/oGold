@@ -9,6 +9,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\ResetForgetPasswordRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Resources\UserResource;
 use App\Mail\UserMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -214,7 +215,7 @@ class AuthController extends Controller
         try{
             $isRefreshed = $this->matchService->refreshTokenInMatch();
             if($isRefreshed){
-                return response()->json(['message' => 'token Refreshed Successfully'],200);
+                return response()->json(['message' => 'token Refreshed Successfully' , 'data' => UserResource::make(Auth::user())],200);
             }
         }catch(\Exception $e){
             return $e;
