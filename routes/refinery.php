@@ -16,7 +16,7 @@ $router->group(['prefix' => 'ordersByDate' ,'namespace' => 'App\Http\Controllers
 });
 
 $router->group(['namespace' => 'App\Http\Controllers\Refinery'], function () use ($router) {
-    $router->put('/update/order/delivery/status/{id}' , ['as' => 'update.orderDeliveryRefinary', 'uses' => 'OrderDeliveryController@updateOrderDeliveryStatusRefinary']);
+    $router->put('/update/order/delivery/refinary/status/{id}' , ['as' => 'update.orderDeliveryRefinary', 'uses' => 'OrderDeliveryController@updateOrderDeliveryStatusRefinary']);
     $router->post('/order/refinary/cancel' , ['as' => 'order.cancelSingleRefinary', 'uses' => 'OrderDeliveryController@cancelOrderDeliveryRefinary']);
 });
 $router->get('/user/info' , ['as' => 'refinary.userInfo', 'uses' => 'App\Http\Controllers\Refinery\OrderDeliveryController@getUserInfo']);
