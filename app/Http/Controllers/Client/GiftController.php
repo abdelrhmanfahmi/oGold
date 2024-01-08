@@ -103,10 +103,12 @@ class GiftController extends Controller
                                     // if($buyGoldResponse['buyResponse']->status == 'OK'){
                                         Gift::create([
                                             'volume' => $data['volume'],
+                                            'total_price' => $buyPriceWithVolume,
                                             'sender_user_id' => $data['sender_user_id'],
                                             'recieved_user_id' => $data['recieved_user_id'],
                                             'message' => $data['message'],
-                                            'client_order_id' => $clientOrderStringId
+                                            'client_order_id' => $clientOrderStringId,
+                                            'commision' => $priceWillBeDeducted
                                         ]);
                                         return response()->json(['message' => 'Gift Send Successfully'] , 200);
                                     // }else{

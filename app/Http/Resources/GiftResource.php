@@ -17,8 +17,10 @@ class GiftResource extends JsonResource
         return [
             'id' => $this->id ?? null,
             'volume' => $this->volume,
+            'total_price' => $this->total_price,
             'sender' => UserResource::make($this->whenLoaded('sender')),
             'recieved' => UserResource::make($this->whenLoaded('recieved')),
+            'commision' => $this->commision,
             'created_at' => $this->created_at,
         ];
     }

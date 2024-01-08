@@ -40,6 +40,11 @@ interface OrderRepositoryInterface
     public function getOrdersPerSpecificDate($date,$relations);
 
     /**
+     * * @param date $date
+     * @return object
+     */
+    public function getOrdersIdsByDate($date);
+    /**
      * @param int $model_id
      * @param  array $relations
      * @return object

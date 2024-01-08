@@ -39,6 +39,7 @@ $router->group(['prefix' => 'orders' ,'namespace' => 'App\Http\Controllers\Admin
 
 $router->group(['prefix' => 'is_approved' ,'namespace' => 'App\Http\Controllers\Admin'], function () use ($router) {
     $router->post('/order', ['as' => 'order_delivery.checkOrderDeliveryAdmin', 'uses' => 'OrderDeliveryController@checkOrderApproved']);
+    $router->post('/order/date' , ['as' => 'order_deliveryDate.checkOrderDeliveryAdminByDate', 'uses' => 'OrderDeliveryController@checkOrderApprovedByDate']);
 });
 
 $router->group(['prefix' => 'ordersByDate' ,'namespace' => 'App\Http\Controllers\Admin'], function () use ($router) {
@@ -50,6 +51,11 @@ $router->group(['namespace' => 'App\Http\Controllers\Admin'], function () use ($
     $router->put('/is_active/product/{id}', ['as' => 'order_delivery.checkOrderDeliveryAdmin', 'uses' => 'ProductController@updateProduct']);
     $router->put('/update/withdraw/status/{id}' , ['as' => 'withdraw.updateStatus', 'uses' => 'AccountController@updateWithdrawStatus']);
     $router->put('/update/deposit/status/{id}' , ['as' => 'deposit.updateStatus', 'uses' => 'AccountController@updateDepositStatus']);
+});
+
+$router->group(['prefix' => 'gifts' ,'namespace' => 'App\Http\Controllers\Admin'], function () use ($router) {
+    $router->get('/' , ['as' => 'gifts.ordersIndex' , 'uses' => 'GiftController@index']);
+    $router->get('/{id}' , ['as' => 'gifts.ordersShow' , 'uses' => 'GiftController@show']);
 });
 
 $router->get('/approve-delete-request' , ['as' => 'admin.get_approve_request', 'uses' => 'App\Http\Controllers\Admin\AccountController@indexApproveDeletionRequest']);
