@@ -637,11 +637,15 @@ class MatchService {
             }
 
             if($arrayOfPositionsToClose['reminder'] != 0){
-                //here to get all positions of auth user to get id of it to edit volume
+                //here to get all positions of auth user and filter on array of all positions to get id that close partialy and edit volume of it
                 $dataAll = $this->getAllPositionForAuthUser($user_id);
+                $specific_value = $arrayOfPositionsToClose['positionId'];
+                $filtered_array = array_filter($dataAll['positionInfo'], function ($obj) use ($specific_value) {
+                    return $obj['rMask']['simple']['clientOrderId'] == $specific_value;
+                });
 
                 //here edit volume in reminder to close total position of it
-                $editPosition = $this->editVolumeForUser($user_id , $dataAll['positionInfo'][0]['id'] , $arrayOfPositionsToClose['positionId'] , $arrayOfPositionsToClose['reminder']);
+                $editPosition = $this->editVolumeForUser($user_id , array_values($filtered_array)[0]['id'] , $arrayOfPositionsToClose['positionId'] , $arrayOfPositionsToClose['reminder']);
                 if($editPosition['status'] == 'EDIT_POSITION_SUCCESS'){
                     $response = Http::withHeaders([
                         'Accept' => 'application/json',
@@ -664,16 +668,7 @@ class MatchService {
                     $decodedData = $response->json();
                 }
             }
-            // // here make withdraw for authenticated user per request for sell gold
-            // $sellPriceNow = $this->getMarketWatchSymbolPerUser($user_id);
 
-            // //get net price of gold by multiply (gramGoldNow * $volumeOfUser Request)
-            // $priceWillWithdrawed = $volume * $sellPriceNow[0]->bid;
-
-            // //run withdraw request match service
-            // $token = $this->getAccessToken();
-            // $paymentGateWayUUid = $this->getPayment($token);
-            // $this->makeWithdraw($user_id, $priceWillWithdrawed, $token, $paymentGateWayUUid);
             return $decodedData;
 
         }catch(\GuzzleHttp\Exception\BadResponseException $e){
