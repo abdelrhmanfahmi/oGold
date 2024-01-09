@@ -92,14 +92,13 @@ class GiftController extends Controller
                                     $buyPriceWithVolume = $sellPriceNow[0]->ask * $data['volume'];
                                     if($priceCreditOut > $buyPriceWithVolume){
                                         $priceWillBeDeducted = $priceCreditOut - $buyPriceWithVolume;
-                                        dd($priceCreditOut , $buyPriceWithVolume);
                                         //start credit out commission of company
                                         $res = $this->matchService->withdrawMoneyManager($priceWillBeDeducted);
                                         if($res['status'] != 'OPERATION_SUCCESS'){
                                             return response()->json(['message' => $dataCreditIn['message']] , 400);
                                         }
                                     }
-
+                                    dd('here');
                                     // if($buyGoldResponse['buyResponse']->status == 'OK'){
                                         Gift::create([
                                             'volume' => $data['volume'],
