@@ -68,7 +68,6 @@ class GiftController extends Controller
                         }
                         if(is_string($order)){
                             $returnedError = json_decode($order);
-                            dd($returnedError);
                             return response()->json(['message' => $returnedError->errorMessage] , 400);
                         }
                         if($order['sellResponse']->status == 'OK'){
@@ -92,6 +91,7 @@ class GiftController extends Controller
                                     //here check if price will be deducted from price credit in user or not
                                     $buyPriceWithVolume = $sellPriceNow[0]->ask * $data['volume'];
                                     if($priceCreditOut > $buyPriceWithVolume){
+                                        dd('here');
                                         $priceWillBeDeducted = $priceCreditOut - $buyPriceWithVolume;
 
                                         //start credit out commission of company
@@ -109,7 +109,7 @@ class GiftController extends Controller
                                             'recieved_user_id' => $data['recieved_user_id'],
                                             'message' => $data['message'],
                                             'client_order_id' => $clientOrderStringId,
-                                            'commision' => $priceWillBeDeducted
+                                            // 'commision' => $priceWillBeDeducted
                                         ]);
                                         return response()->json(['message' => 'Gift Send Successfully'] , 200);
                                     // }else{
