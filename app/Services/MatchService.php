@@ -556,7 +556,8 @@ class MatchService {
                 $result = $response->getBody()->getContents();
                 $decodedData = json_decode($result);
             }
-            return ['sellResponse' => $decodedData];
+            $sellPrice = $this->getMarketWatchSymbolMarkup();
+            return ['sellResponse' => $decodedData , 'sellPrice' => $sellPrice[0]->bid];
 
 
         }catch(\GuzzleHttp\Exception\BadResponseException $e){

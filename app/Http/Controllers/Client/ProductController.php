@@ -122,6 +122,7 @@ class ProductController extends Controller
                         return response()->json(['message' => 'Gold trading is closed currently!'] , 400);
                     }
                     if($order['sellResponse']->status == 'OK'){
+                        $data['sell_price'] = $order['sellPrice'];
                         $this->sellGoldRepository->create($data);
                     }else{
                         return response()->json(['message' => 'something wrong!'] , 500);
