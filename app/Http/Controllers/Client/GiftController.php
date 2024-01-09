@@ -110,6 +110,7 @@ class GiftController extends Controller
                                             'commision' => $priceWillBeDeducted
                                         ]);
                                         return response()->json(['message' => 'Gift Send Successfully'] , 200);
+                                        //here
                                     // }else{
                                     //     return response()->json(['message' => 'something wrong in buy gold!'] , 500);
                                     // }
