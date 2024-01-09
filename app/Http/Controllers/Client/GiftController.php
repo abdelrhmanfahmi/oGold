@@ -109,7 +109,7 @@ class GiftController extends Controller
                                             'recieved_user_id' => $data['recieved_user_id'],
                                             'message' => $data['message'],
                                             'client_order_id' => $clientOrderStringId,
-                                            'commision' => $priceWillBeDeducted
+                                            // 'commision' => $priceWillBeDeducted
                                         ]);
                                         return response()->json(['message' => 'Gift Send Successfully'] , 200);
                                     // }else{
