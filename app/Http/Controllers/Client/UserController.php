@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CheckUserExistsRequest;
 use App\Http\Requests\DeleteAccountRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\UploadFileKYCRequest;
+use App\Http\Resources\GiftUserResource;
 use App\Http\Resources\KycResource;
 use App\Models\DeleteRequest;
 use App\Models\KYC;
@@ -95,6 +97,17 @@ class UserController extends Controller
                 return response()->json(['message' => 'Authentication Error'] , 401);
             }
 
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function getUsersByPhone(CheckUserExistsRequest $request)
+    {
+        try{
+            $data = $request->validated();
+            $user = $this->userRepository->findByPhone($data['phone']);
+            return GiftUserResource::make($user);
         }catch(\Exception $e){
             return $e;
         }
