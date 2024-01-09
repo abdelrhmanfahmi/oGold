@@ -15,13 +15,18 @@ class OrderUserResource extends JsonResource
     public function toArray(Request $request): array
     {
         $buyPrice = getBuyPrice();
-        return [
-            'id' => $this->id,
-            'address_book' => AddressBookResource::make($this->whenLoaded('address_book')),
-            'products' => ProductResource::collection($this->whenLoaded('products')),
-            'status' => $this->status ?? null,
-            'total_gram' => $this->total ?? null,
-            'total_amount' => (int) $this->total * $buyPrice[0]->ask
-        ];
+        if(is_object($buyPrice)){
+            return response()->json(['message' => 'Authentication Error !']);
+        }else{
+            return [
+                'id' => $this->id,
+                'address_book' => AddressBookResource::make($this->whenLoaded('address_book')),
+                'products' => ProductResource::collection($this->whenLoaded('products')),
+                'status' => $this->status ?? null,
+                'total_gram' => $this->total ?? null,
+                'total_amount' => (int) ceil($this->total * $buyPrice[0]->ask)
+            ];
+        }
+
     }
 }
