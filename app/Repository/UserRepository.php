@@ -61,7 +61,7 @@ class UserRepository implements UserRepositoryInterface
      */
     public function findByPhone($phone): ?object
     {
-        return $this->model->where('id' , '!=' , Auth::id())->where('phone' , $phone)->first();
+        return $this->model->where('id' , '!=' , Auth::id())->whereNotNull('client_trading_id')->where('phone' , $phone)->first();
     }
 
     /**
