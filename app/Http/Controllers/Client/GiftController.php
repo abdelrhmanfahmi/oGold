@@ -68,6 +68,7 @@ class GiftController extends Controller
                         }
                         if(is_string($order)){
                             $returnedError = json_decode($order);
+                            dd($returnedError);
                             return response()->json(['message' => $returnedError->errorMessage] , 400);
                         }
                         if($order['sellResponse']->status == 'OK'){
