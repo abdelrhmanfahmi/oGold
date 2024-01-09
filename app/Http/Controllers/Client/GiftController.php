@@ -98,7 +98,7 @@ class GiftController extends Controller
                                             return response()->json(['message' => $dataCreditIn['message']] , 400);
                                         }
                                     }
-                                    dd('here');
+
                                     // if($buyGoldResponse['buyResponse']->status == 'OK'){
                                         Gift::create([
                                             'volume' => $data['volume'],
