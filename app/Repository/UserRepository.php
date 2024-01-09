@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Filters\UserFilter;
 use App\Repository\Interfaces\UserRepositoryInterface;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -60,7 +61,7 @@ class UserRepository implements UserRepositoryInterface
      */
     public function findByPhone($phone): ?object
     {
-        return $this->model->where('phone' , $phone)->first();
+        return $this->model->where('id' , '!=' , Auth::id())->where('phone' , $phone)->first();
     }
 
     /**

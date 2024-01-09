@@ -53,7 +53,7 @@ class GiftController extends Controller
             $sellPriceNow = $this->matchService->getMarketWatchSymbolMarkup();
 
             $userRecieved = User::find($data['recieved_user_id']);
-            if($userRecieved->co_auth != null){
+            if($userRecieved->client_trading_id != null){
                 if(!is_string($opendPositions) && !is_string($userBalance) && !is_string($sellPriceNow)){
                     $priceWillSentForGift = $data['volume'] * $sellPriceNow[0]->bid;
                     if($priceWillSentForGift <= $userBalance->balance){ //check if user has much price in his balance to send gift
@@ -123,7 +123,7 @@ class GiftController extends Controller
                             }
                         }
                     }else{
-                        return response()->json(['message' => 'you dont have much money to withdraw to send to gift'] , 400);
+                        return response()->json(['message' => 'You dont have enough balance to send gift'] , 400);
                     }
                 }else{
                     return response()->json(['message' => 'Authentication error'] , 401);
