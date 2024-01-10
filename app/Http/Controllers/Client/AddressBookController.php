@@ -27,7 +27,7 @@ class AddressBookController extends Controller
         //count of pagination per page
         $count = Request()->count ?? 10;
 
-        $address_books = $this->addressBookRepository->all($count , $paginate);
+        $address_books = $this->addressBookRepository->allForUsers($count , $paginate);
         return AddressBookResource::collection($address_books);
         }catch(\Exception $e){
             return $e;
