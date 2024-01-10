@@ -88,7 +88,7 @@ class ProductController extends Controller
                 $data['buy_price'] = $order['buy_price'];
                 $this->buyGoldRepository->create($data);
             }else{
-                return response()->json(['message' => 'Gold trading is closed currently! '] , 403);
+                return response()->json(['message' => 'The market is closed. Try again later !'] , 403);
             }
             return response()->json(['data' => $order['buyResponse']] , 200);
         }catch(\Exception $e){
@@ -115,11 +115,11 @@ class ProductController extends Controller
                 }else{
                     $order = $this->matchService->closePositionsByOrderDatePerUser($arrayOfPositionsToClose , Auth::id(), $data['volume']);
                     if($order == 'Qfx response exception: while closing positions, status: 3, response: Failed to close any position!'){
-                        return response()->json(['message' => 'Gold trading is closed currently!'] , 400);
+                        return response()->json(['message' => 'The market is closed. Try again later !'] , 400);
                     }
                     if(is_string($order)){
                         $returnedError = json_decode($order);
-                        return response()->json(['message' => 'Gold trading is closed currently!'] , 400);
+                        return response()->json(['message' => 'The market is closed. Try again later !'] , 400);
                     }
                     if($order['sellResponse']->status == 'OK'){
                         $data['sell_price'] = $order['sellPrice'];
