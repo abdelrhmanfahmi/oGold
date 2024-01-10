@@ -68,8 +68,8 @@ class OrderDeliveryController extends Controller
                 $getPositionsByOrder = $this->matchService->getPositionsByOrderAdminRefinaryRole($opendPositions,$orderData->total);
                 $this->matchService->closePositionsByOrderDatePerAdmin($getPositionsByOrder , $orderData->user_id, $orderData->total);
             // }
+            $this->orderRepository->update($orderData,['status' => 'ready_to_picked']);
         }
-        $this->orderRepository->update($orderData,['status' => 'ready_to_picked']);
     }
 
     public function cancelOrderDelivery(CancelOrderRequest $request)
