@@ -646,7 +646,8 @@ class MatchService {
                 });
 
                 //here edit volume in reminder to close total position of it
-                $editPosition = $this->editVolumeForUser($user_id , array_values($filtered_array)[0]['id'] , $arrayOfPositionsToClose['positionId'] , $arrayOfPositionsToClose['reminder']);
+
+                $editPosition = $this->editVolumeForUser($user_id , array_values($filtered_array)[0]['id'] , $arrayOfPositionsToClose['positionId'] , (int) $arrayOfPositionsToClose['reminder']);
                 if($editPosition['status'] == 'EDIT_POSITION_SUCCESS'){
                     $response = Http::withHeaders([
                         'Accept' => 'application/json',
