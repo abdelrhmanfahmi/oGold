@@ -33,9 +33,9 @@ class OrderRepository implements OrderRepositoryInterface
     {
         $filter = new OrderFilter(Request());
         if ($paginate == true) {
-            return $this->model->with($relations)->filter($filter)->paginate($count);
+            return $this->model->with($relations)->filter($filter)->orderBy('id' , 'DESC')->paginate($count);
         }
-        return $this->model->with($relations)->filter($filter)->get();
+        return $this->model->with($relations)->filter($filter)->orderBy('id' , 'DESC')->get();
     }
 
     /**
@@ -48,9 +48,9 @@ class OrderRepository implements OrderRepositoryInterface
     {
         // $filter = new OrderFilter(Request());
         if ($paginate == true) {
-            return $this->model->with($relations)->where('user_id' , Auth::id())->paginate($count);
+            return $this->model->with($relations)->where('user_id' , Auth::id())->orderBy('id' , 'DESC')->paginate($count);
         }
-        return $this->model->with($relations)->where('user_id' , Auth::id())->get();
+        return $this->model->with($relations)->where('user_id' , Auth::id())->orderBy('id' , 'DESC')->get();
     }
 
     /**

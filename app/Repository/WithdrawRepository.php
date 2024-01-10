@@ -31,9 +31,9 @@ class WithdrawRepository implements WithdrawRepositoryInterface
      public function all(int $count, bool $paginate,array $relations): object
      {
          if ($paginate == true) {
-             return $this->model->with($relations)->paginate($count);
+             return $this->model->with($relations)->orderBy('id' , 'DESC')->paginate($count);
          }
-         return $this->model->with($relations)->get();
+         return $this->model->with($relations)->orderBy('id' , 'DESC')->get();
      }
 
      /**
@@ -46,9 +46,9 @@ class WithdrawRepository implements WithdrawRepositoryInterface
      public function allForUsers(int $count, bool $paginate,array $relations): object
      {
          if ($paginate == true) {
-             return $this->model->with($relations)->where('user_id' , Auth::id())->paginate($count);
+             return $this->model->with($relations)->where('user_id' , Auth::id())->orderBy('id' , 'DESC')->paginate($count);
          }
-         return $this->model->with($relations)->where('user_id' , Auth::id())->get();
+         return $this->model->with($relations)->where('user_id' , Auth::id())->orderBy('id' , 'DESC')->get();
      }
 
     /**
