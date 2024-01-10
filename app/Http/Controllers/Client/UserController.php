@@ -106,7 +106,24 @@ class UserController extends Controller
     {
         try{
             $data = $request->validated();
+            $phones = $this->userRepository->getAllPhones();
+
+            //first check if you send to yourself
+            if(Auth::user()->phone == $data['phone']){
+                return response()->json(['message' => 'You Cannot Send Gift To Yourself !'] , 400);
+            }
+
+            //second check if this phone exists in system
+            if(!in_array($data['phone'] , $phones)){
+                return response()->json(['message' => 'This Phone Not Exists !'] , 400);
+            }
+
             $user = $this->userRepository->findByPhone($data['phone']);
+            //check if user is active or not
+            if($user->client_trading_id == null){
+                return response()->json(['message' => 'This User Is Not Active Yet !'] , 400);
+            }
+
             return GiftUserResource::make($user);
         }catch(\Exception $e){
             return $e;

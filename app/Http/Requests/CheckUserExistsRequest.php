@@ -22,7 +22,7 @@ class CheckUserExistsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => 'required|numeric|exists:users,phone'
+            'phone' => 'required|numeric'
         ];
     }
 }
