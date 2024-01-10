@@ -41,6 +41,16 @@ class AuthController extends Controller
             }
 
             //check if this credentials belongs to this user type
+            if(Auth::user()->type == 'admin' || Auth::user()->type == 'refinery'){
+                $user = Auth::user();
+
+                return response()->json([
+                    'status' => 'success',
+                    'user' => $user,
+                    'token' => $token
+                ] , 200);
+            }
+
             if (Auth::user()->type != Request()->type) {
                 auth()->logout();
                 return response()->json(['message' => 'Unauthorized']);

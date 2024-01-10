@@ -17,6 +17,14 @@ interface AddressBookRepositoryInterface {
     public function all(int $count, bool $paginate);
 
     /**
+     * @param int $count
+     * @param bool $paginate
+     * * @param array $relations
+     * @return object
+     */
+    public function allForUsers(int $count, bool $paginate);
+
+    /**
      * @param int $model_id
      * @return object
      */

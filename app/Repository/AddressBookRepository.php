@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Models\AddressBook;
 use App\Repository\Interfaces\AddressBookRepositoryInterface;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class AddressBookRepository implements AddressBookRepositoryInterface{
 
@@ -33,6 +34,21 @@ class AddressBookRepository implements AddressBookRepositoryInterface{
             return $this->model->paginate($count);
         }
         return $this->model->get();
+    }
+
+    /**
+     *  @param int $count
+     *  @param bool $paginate
+     *  @param array $relations
+     * @return object
+     */
+    public function allForUsers(int $count, bool $paginate): object
+    {
+        // $filter = new OrderFilter(Request());
+        if ($paginate == true) {
+            return $this->model->where('user_id' , Auth::id())->paginate($count);
+        }
+        return $this->model->where('user_id' , Auth::id())->get();
     }
 
     /**
