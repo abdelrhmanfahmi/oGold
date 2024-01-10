@@ -17,7 +17,7 @@ class GiftController extends Controller
     public function index()
     {
         try{
-            $gifts = Gift::with('sender')->with('recieved')->get();
+            $gifts = Gift::with('sender')->with('recieved')->orderBy('id' , 'DESC')->get();
             return GiftResource::collection($gifts);
         }catch(\Exception $e){
             return $e;
