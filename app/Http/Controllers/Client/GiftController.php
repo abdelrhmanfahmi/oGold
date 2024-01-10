@@ -59,7 +59,7 @@ class GiftController extends Controller
                     if($priceWillSentForGift <= $userBalance->balance){ //check if user has much price in his balance to send gift
                         $arrayOfPositionsToClose = $this->matchService->getPositionsByOrder($opendPositions,$totalGoldPending,$data);
                         if($arrayOfPositionsToClose == 0){
-                            return response()->json(['message' => 'you have not positions to close'] , 400);
+                            return response()->json(['message' => 'You don,t have enough Gold'] , 400);
                         }else if($arrayOfPositionsToClose == -1){
                             return response()->json(['message' => 'you cannot sell gold smaller than you have'] , 400);
                         }else if($arrayOfPositionsToClose == -2){
