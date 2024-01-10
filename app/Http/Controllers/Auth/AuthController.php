@@ -231,4 +231,13 @@ class AuthController extends Controller
             return $e;
         }
     }
+
+    public function getUserInfo()
+    {
+        try{
+            return UserResource::make(Auth::user());
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
 }
