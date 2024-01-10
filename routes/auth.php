@@ -15,4 +15,5 @@ $router->group([ 'namespace' => 'App\Http\Controllers\Auth'], function () use ($
     $router->post('/forget-reset-password', ['as' => 'auth.forget_reset', 'uses' => 'AuthController@resetPasswordMatch']);
     $router->post('/refresh-token' , ['as' => 'auth.refresh' , 'uses' => 'AuthController@refresh']);
     $router->get('/logout', ['as' => 'auth.logout', 'uses' => 'AuthController@logout'])->middleware('auth:api');
+    $router->get('/user/info' , ['as' => 'user.infoDataLoggedIn' , 'uses' => 'AuthController@getUserInfo'])->middleware('auth:api');
 });
