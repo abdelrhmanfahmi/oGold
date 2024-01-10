@@ -27,13 +27,13 @@ class GiftController extends Controller
         try{
             if($request->type == 'sender'){
                 $gifts = Gift::where('sender_user_id' , Auth::id())
-                ->with('sender')
+                ->with('sender' , 'recieved')
                 ->orderBy('id' , 'DESC')
                 ->get();
                 return GiftResource::collection($gifts);
             }else{
                 $gifts = Gift::where('recieved_user_id' , Auth::id())
-                ->with('recieved')
+                ->with('sender' , 'recieved')
                 ->orderBy('id' , 'DESC')
                 ->get();
                 return GiftResource::collection($gifts);
