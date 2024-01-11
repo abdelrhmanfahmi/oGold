@@ -61,12 +61,12 @@ class UserRepository implements UserRepositoryInterface
      */
     public function findByPhone($phone): ?object
     {
-        return $this->model->where('id' , '!=' , Auth::id())->where('phone' , $phone)->whereNotNull('deleted_at')->first();
+        return $this->model->where('id' , '!=' , Auth::id())->where('phone' , $phone)->whereNull('deleted_at')->first();
     }
 
     public function getAllPhones(): ?array
     {
-        return $this->model->pluck('phone')->whereNotNull('deleted_at')->toArray();
+        return $this->model->pluck('phone')->whereNull('deleted_at')->toArray();
     }
 
     /**
