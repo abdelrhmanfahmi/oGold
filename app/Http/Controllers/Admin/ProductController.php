@@ -97,8 +97,7 @@ class ProductController extends Controller
     {
         try{
             $model = $this->productRepository->find($id , []);
-            $this->authorize('update', $model);
-
+            // $this->authorize('update', $model);
             $data = $request->validated();
             $this->productRepository->ActivateProductUpdate($model,$data);
             return response()->json(['message' => 'Product Updated Successfully']);
