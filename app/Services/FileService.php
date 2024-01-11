@@ -37,6 +37,22 @@ class FileService {
         }
     }
 
+    public function updateFileSettings($file,$setting)
+    {
+        try{
+            if($setting){
+                unlink("uploads/".$setting->image);
+            }
+            $fileName = time().rand(1,99).'.'.$file->extension();
+            $file->move(public_path('uploads'), $fileName);
+            return $fileName;
+
+
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
     public function deleteFileFromUploads($id , $productRepository)
     {
         try{

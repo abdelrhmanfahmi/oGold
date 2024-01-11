@@ -4,14 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSettingRequest;
+use App\Http\Requests\UpdateImageRequest;
 use App\Http\Requests\UpdateSettingRequest;
 use App\Http\Resources\SettingResource;
 use App\Repository\Interfaces\SettingRepositoryInterface;
+use App\Services\FileService;
 use Illuminate\Http\Request;
 
 class SettingController extends Controller
 {
-    public function __construct(private SettingRepositoryInterface $settingRepository)
+    public function __construct(private SettingRepositoryInterface $settingRepository, private FileService $fileService)
     {
         $this->middleware('auth:api');
     }
@@ -70,6 +72,24 @@ class SettingController extends Controller
         try{
             $this->settingRepository->delete($id);
             return response()->json(['message' => 'Setting Deleted Successfully']);
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function updateImageSettings(UpdateImageRequest $request)
+    {
+        try{
+            $data = $request->validated();
+            $model = $this->settingRepository->findByKey($data['key']);
+
+            if($request->has('image')){
+                $fileName = $this->fileService->updateFileSettings($data['image'] , $model);
+                $data['image'] = $fileName;
+
+                $this->settingRepository->update($model , ['image' => $data['image']]);
+            }
+            return response()->json(['message' => 'Setting Updated Successfully']);
         }catch(\Exception $e){
             return $e;
         }
