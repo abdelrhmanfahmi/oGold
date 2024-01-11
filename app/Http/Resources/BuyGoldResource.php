@@ -20,6 +20,7 @@ class BuyGoldResource extends JsonResource
             'symbol' => $this->symbol ?? null,
             'buy_price' => $this->buy_price ?? null,
             'price_usd' => $this->when($this->buy_price , $this->volume * $this->buy_price , null),
+            'created_at' => $this->created_at ?? null
         ];
     }
 }
