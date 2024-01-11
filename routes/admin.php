@@ -10,6 +10,7 @@ $router->group(['prefix' => 'settings' ,'namespace' => 'App\Http\Controllers\Adm
     $router->get('/{id}', ['as' => 'settings.show', 'uses' => 'SettingController@show']);
     $router->put('/{id}', ['as' => 'settings.update', 'uses' => 'SettingController@update']);
     $router->delete('/{id}', ['as' => 'settings.delete', 'uses' => 'SettingController@destroy']);
+    $router->post('/update/image' , ['as' => 'settings.updateImage' , 'uses' => 'SettingController@updateImageSettings']);
 });
 
 $router->group(['prefix' => 'faqs' ,'namespace' => 'App\Http\Controllers\Admin'], function () use ($router) {
