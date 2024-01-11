@@ -58,7 +58,7 @@ class SettingRepository implements SettingRepositoryInterface
      */
     public function findByKey(): ?object
     {
-        return $this->model->where('key' , 'image-home-page')->first();
+        return $this->model->where('key' , 'image-home-page');
     }
 
     /**
