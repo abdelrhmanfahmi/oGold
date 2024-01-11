@@ -81,7 +81,7 @@ class SettingController extends Controller
     {
         try{
             $data = $request->validated();
-            $model = $this->settingRepository->findByKey($data['key']);
+            $model = $this->settingRepository->findByKey($data['key'])->first();
 
             if($request->has('image')){
                 $fileName = $this->fileService->updateFileSettings($data['image'] , $model);
