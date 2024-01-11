@@ -19,7 +19,8 @@ class ClientDepositResource extends JsonResource
             'amount' => $this->amount ?? null,
             'currency' => $this->currency ?? null,
             'status' => $this->status ?? null,
-            'client' => BankResource::make($this->whenLoaded('client'))
+            'client' => BankResource::make($this->whenLoaded('client')),
+            'created_at' => $this->created_at ?? null
         ];
     }
 }

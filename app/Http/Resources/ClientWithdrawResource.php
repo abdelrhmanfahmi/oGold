@@ -20,7 +20,8 @@ class ClientWithdrawResource extends JsonResource
             'currency' => $this->currency ?? null,
             'status' => $this->status ?? null,
             'bank_details' => BankResource::make($this->whenLoaded('bank_details')),
-            'client' => BankResource::make($this->whenLoaded('client'))
+            'client' => BankResource::make($this->whenLoaded('client')),
+            'created_at' => $this->created_at ?? null
         ];
     }
 }
