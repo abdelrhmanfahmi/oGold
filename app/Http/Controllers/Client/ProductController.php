@@ -148,8 +148,9 @@ class ProductController extends Controller
 
             $order->products()->attach($data['products']);
             $data['total'] = $this->totalGramService->calculateTotalService($order->id);
+            $data['total_charges'] = $this->totalGramService->calculateTotalChargesService($order->id);
             $updatedOrder = $this->orderRepository->find($order->id ,[]);
-            $this->orderRepository->update($updatedOrder , ['total' => $data['total']]);
+            $this->orderRepository->update($updatedOrder , ['total' => $data['total'] , 'total_charges' => $data['total_charges']]);
 
             return response()->json(['message' => 'Transaction Done Successfully, Wait For Order Approval From Admin'] , 200);
         }catch(\Exception $e){

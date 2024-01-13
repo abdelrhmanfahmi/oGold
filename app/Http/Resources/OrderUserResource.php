@@ -24,6 +24,7 @@ class OrderUserResource extends JsonResource
                 'products' => ProductResource::collection($this->whenLoaded('products')),
                 'status' => $this->status ?? null,
                 'total_gram' => $this->total ?? null,
+                'total_charges' => $this->total_charges ?? null,
                 'total_amount' => (int) ceil($this->total * $buyPrice[0]->ask),
                 'created_at' => $this->created_at ?? null
             ];

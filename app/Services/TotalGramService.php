@@ -36,5 +36,22 @@ class TotalGramService {
         }
     }
 
+    public function calculateTotalChargesService($orderId)
+    {
+        try{
+            $totalCharge = 0;
+            $relations = ['products'];
+
+            $data = $this->orderRepository->find($orderId , $relations);
+            foreach($data->products as $dat){
+                $totalCharge += $dat->charge;
+            }
+
+            return $totalCharge;
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
 
 }
