@@ -143,6 +143,11 @@ class ProductController extends Controller
         try{
             $data = $request->validated();
             $orderData = $request->only('user_id','address_book_id');
+            $buyPrice = $this->matchService->getMarketWatchSymbolMarkup();
+            if(is_object($buyPrice)){
+                return response()->json(['message' => 'Authentication error !'] , 400);
+            }
+            $orderData['buy_price'] = $buyPrice[0]->ask;
             $orderData['status'] = 'pending';
             $order = $this->orderRepository->create($orderData);
 
