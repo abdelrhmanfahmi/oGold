@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CheckUserExistsRequest;
 use App\Http\Requests\DeleteAccountRequest;
 use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Requests\StoreContactRequest;
 use App\Http\Requests\UploadFileKYCRequest;
 use App\Http\Resources\GiftUserResource;
 use App\Http\Resources\KycResource;
+use App\Models\Contact;
 use App\Models\DeleteRequest;
 use App\Models\KYC;
 use App\Repository\Interfaces\UserRepositoryInterface;
@@ -125,6 +127,17 @@ class UserController extends Controller
             }
 
             return GiftUserResource::make($user);
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function storeContact(StoreContactRequest $request)
+    {
+        try{
+            $data = $request->validated();
+            Contact::create($data);
+            return response()->json(['message' => 'Your Request Stored Successfully'] , 200);
         }catch(\Exception $e){
             return $e;
         }

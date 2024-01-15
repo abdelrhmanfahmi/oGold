@@ -51,3 +51,4 @@ $router->post('/delete-request' , ['as' => 'user.delete_request', 'uses' => 'App
 $router->post('/upload-kyc-file' , ['as' => 'user.kyc', 'uses' => 'App\Http\Controllers\Client\UserController@UploadKYCFile']);
 $router->get('/kyc-data' , ['as' => 'index.kyc_data', 'uses' => 'App\Http\Controllers\Client\UserController@getFileUrls']);
 $router->post('/check-user-exists' , ['as' => 'getusers.phone' , 'uses' => 'App\Http\Controllers\Client\UserController@getUsersByPhone']);
+$router->post('/store-contact' , ['as' => 'store.contact' , 'uses' => 'App\Http\Controllers\Client\UserController@storeContact']);
