@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ApproveDeleteAccountRequest;
 use App\Http\Requests\UpdateStatusDepositRequest;
 use App\Http\Requests\UpdateStatusWithdrawRequest;
+use App\Http\Resources\ContactResource;
 use App\Http\Resources\DeletionAprroveResource;
 use App\Http\Resources\UserResource;
+use App\Models\Contact;
 use App\Models\DeleteRequest;
 use App\Models\User;
 use App\Repository\Interfaces\DepositRepositoryInterface;
@@ -94,6 +96,16 @@ class AccountController extends Controller
     {
         try{
             return UserResource::make(Auth::user());
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function getContactUsData()
+    {
+        try{
+            $data = Contact::with('user')->get();
+            return ContactResource::collection($data);
         }catch(\Exception $e){
             return $e;
         }

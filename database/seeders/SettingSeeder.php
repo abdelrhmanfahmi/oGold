@@ -34,14 +34,44 @@ class SettingSeeder extends Seeder
             'image' => ''
         ]);
         Setting::create([
-            'key' => 'contact-us',
+            'key' => 'image-home-page',
+            'value' => '',
+            'image' => 'ahly.png'
+        ]);
+        Setting::create([
+            'key' => 'oGold-name',
             'value' => '',
             'image' => ''
         ]);
         Setting::create([
-            'key' => 'image-home-page',
+            'key' => 'oGold-phone',
             'value' => '',
-            'image' => 'ahly.png'
+            'image' => ''
+        ]);
+        Setting::create([
+            'key' => 'oGold-facebook-link',
+            'value' => '',
+            'image' => ''
+        ]);
+        Setting::create([
+            'key' => 'oGold-telegram-link',
+            'value' => '',
+            'image' => ''
+        ]);
+        Setting::create([
+            'key' => 'oGold-instagram-link',
+            'value' => '',
+            'image' => ''
+        ]);
+        Setting::create([
+            'key' => 'oGold-linkedin-link',
+            'value' => '',
+            'image' => ''
+        ]);
+        Setting::create([
+            'key' => 'oGold-whatsapp-link',
+            'value' => '',
+            'image' => ''
         ]);
     }
 }

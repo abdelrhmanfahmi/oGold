@@ -64,5 +64,6 @@ $router->group(['prefix' => 'gifts' ,'namespace' => 'App\Http\Controllers\Admin'
 $router->get('/approve-delete-request' , ['as' => 'admin.get_approve_request', 'uses' => 'App\Http\Controllers\Admin\AccountController@indexApproveDeletionRequest']);
 $router->put('/approve-delete-request/{id}' , ['as' => 'admin.approve_delete_request', 'uses' => 'App\Http\Controllers\Admin\AccountController@approveRequestDeletion']);
 $router->get('/get-users-deleted' , ['as' => 'admin.users_deleted', 'uses' => 'App\Http\Controllers\Admin\AccountController@getUserTrashed']);
+$router->get('/get-contacts' , ['as' => 'admin.contact_us', 'uses' => 'App\Http\Controllers\Admin\AccountController@getContactUsData']);
 
 $router->get('/user/info' , ['as' => 'admin.userInfo', 'uses' => 'App\Http\Controllers\Admin\AccountController@getUserInfo']);
