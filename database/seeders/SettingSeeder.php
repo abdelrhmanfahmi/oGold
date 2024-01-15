@@ -34,6 +34,11 @@ class SettingSeeder extends Seeder
             'image' => ''
         ]);
         Setting::create([
+            'key' => 'contact-us',
+            'value' => '',
+            'image' => ''
+        ]);
+        Setting::create([
             'key' => 'image-home-page',
             'value' => '',
             'image' => 'ahly.png'
