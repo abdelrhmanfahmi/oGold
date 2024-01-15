@@ -25,6 +25,7 @@ use App\Services\TotalGramService;
 use App\Services\TotalVolumesService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -55,8 +56,7 @@ class ProductController extends Controller
             //check if requst has count
             $count = Request()->count ?? 10;
             //check if Product has relation
-            $relations = ['orders'];
-            $products = $this->productRepository->all($count ,$paginate , $relations);
+            $products = $this->productRepository->all($count ,$paginate , []);
             return ProductResource::collection($products);
         }catch(\Exception $e){
             return $e;
