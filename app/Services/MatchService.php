@@ -647,27 +647,10 @@ class MatchService {
 
                 //here edit volume in reminder to close total position of it
 
-                $editPosition = $this->editVolumeForUser($user_id , array_values($filtered_array)[0]['id'] , $arrayOfPositionsToClose['positionId'] , (int) $arrayOfPositionsToClose['reminder']);
+                $editPosition = $this->editVolumeForUser($user_id , array_values($filtered_array)[0]['id'] , $arrayOfPositionsToClose['positionId'] , (int) $arrayOfPositionsToClose['reminder'] , array_values($filtered_array)[0]['volume']);
                 if($editPosition['status'] == 'EDIT_POSITION_SUCCESS'){
-                    $response = Http::withHeaders([
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json'
-                    ])->post("https://grpc-mtrwl.match-trade.com/v1/position/close", [
-                        "auth" => [
-                            "managerID" => env('MANAGER_ID'),
-                            "token" => $dataToken->token
-                        ],
-                        "clientPositionsToClose" => [
-                            [
-                                "comment" => "string",
-                                "positionOrderId"=> $arrayOfPositionsToClose['positionId'],
-                                "clientId"=> $user->client_trading_id,
-                                "instrument"=> "GoldGram24c"
-                            ]
-                        ]
-                    ]);
-
-                    $decodedData = $response->json();
+                    $decodedData['status'] = 'SUCCESS';
+                    return $decodedData;
                 }
             }
 
@@ -703,10 +686,11 @@ class MatchService {
         }
     }
 
-    public function editVolumeForUser($user_id , $idForPositinEdit , $positionId , $reminder)
+    public function editVolumeForUser($user_id , $idForPositinEdit , $positionId , $reminder , $total)
     {
         try{
             $dataToken = $this->loginAsManager();
+            $totalReminder = $total - $reminder;
             $user = User::findOrFail($user_id);
             $response = Http::withHeaders([
                 'Accept' => 'application/json',
@@ -716,7 +700,7 @@ class MatchService {
                     "managerID" => env('MANAGER_ID'),
                     "token" => $dataToken->token
                 ],
-                "newValue"=> (int) $reminder,
+                "newValue"=> (int) $totalReminder,
                 "positionOrderId"=> $positionId,
                 "clientId"=> $user->client_trading_id,
                 "instrument"=> "GoldGram24c",
