@@ -35,6 +35,8 @@ class OrderDeliveryController extends Controller
             }else{
                 $order = $this->matchService->closePositionsByOrderDatePerAdmin($getPositionsByOrder , $orderData->user_id, $orderData->total);
                 if($order['status'] == 'SUCCESS'){
+                    $priceWillBeDeducted = $orderData->total * $orderData->buy_price;
+                    $this->matchService->withdrawMoneyManager($priceWillBeDeducted , $orderData->user_id);
                     $this->orderRepository->update($orderData,['status' => 'ready_to_picked']);
                     return response()->json(['message' => 'Order Approved Successfully'] , 200);
                 }else{
@@ -68,6 +70,8 @@ class OrderDeliveryController extends Controller
                 $getPositionsByOrder = $this->matchService->getPositionsByOrderAdminRefinaryRole($opendPositions,$orderData->total);
                 $this->matchService->closePositionsByOrderDatePerAdmin($getPositionsByOrder , $orderData->user_id, $orderData->total);
             // }
+            $priceWillBeDeducted = $orderData->total * $orderData->buy_price;
+            $this->matchService->withdrawMoneyManager($priceWillBeDeducted , $orderData->user_id);
             $this->orderRepository->update($orderData,['status' => 'ready_to_picked']);
         }
     }
