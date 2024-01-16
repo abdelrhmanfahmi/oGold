@@ -79,7 +79,7 @@ class GiftController extends Controller
                             if($order['sellResponse']->status == 'OK'){
                                 // start credit out
                                 $priceCreditOut = $priceWillSentForGift + (($priceWillSentForGift * 0.5)/100);
-                                $returnedData = $this->matchService->withdrawMoneyManager($priceCreditOut);
+                                $returnedData = $this->matchService->withdrawMoneyManager($priceCreditOut , $data['sender_user_id']);
 
                                 // here handling exception of withdraw that account now is demo
                                 if($returnedData['status'] != 'OPERATION_SUCCESS'){
@@ -99,7 +99,7 @@ class GiftController extends Controller
                                         if($priceCreditOut > $buyPriceWithVolume){
                                             $priceWillBeDeducted = $priceCreditOut - $buyPriceWithVolume;
                                             //start credit out commission of company
-                                            $res = $this->matchService->withdrawMoneyManager($priceWillBeDeducted);
+                                            $res = $this->matchService->withdrawMoneyManager($priceWillBeDeducted , $data['recieved_user_id']);
                                             if($res['status'] != 'OPERATION_SUCCESS'){
                                                 return response()->json(['message' => $dataCreditIn['message']] , 400);
                                             }

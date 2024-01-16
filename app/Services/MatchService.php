@@ -847,10 +847,11 @@ class MatchService {
         }
     }
 
-    public function withdrawMoneyManager($price)
+    public function withdrawMoneyManager($price,$userId)
     {
         try{
             $dataToken = $this->loginAsManager();
+            $user = User::findOrFail($userId);
             $response = Http::withHeaders([
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
@@ -860,7 +861,7 @@ class MatchService {
                     "token" => $dataToken->token
                 ],
                 "amount" => (int) ceil($price)*100,
-                "clientId" => Auth::user()->client_trading_id
+                "clientId" => $user->client_trading_id
             ]);
 
             return $response->json();
