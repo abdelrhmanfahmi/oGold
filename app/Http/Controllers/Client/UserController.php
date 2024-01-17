@@ -56,7 +56,8 @@ class UserController extends Controller
             $getOpenedPositions = $this->matchService->getOpenedPositions(Auth::id());
             $totalVolumes = $this->totalVolumesService->getTotalVolumes($getOpenedPositions);
             $balance = $this->matchService->getBalanceMatch();
-            if($hasOrdersPending != 0 || $balance->balance != 0 || $totalVolumes != 0){
+            $balance->wallet = number_format((float)$balance->balance - $balance->margin,2,'.','');
+            if($hasOrdersPending != 0 || $balance->wallet != 0 || $totalVolumes != 0){
                 DeleteRequest::create($data);
                 return response()->json(['message' => 'Request Sent To Admin, Wait For Approval'], 200);
             }else{

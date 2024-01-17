@@ -171,6 +171,7 @@ class ProductController extends Controller
             $balanceDataInMatch = $this->matchService->getBalanceMatch();
             if(!is_string($balanceDataInMatch)){
                 $keyImage = $this->settingRepository->findByKey()->first();
+                $balanceDataInMatch->wallet = number_format((float)$balanceDataInMatch->balance - $balanceDataInMatch->margin,2,'.','');
                 $balanceDataInMatch->totalVolumes = $totalVolumes;
                 $balanceDataInMatch->imageKey = env('APP_URL').'/uploads/'.$keyImage->image;
                 return response()->json(['data' => $balanceDataInMatch]);

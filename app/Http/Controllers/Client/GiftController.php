@@ -58,7 +58,8 @@ class GiftController extends Controller
             if($userRecieved->client_trading_id != null){
                 if(!is_string($opendPositions) && !is_string($userBalance) && !is_string($sellPriceNow)){
                     $priceWillSentForGift = $data['volume'] * $sellPriceNow[0]->bid;
-                    if($priceWillSentForGift <= $userBalance->balance){ //check if user has much price in his balance to send gift
+                    $userBalance->wallet = number_format((float)$userBalance->balance - $userBalance->margin,2,'.','');
+                    if($priceWillSentForGift <= $userBalance->wallet){ //check if user has much price in his balance to send gift
                         $arrayOfPositionsToClose = $this->matchService->getPositionsByOrder($opendPositions,$totalGoldPending,$data);
                         if($arrayOfPositionsToClose == 0){
                             return response()->json(['message' => 'You don,t have enough Gold'] , 400);
