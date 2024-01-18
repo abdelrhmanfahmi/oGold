@@ -81,6 +81,7 @@ class OrderDeliveryController extends Controller
         try{
             $data = $request->validated();
             $orderData = $this->orderRepository->find($data['order_id'] , []);
+            $this->authorize('update',$orderData);
             $this->orderRepository->update($orderData , ['status' => 'canceled']);
             return response()->json(['message' => 'Order Cancelled Successfully'] , 200);
         }catch(\Exception $e){
