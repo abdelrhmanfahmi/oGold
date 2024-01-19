@@ -11,9 +11,13 @@ class CheckMatchAuthentication
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if(Auth::user()->co_auth != null && Auth::user()->trading_api_token != null){
-            return $next($request);
+        try{
+            if(Auth::user()->co_auth != null && Auth::user()->trading_api_token != null){
+                return $next($request);
+            }
+            return response()->json(['message' => 'Check Mail Verification And Login Again'], 403);
+        }catch(\Exception $e){
+            return response()->json(['message' => 'unauthenticated'] , 401);
         }
-        return response()->json(['message' => 'Check Mail Verification And Login Again'], 403);
     }
 }
