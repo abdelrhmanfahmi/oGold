@@ -83,14 +83,32 @@ class ProductController extends Controller
         try{
             $data = $request->validated();
             $data['user_id'] = Auth::id();
-            $order = $this->matchService->openPosition($data);
-            if(!is_string($order)){
-                $data['buy_price'] = $order['buy_price'];
-                $this->buyGoldRepository->create($data);
+            //get buy price & user balance
+            $buyPrice = $this->matchService->getMarketWatchSymbolMarkup();
+            $userBalance = $this->matchService->getBalanceMatch();
+            // check if they authenticated or not
+            if(!is_string($buyPrice) && !is_string($userBalance)){
+                //calculate total volume price
+                $totalVolumePrice = $buyPrice[0]->ask * (int) $data['volume'];
+                //get wallet per user
+                $userBalance->wallet = number_format((float)$userBalance->balance - $userBalance->margin,2,'.','');
+
+                if($userBalance->wallet > $totalVolumePrice){
+                    $order = $this->matchService->openPosition($data);
+                    if(!is_string($order)){
+                        $data['buy_price'] = $order['buy_price'];
+                        $this->buyGoldRepository->create($data);
+                        return response()->json(['data' => $order['buyResponse']] , 200);
+                    }else{
+                        return response()->json(['message' => 'The market is closed. Try again later !'] , 403);
+                    }
+                }else{
+                    return response()->json(['message' => 'balance insufficient, please add more funds !'] , 403);
+                }
             }else{
-                return response()->json(['message' => 'The market is closed. Try again later !'] , 403);
+                return response()->json(['message' => 'Authentication Error !'] , 403);
             }
-            return response()->json(['data' => $order['buyResponse']] , 200);
+
         }catch(\Exception $e){
             return $e;
         }
