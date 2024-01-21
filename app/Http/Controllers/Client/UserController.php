@@ -118,7 +118,7 @@ class UserController extends Controller
 
             //second check if this phone exists in system
             if(!in_array($data['phone'] , $phones)){
-                return response()->json(['message' => 'This Phone Not Exists !'] , 400);
+                return response()->json(['message' => 'This phone number is not registered on OGOLD !'] , 400);
             }
 
             $user = $this->userRepository->findByPhone($data['phone']);

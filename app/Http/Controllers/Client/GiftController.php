@@ -66,7 +66,7 @@ class GiftController extends Controller
                         }else if($arrayOfPositionsToClose == -1){
                             return response()->json(['message' => 'you cannot sell gold smaller than you have'] , 400);
                         }else if($arrayOfPositionsToClose == -2){
-                            return response()->json(['message' => 'you cannot sell gold bigger than your pending order gold, wait approve admin to see your net gold'] , 400);
+                            return response()->json(['message' => 'Some orders are pending, this quantity of gold cannot be sold'] , 400);
                         }else{
                             $order = $this->matchService->closePositionsByOrderDateForGift($arrayOfPositionsToClose , $data['sender_user_id'], $data['volume']);
                             if($order == 'Qfx response exception: while closing positions, status: 3, response: Failed to close any position!'){
