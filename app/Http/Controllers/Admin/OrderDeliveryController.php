@@ -8,13 +8,15 @@ use App\Http\Requests\ApproveOrderRequest;
 use App\Http\Requests\CancelOrderRequest;
 use App\Repository\Interfaces\OrderRepositoryInterface;
 use App\Services\MatchService;
+use App\Services\ShipdayService;
 use Illuminate\Http\Request;
 
 class OrderDeliveryController extends Controller
 {
     public function __construct(
         private MatchService $matchService ,
-        private OrderRepositoryInterface $orderRepository
+        private OrderRepositoryInterface $orderRepository,
+        private ShipdayService $shipdayService
         )
     {
         $this->middleware('auth:api');
@@ -37,6 +39,8 @@ class OrderDeliveryController extends Controller
                 if($order['status'] == 'SUCCESS'){
                     $priceWillBeDeducted = $orderData->total * $orderData->buy_price;
                     $this->matchService->withdrawMoneyManager($priceWillBeDeducted , $orderData->user_id);
+                    //here call api for approve order to ready to pick up delivery integration
+                    // $this->shipdayService->approveOrderReadyToPickup();
                     $this->orderRepository->update($orderData,['status' => 'ready_to_picked']);
                     return response()->json(['message' => 'Order Approved Successfully'] , 200);
                 }else{
@@ -72,6 +76,8 @@ class OrderDeliveryController extends Controller
             // }
             $priceWillBeDeducted = $orderData->total * $orderData->buy_price;
             $this->matchService->withdrawMoneyManager($priceWillBeDeducted , $orderData->user_id);
+            //here call api for approve order to ready to pick up delivery integration
+            // $this->shipdayService->approveOrderReadyToPickup();
             $this->orderRepository->update($orderData,['status' => 'ready_to_picked']);
         }
     }
