@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateCatalogRequest;
 use App\Http\Resources\CatalogResource;
 use App\Repository\Interfaces\CatalogRepositoryInterface;
 use Illuminate\Http\Request;
+use Ramsey\Uuid\Uuid;
 
 class CatalogController extends Controller
 {
@@ -33,6 +34,7 @@ class CatalogController extends Controller
     {
         try{
             $data = $request->validated();
+            $data['uuid'] = Uuid::uuid4();
             $catalog = $this->catalogRepository->create($data);
             $catalog->products()->attach($data['products']);
             return response()->json(['message' => 'Catalog Stored Successfully'] , 200);
