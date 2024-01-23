@@ -21,6 +21,7 @@ use App\Repository\Interfaces\SettingRepositoryInterface;
 use App\Repository\Interfaces\WithdrawRepositoryInterface;
 use App\Services\FileService;
 use App\Services\MatchService;
+use App\Services\ShipdayService;
 use App\Services\TotalGramService;
 use App\Services\TotalVolumesService;
 use Illuminate\Http\Request;
@@ -40,7 +41,8 @@ class ProductController extends Controller
         private TotalGramService $totalGramService,
         private SettingRepositoryInterface $settingRepository,
         private BuyGoldRepositoryInterface $buyGoldRepository,
-        private SellGoldRepositoryInterface $sellGoldRepository
+        private SellGoldRepositoryInterface $sellGoldRepository,
+        private ShipdayService $shipdayService
         )
     {
         $this->middleware('auth:api');
@@ -175,6 +177,8 @@ class ProductController extends Controller
             $updatedOrder = $this->orderRepository->find($order->id ,[]);
             $this->orderRepository->update($updatedOrder , ['total' => $data['total'] , 'total_charges' => $data['total_charges']]);
 
+            //here call api integration of shipday
+            // $this->shipdayService->storeOrderDelivery();
             return response()->json(['message' => 'Transaction Done Successfully, Wait For Order Approval From Admin'] , 200);
         }catch(\Exception $e){
             return $e;

@@ -61,6 +61,14 @@ $router->group(['prefix' => 'gifts' ,'namespace' => 'App\Http\Controllers\Admin'
     $router->get('/{id}' , ['as' => 'gifts.ordersShow' , 'uses' => 'GiftController@show']);
 });
 
+$router->group(['prefix' => 'catalogs' ,'namespace' => 'App\Http\Controllers\Admin'], function () use ($router) {
+    $router->get('/', ['as' => 'catalogs.index', 'uses' => 'CatalogController@index']);
+    $router->post('/', ['as' => 'catalogs.store', 'uses' => 'CatalogController@store']);
+    $router->get('/{id}', ['as' => 'catalogs.show', 'uses' => 'CatalogController@show']);
+    $router->put('/{id}', ['as' => 'catalogs.update', 'uses' => 'CatalogController@update']);
+    $router->delete('/{id}', ['as' => 'catalogs.delete', 'uses' => 'CatalogController@destroy']);
+});
+
 $router->get('/approve-delete-request' , ['as' => 'admin.get_approve_request', 'uses' => 'App\Http\Controllers\Admin\AccountController@indexApproveDeletionRequest']);
 $router->put('/approve-delete-request/{id}' , ['as' => 'admin.approve_delete_request', 'uses' => 'App\Http\Controllers\Admin\AccountController@approveRequestDeletion']);
 $router->get('/get-users-deleted' , ['as' => 'admin.users_deleted', 'uses' => 'App\Http\Controllers\Admin\AccountController@getUserTrashed']);

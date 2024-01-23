@@ -27,6 +27,8 @@ use App\Repository\Interfaces\SellGoldRepositoryInterface;
 use App\Repository\SellGoldRepository;
 use App\Repository\Interfaces\BankRepositoryInterface;
 use App\Repository\BankRepository;
+use App\Repository\Interfaces\CatalogRepositoryInterface;
+use App\Repository\CatalogRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -47,5 +49,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(BuyGoldRepositoryInterface::class, BuyGoldRepository::class);
         $this->app->bind(SellGoldRepositoryInterface::class, SellGoldRepository::class);
         $this->app->bind(BankRepositoryInterface::class, BankRepository::class);
+        $this->app->bind(CatalogRepositoryInterface::class, CatalogRepository::class);
     }
 }
