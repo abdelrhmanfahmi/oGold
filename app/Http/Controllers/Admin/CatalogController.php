@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCatalogRequest;
 use App\Http\Requests\UpdateCatalogRequest;
 use App\Http\Resources\CatalogResource;
+use App\Models\Product;
 use App\Repository\Interfaces\CatalogRepositoryInterface;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
@@ -36,7 +37,8 @@ class CatalogController extends Controller
             $data = $request->validated();
             $data['uuid'] = Uuid::uuid4();
             $catalog = $this->catalogRepository->create($data);
-            $catalog->products()->attach($data['products']);
+            $dataTotal = $this->getTotalPriceWithCatalog($data['products'] , $data['preimum_fees']);
+            $catalog->products()->attach($dataTotal);
             return response()->json(['message' => 'Catalog Stored Successfully'] , 200);
         }catch(\Exception $e){
             return $e;
@@ -59,7 +61,8 @@ class CatalogController extends Controller
             $data = $request->validated();
             $model = $this->catalogRepository->find($id , []);
             $catalog = $this->catalogRepository->update($model,$data);
-            $catalog->products()->sync($data['products']);
+            $dataTotal = $this->getTotalPriceWithCatalog($data['products'] , $data['preimum_fees']);
+            $catalog->products()->sync($dataTotal);
             return response()->json(['message' => 'Catalog Updated Successfully'] , 200);
         }catch(\Exception $e){
             return $e;
@@ -71,6 +74,28 @@ class CatalogController extends Controller
         try{
             $this->catalogRepository->delete($id);
             return response()->json(['message' => 'Catalog Deleted Successfully'] , 200);
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    protected function getTotalPriceWithCatalog($products , $preimum_fees)
+    {
+        try{
+            $arrResult = [];
+            if($preimum_fees == null){
+                $preimum_fees = 0;
+            }
+            foreach($products as $key => $product){
+                foreach($product as $p){
+                    $dataProduct = Product::whereId($p)->first();
+                    $totalPrice = ($dataProduct->buy_price * $dataProduct->gram) + $dataProduct->charge + ($preimum_fees * $dataProduct->gram);
+                    $arrResult [$key]['product_id'] = $p;
+                    $arrResult [$key]['total_price'] = $totalPrice;
+                }
+            }
+
+            return $arrResult;
         }catch(\Exception $e){
             return $e;
         }

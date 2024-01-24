@@ -52,6 +52,15 @@ class CatalogRepository implements CatalogRepositoryInterface
     }
 
     /**
+     * @param int $model_id
+     * @return object
+     */
+    public function findByUUID($uuid , array $relations=[]): ?object
+    {
+        return $this->model->with($relations)->where('uuid' , $uuid)->first();
+    }
+
+    /**
      * @param Catalog  $model
      * @param array $attributes
      * @return object

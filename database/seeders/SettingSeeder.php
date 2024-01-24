@@ -39,6 +39,16 @@ class SettingSeeder extends Seeder
             'image' => 'ahly.png'
         ]);
         Setting::create([
+            'key' => 'pickup_address',
+            'value' => 'address',
+            'image' => ''
+        ]);
+        Setting::create([
+            'key' => 'delivery_period',
+            'value' => 1,
+            'image' => ''
+        ]);
+        Setting::create([
             'key' => 'oGold-name',
             'value' => '',
             'image' => ''
