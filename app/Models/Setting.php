@@ -11,13 +11,6 @@ class Setting extends Model
     protected $fillable = [
         'key' ,
         'value' ,
-        'image' ,
-        'oGold-name' ,
-        'oGold-phone' ,
-        'oGold-facebook-link' ,
-        'oGold-telegram-link' ,
-        'oGold-instagram-link' ,
-        'oGold-linkedin-link' ,
-        'oGold-whatsapp-link'
+        'image'
     ];
 }

@@ -12,6 +12,6 @@ class Catalog extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class , 'catalog_products' , 'catalog_id' , 'product_id');
+        return $this->belongsToMany(Product::class , 'catalog_products' , 'catalog_id' , 'product_id')->withPivot('total_price');
     }
 }

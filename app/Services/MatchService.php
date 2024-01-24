@@ -84,6 +84,34 @@ class MatchService {
         }
     }
 
+    public function loginAccountForCronJob()
+    {
+        try{
+            $client = new \GuzzleHttp\Client();
+            $url = 'https://platform.ogold.app/manager/co-login';
+            $response = $client->request('POST', $url, [
+                'headers' => ['Content-Type' => 'application/json' , 'Accept' => 'application/json'],
+                'json' => [
+                    'email' => env('EMAILUPDATEPRICE'),
+                    'password' => env('PASSWORDUPDATEPRICE'),
+                    'brokerId' => env('BROKERID'),
+                ],
+            ]);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+
+            //get refresh token
+            $headers = $response->getHeaders();
+            $stringCuts = $headers['Set-Cookie'][1];
+            $refreshToken = substr($stringCuts,3 , -122);
+
+            $authUser = User::where('email' , env('EMAILUPDATEPRICE'))->first();
+            $authUser->update(['refresh_token_id' => $refreshToken , 'co_auth' => $decodedData->token , 'trading_api_token' => $decodedData->accounts[0]->tradingApiToken , 'trading_uuid' => $decodedData->accounts[0]->uuid , 'client_trading_id' => $decodedData->accounts[0]->tradingAccountId]);
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
     public function createUserInMatch($data)
     {
         try{
@@ -289,7 +317,7 @@ class MatchService {
         try{
             $user = User::findOrFail($user_id);
             $client = new \GuzzleHttp\Client();
-            $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/quotations?symbols=GoldGram24c';
+            $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/quotations?symbols=GoldGram24c&applyMarkup=true';
             $response = $client->request('GET', $url, [
                 'headers' => [
                     'co-auth' => $user->co_auth,

@@ -23,6 +23,12 @@ interface CatalogRepositoryInterface
     public function find(int $model_id , array $relations): ?object;
 
     /**
+     * @param int $model_id
+     * @return object
+     */
+    public function findByUUID(int $model_id , array $relations): ?object;
+
+    /**
      * @param array $attributes
      * @return object
      */

@@ -9,7 +9,7 @@ use App\Filters\Filters;
 class Product extends Model
 {
     use HasFactory;
-    protected $fillable = ['name' , 'gram' , 'image' , 'is_active' , 'charge' , 'type'];
+    protected $fillable = ['name' , 'gram' , 'image' , 'is_active' , 'charge' , 'type' , 'buy_price'];
 
     public function scopeFilter($query, Filters $filter)
     {
@@ -23,6 +23,6 @@ class Product extends Model
 
     public function catalogs()
     {
-        return $this->belongsToMany(Catalog::class , 'catalog_products' , 'product_id' , 'catalog_id');
+        return $this->belongsToMany(Catalog::class , 'catalog_products' , 'product_id' , 'catalog_id')->withPivot('total_price');
     }
 }
