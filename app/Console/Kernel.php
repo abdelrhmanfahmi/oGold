@@ -19,6 +19,8 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('update:cron')
                  ->everyMinute();
+        $schedule->command('update_user:cron')
+                 ->everyTenMinutes();
     }
 
     /**
