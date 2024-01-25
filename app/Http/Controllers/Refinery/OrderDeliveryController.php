@@ -22,6 +22,7 @@ use App\Repository\Interfaces\WithdrawRepositoryInterface;
 use App\Services\MatchService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Services\ShipdayService;
 
 class OrderDeliveryController extends Controller
 {
@@ -31,7 +32,8 @@ class OrderDeliveryController extends Controller
         private WithdrawRepositoryInterface $withdrawRepository,
         private DepositRepositoryInterface $depositRepository,
         private BuyGoldRepositoryInterface $buyGoldRepository,
-        private SellGoldRepositoryInterface $sellGoldRepository
+        private SellGoldRepositoryInterface $sellGoldRepository,
+        private ShipdayService $shipdayService
     )
     {
         $this->middleware('auth:api');
@@ -119,7 +121,7 @@ class OrderDeliveryController extends Controller
                     $priceWillBeDeducted = $orderData->total * $orderData->buy_price;
                     $this->matchService->withdrawMoneyManager($priceWillBeDeducted , $orderData->user_id);
                     //here call api for approve order to ready to pick up delivery integration
-                    // $this->shipdayService->approveOrderReadyToPickup();
+                    $this->shipdayService->approveOrderReadyToPickup($data['order_id']);
                     $this->orderRepository->update($orderData,['status' => 'ready_to_picked']);
                     return response()->json(['message' => 'Order Approved Successfully'] , 200);
                 }else{
@@ -156,7 +158,7 @@ class OrderDeliveryController extends Controller
             $priceWillBeDeducted = $orderData->total * $orderData->buy_price;
             $this->matchService->withdrawMoneyManager($priceWillBeDeducted , $orderData->user_id);
             //here call api for approve order to ready to pick up delivery integration
-            // $this->shipdayService->approveOrderReadyToPickup();
+            $this->shipdayService->approveOrderReadyToPickup($id);
             $this->orderRepository->update($orderData,['status' => 'ready_to_picked']);
         }
     }

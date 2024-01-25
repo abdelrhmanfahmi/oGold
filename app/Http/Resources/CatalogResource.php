@@ -19,7 +19,7 @@ class CatalogResource extends JsonResource
             'name' => $this->name ?? null,
             'uuid' => $this->uuid ?? null,
             'preimum_fees' => $this->preimum_fees ?? null,
-            'products' => ProductResource::make($this->whenLoaded('products')),
+            'products' => ProductResource::collection($this->whenLoaded('products')),
         ];
     }
 }
