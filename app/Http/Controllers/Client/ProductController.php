@@ -164,7 +164,7 @@ class ProductController extends Controller
             $data = $request->validated();
             $orderData = $request->only('user_id','address_book_id');
             $buyPrice = $this->matchService->getMarketWatchSymbolMarkup();
-            if(is_object($buyPrice)){
+            if(is_string($buyPrice)){
                 return response()->json(['message' => 'Authentication error !'] , 400);
             }
             $orderData['buy_price'] = $buyPrice[0]->ask;
@@ -178,7 +178,7 @@ class ProductController extends Controller
             $this->orderRepository->update($updatedOrder , ['total' => $data['total'] , 'total_charges' => $data['total_charges']]);
 
             //here call api integration of shipday
-            // $this->shipdayService->storeOrderDelivery();
+            $this->shipdayService->storeOrderDelivery($updatedOrder , Auth::user() , 'cash');
             return response()->json(['message' => 'Transaction Done Successfully, Wait For Order Approval From Admin'] , 200);
         }catch(\Exception $e){
             return $e;
