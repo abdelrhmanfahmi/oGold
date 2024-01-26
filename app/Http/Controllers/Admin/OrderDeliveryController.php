@@ -7,6 +7,7 @@ use App\Http\Requests\ApproveDateRequest;
 use App\Http\Requests\ApproveOrderRequest;
 use App\Http\Requests\CancelOrderRequest;
 use App\Repository\Interfaces\OrderRepositoryInterface;
+use App\Repository\Interfaces\UserRepositoryInterface;
 use App\Services\MatchService;
 use App\Services\ShipdayService;
 use Illuminate\Http\Request;
@@ -16,7 +17,8 @@ class OrderDeliveryController extends Controller
     public function __construct(
         private MatchService $matchService ,
         private OrderRepositoryInterface $orderRepository,
-        private ShipdayService $shipdayService
+        private ShipdayService $shipdayService,
+        private UserRepositoryInterface $userRepository
         )
     {
         $this->middleware('auth:api');
@@ -37,11 +39,21 @@ class OrderDeliveryController extends Controller
             }else{
                 $order = $this->matchService->closePositionsByOrderDatePerAdmin($getPositionsByOrder , $orderData->user_id, $orderData->total);
                 if($order['status'] == 'SUCCESS'){
-                    $priceWillBeDeducted = $orderData->total * $orderData->buy_price;
+                    $user = $this->userRepository->findByEmail(env('EMAILUPDATEPRICE'));
+                    $sellPrice = $this->matchService->getMarketWatchSymbolPerUser($user->id);
+                    if(!is_string($sellPrice)){
+                        $priceWillBeDeducted = $orderData->total * $sellPrice[0]->bid;
+                    }else{
+                        $this->matchService->loginAccountForCronJob();
+                        $sellPrice = $this->matchService->getMarketWatchSymbolPerUser($user->id);
+                        $priceWillBeDeducted = $orderData->total * $sellPrice[0]->bid;
+                    }
+
                     $this->matchService->withdrawMoneyManager($priceWillBeDeducted , $orderData->user_id);
                     //here call api for approve order to ready to pick up delivery integration
                     $this->shipdayService->approveOrderReadyToPickup($data['order_id']);
                     $this->orderRepository->update($orderData,['status' => 'ready_to_picked']);
+
                     return response()->json(['message' => 'Order Approved Successfully'] , 200);
                 }else{
                     return response()->json(['message' => 'Something Went Wrong !'] , 400);
@@ -67,6 +79,8 @@ class OrderDeliveryController extends Controller
 
     protected function getOrdersByDate($ids)
     {
+        $user = $this->userRepository->findByEmail(env('EMAILUPDATEPRICE'));
+        $sellPrice = $this->matchService->getMarketWatchSymbolPerUser($user->id);
         foreach($ids as $id){
             $orderData = $this->orderRepository->find($id , []);
             $opendPositions = $this->matchService->getAllPositionForAuthUser($orderData->user_id);
@@ -74,7 +88,14 @@ class OrderDeliveryController extends Controller
                 $getPositionsByOrder = $this->matchService->getPositionsByOrderAdminRefinaryRole($opendPositions,$orderData->total);
                 $this->matchService->closePositionsByOrderDatePerAdmin($getPositionsByOrder , $orderData->user_id, $orderData->total);
             // }
-            $priceWillBeDeducted = $orderData->total * $orderData->buy_price;
+            if(!is_string($sellPrice)){
+                $priceWillBeDeducted = $orderData->total * $sellPrice[0]->bid;
+            }else{
+                $this->matchService->loginAccountForCronJob();
+                $sellPrice = $this->matchService->getMarketWatchSymbolPerUser($user->id);
+                $priceWillBeDeducted = $orderData->total * $sellPrice[0]->bid;
+            }
+
             $this->matchService->withdrawMoneyManager($priceWillBeDeducted , $orderData->user_id);
             //here call api for approve order to ready to pick up delivery integration
             $this->shipdayService->approveOrderReadyToPickup($id);

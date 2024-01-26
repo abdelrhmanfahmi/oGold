@@ -18,6 +18,7 @@ use App\Repository\Interfaces\BuyGoldRepositoryInterface;
 use App\Repository\Interfaces\DepositRepositoryInterface;
 use App\Repository\Interfaces\OrderRepositoryInterface;
 use App\Repository\Interfaces\SellGoldRepositoryInterface;
+use App\Repository\Interfaces\UserRepositoryInterface;
 use App\Repository\Interfaces\WithdrawRepositoryInterface;
 use App\Services\MatchService;
 use Illuminate\Http\Request;
@@ -33,7 +34,8 @@ class OrderDeliveryController extends Controller
         private DepositRepositoryInterface $depositRepository,
         private BuyGoldRepositoryInterface $buyGoldRepository,
         private SellGoldRepositoryInterface $sellGoldRepository,
-        private ShipdayService $shipdayService
+        private ShipdayService $shipdayService,
+        private UserRepositoryInterface $userRepository
     )
     {
         $this->middleware('auth:api');
@@ -118,7 +120,15 @@ class OrderDeliveryController extends Controller
             }else{
                 $order = $this->matchService->closePositionsByOrderDatePerAdmin($getPositionsByOrder , $orderData->user_id, $orderData->total);
                 if($order['status'] == 'SUCCESS'){
-                    $priceWillBeDeducted = $orderData->total * $orderData->buy_price;
+                    $user = $this->userRepository->findByEmail(env('EMAILUPDATEPRICE'));
+                    $sellPrice = $this->matchService->getMarketWatchSymbolPerUser($user->id);
+                    if(!is_string($sellPrice)){
+                        $priceWillBeDeducted = $orderData->total * $sellPrice[0]->bid;
+                    }else{
+                        $this->matchService->loginAccountForCronJob();
+                        $sellPrice = $this->matchService->getMarketWatchSymbolPerUser($user->id);
+                        $priceWillBeDeducted = $orderData->total * $sellPrice[0]->bid;
+                    }
                     $this->matchService->withdrawMoneyManager($priceWillBeDeducted , $orderData->user_id);
                     //here call api for approve order to ready to pick up delivery integration
                     $this->shipdayService->approveOrderReadyToPickup($data['order_id']);
@@ -148,6 +158,8 @@ class OrderDeliveryController extends Controller
 
     protected function getOrdersByDate($ids)
     {
+        $user = $this->userRepository->findByEmail(env('EMAILUPDATEPRICE'));
+        $sellPrice = $this->matchService->getMarketWatchSymbolPerUser($user->id);
         foreach($ids as $id){
             $orderData = $this->orderRepository->find($id , []);
             $opendPositions = $this->matchService->getAllPositionForAuthUser($orderData->user_id);
@@ -155,7 +167,13 @@ class OrderDeliveryController extends Controller
                 $getPositionsByOrder = $this->matchService->getPositionsByOrderAdminRefinaryRole($opendPositions,$orderData->total);
                 $this->matchService->closePositionsByOrderDatePerAdmin($getPositionsByOrder , $orderData->user_id, $orderData->total);
             // }
-            $priceWillBeDeducted = $orderData->total * $orderData->buy_price;
+            if(!is_string($sellPrice)){
+                $priceWillBeDeducted = $orderData->total * $sellPrice[0]->bid;
+            }else{
+                $this->matchService->loginAccountForCronJob();
+                $sellPrice = $this->matchService->getMarketWatchSymbolPerUser($user->id);
+                $priceWillBeDeducted = $orderData->total * $sellPrice[0]->bid;
+            }
             $this->matchService->withdrawMoneyManager($priceWillBeDeducted , $orderData->user_id);
             //here call api for approve order to ready to pick up delivery integration
             $this->shipdayService->approveOrderReadyToPickup($id);
