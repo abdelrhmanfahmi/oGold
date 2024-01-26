@@ -395,7 +395,8 @@ class MatchService {
     public function makeOrderSubmitForBuyGold($orderStringId,$data)
     {
         try{
-            $dataToken = $this->loginAsManager();
+            // $dataToken = $this->loginAsManager();
+            $dataToken = MatchData::first();
             $userRecieved = User::findOrFail($data['recieved_user_id']);
             $response = Http::withHeaders([
                 'Accept' => 'application/json',
@@ -641,7 +642,8 @@ class MatchService {
     public function closePositionsByOrderDatePerAdmin($arrayOfPositionsToClose, $user_id, $volume)
     {
         try{
-            $dataToken = $this->loginAsManager();
+            // $dataToken = $this->loginAsManager();
+            $dataToken = MatchData::first();
             $user = User::findOrFail($user_id);
 
             if(count($arrayOfPositionsToClose['originalClose']) > 0){
@@ -692,7 +694,8 @@ class MatchService {
     public function getAllPositionForAuthUser($user_id)
     {
         try{
-            $dataToken = $this->loginAsManager();
+            // $dataToken = $this->loginAsManager();
+            $dataToken = MatchData::first();
             $user = User::findOrFail($user_id);
             $response = Http::withHeaders([
                 'Accept' => 'application/json',
@@ -717,7 +720,8 @@ class MatchService {
     public function editVolumeForUser($user_id , $idForPositinEdit , $positionId , $reminder , $total)
     {
         try{
-            $dataToken = $this->loginAsManager();
+            // $dataToken = $this->loginAsManager();
+            $dataToken = MatchData::first();
             $totalReminder = $total - $reminder;
             $user = User::findOrFail($user_id);
             $response = Http::withHeaders([
@@ -814,7 +818,8 @@ class MatchService {
     public function creditOut($price)
     {
         try{
-            $dataToken = $this->loginAsManager();
+            // $dataToken = $this->loginAsManager();
+            $dataToken = MatchData::first();
             $response = Http::withHeaders([
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
@@ -838,7 +843,8 @@ class MatchService {
     public function creditIn($price,$recieved_id)
     {
         try{
-            $dataToken = $this->loginAsManager();
+            // $dataToken = $this->loginAsManager();
+            $dataToken = MatchData::first();
             $userRecieved = User::findOrFail($recieved_id);
             $response = Http::withHeaders([
                 'Accept' => 'application/json',
@@ -862,7 +868,8 @@ class MatchService {
     public function withdrawMoneyManager($price,$userId)
     {
         try{
-            $dataToken = $this->loginAsManager();
+            // $dataToken = $this->loginAsManager();
+            $dataToken = MatchData::first();
             $user = User::findOrFail($userId);
             $response = Http::withHeaders([
                 'Accept' => 'application/json',
@@ -885,7 +892,8 @@ class MatchService {
     public function depositMoneyManager($price,$recieved_id)
     {
         try{
-            $dataToken = $this->loginAsManager();
+            // $dataToken = $this->loginAsManager();
+            $dataToken = MatchData::first();
             $userRecieved = User::findOrFail($recieved_id);
             $response = Http::withHeaders([
                 'Accept' => 'application/json',

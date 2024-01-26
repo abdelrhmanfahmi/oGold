@@ -18,9 +18,11 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command('update:cron')
-                 ->everyMinute();
+                 ->everyTwoMinutes();
         $schedule->command('update_user:cron')
                  ->everyTenMinutes();
+        $schedule->command('update_manager:cron')
+                 ->everyThirtyMinutes();
     }
 
     /**

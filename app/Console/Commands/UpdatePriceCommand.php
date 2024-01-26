@@ -2,10 +2,13 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Catalog;
+use App\Models\MatchData;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Console\Command;
 use App\Services\MatchService;
+use Illuminate\Support\Facades\DB;
 
 class UpdatePriceCommand extends Command
 {
@@ -20,24 +23,34 @@ class UpdatePriceCommand extends Command
 
     public function handle()
     {
-        //logic here
         $user = User::where('email' , env('EMAILUPDATEPRICE'))->first();
-        $products = Product::all();
         $buyPrice = $this->matchService->getMarketWatchSymbolPerUser($user->id);
+        $catalogs = Catalog::with('products')->get();
         if(!is_string($buyPrice)){
-            foreach($products as $product){
-                $product->update(['buy_price' => $buyPrice[0]->ask]);
+            foreach($catalogs as $catalog){
+                foreach($catalog->products as $product){
+                    $totalPrice = ($buyPrice[0]->ask * $product->gram) + $product->charge + ($catalog->preimum_fees * $product->gram);
+                    DB::table('catalog_products')
+                    ->where('catalog_id' , $catalog->id)
+                    ->where('product_id' , $product->id)
+                    ->update(['total_price' => $totalPrice]);
+                }
             }
             \Log::info('work fine one');
         }else{
             //login with user
             $this->matchService->loginAccountForCronJob();
             $buyPrice = $this->matchService->getMarketWatchSymbolPerUser($user->id);
-            foreach($products as $product){
-                $product->update(['buy_price' => $buyPrice[0]->ask]);
+            foreach($catalogs as $catalog){
+                foreach($catalog->products as $product){
+                    $totalPrice = ($buyPrice[0]->ask * $product->gram) + $product->charge + ($catalog->preimum_fees * $product->gram);
+                    DB::table('catalog_products')
+                    ->where('catalog_id' , $catalog->id)
+                    ->where('product_id' , $product->id)
+                    ->update(['total_price' => $totalPrice]);
+                }
             }
             \Log::info('work fine two');
         }
-        \Log::info('work fine three');
     }
 }

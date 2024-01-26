@@ -24,6 +24,6 @@ class UpdateUserCommand extends Command
     {
         User::where('email' , env('EMAILUPDATEPRICE'))->first();
         $this->matchService->loginAccountForCronJob();
-        \Log::info('work fine login');
+        \Log::info('work fine login user');
     }
 }
