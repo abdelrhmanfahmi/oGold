@@ -52,3 +52,4 @@ $router->post('/upload-kyc-file' , ['as' => 'user.kyc', 'uses' => 'App\Http\Cont
 $router->get('/kyc-data' , ['as' => 'index.kyc_data', 'uses' => 'App\Http\Controllers\Client\UserController@getFileUrls']);
 $router->post('/check-user-exists' , ['as' => 'getusers.phone' , 'uses' => 'App\Http\Controllers\Client\UserController@getUsersByPhone']);
 $router->post('/store-contact' , ['as' => 'store.contact' , 'uses' => 'App\Http\Controllers\Client\UserController@storeContact']);
+$router->post('/buy-and-deliver' , ['as' => 'order.buyAndDeliver' , 'uses' => 'App\Http\Controllers\Client\UserController@buyAndDeliver']);

@@ -362,6 +362,36 @@ class MatchService {
         }
     }
 
+    public function openPositionBuyAndDeliver($user_id,$totalGrams)
+    {
+        try{
+            $client = new \GuzzleHttp\Client();
+            $user = User::findOrFail($user_id);
+            $dataDahab = new \stdClass();
+            $dataDahab->instrument = 'GoldGram24c';
+            $dataDahab->orderSide = 'BUY';
+            $dataDahab->volume = $totalGrams;
+            $dataDahab->slPrice = 0;
+            $dataDahab->tpPrice = 0;
+            $dataDahab->isMobile = true;
+            $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/position/open';
+            $response = $client->request('POST', $url, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Auth-trading-api' => $user->trading_api_token,
+                    'Cookie' => 'co-auth=' . $user->co_auth
+                ],
+                'json' => $dataDahab,
+            ]);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+            $buyPrice = $this->getMarketWatchSymbolMarkup();
+            return ['buyResponse' => $decodedData , 'buy_price' => $buyPrice[0]->ask];
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
     public function openPositionForUser($data)
     {
         try{
@@ -404,7 +434,7 @@ class MatchService {
             ])->post("https://grpc-mtrwl.match-trade.com/v1/order/submit", [
                 "auth" => [
                     "managerID" => env('MANAGER_ID'),
-                    "token" => $dataToken->token
+                    "token" => $dataToken->manager_token
                 ],
                 "orderMask" => [
                     "symbol"=> "GoldGram24c",
@@ -458,6 +488,27 @@ class MatchService {
                     'co-auth' => Auth::user()->co_auth,
                     'Auth-trading-api' => Auth::user()->trading_api_token,
                     'Cookie' => 'co-auth='. Auth::user()->co_auth
+                ],
+            ]);
+            $result = $response->getBody()->getContents();
+            $decodedData = json_decode($result);
+            return $decodedData;
+        }catch(\GuzzleHttp\Exception\BadResponseException $e){
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
+    public function getBalanceMatchBuyAndDeliver($user_id)
+    {
+        try{
+            $client = new \GuzzleHttp\Client();
+            $user = User::findOrFail($user_id);
+            $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/balance';
+            $response = $client->request('GET', $url, [
+                'headers' => [
+                    'co-auth' => $user->co_auth,
+                    'Auth-trading-api' => $user->trading_api_token,
+                    'Cookie' => 'co-auth='. $user->co_auth
                 ],
             ]);
             $result = $response->getBody()->getContents();
@@ -653,7 +704,7 @@ class MatchService {
                 ])->post("https://grpc-mtrwl.match-trade.com/v1/position/close", [
                     "auth" => [
                         "managerID" => env('MANAGER_ID'),
-                        "token" => $dataToken->token
+                        "token" => $dataToken->manager_token
                     ],
                     "clientPositionsToClose" => [
                         [
@@ -703,7 +754,7 @@ class MatchService {
             ])->post("https://grpc-mtrwl.match-trade.com/v1/position/getAll", [
                 "auth" => [
                     "managerID" => env('MANAGER_ID'),
-                    "token" => $dataToken->token
+                    "token" => $dataToken->manager_token
                 ],
                 "clientIds" => [
                     $user->client_trading_id
@@ -730,7 +781,7 @@ class MatchService {
             ])->post("https://grpc-mtrwl.match-trade.com/v1/position/editVolume", [
                 "auth" => [
                     "managerID" => env('MANAGER_ID'),
-                    "token" => $dataToken->token
+                    "token" => $dataToken->manager_token
                 ],
                 "newValue"=> (int) $totalReminder,
                 "positionOrderId"=> $positionId,
@@ -826,7 +877,7 @@ class MatchService {
             ])->post("https://grpc-mtrwl.match-trade.com/v1/balance/creditOut", [
                 "auth" => [
                     "managerID" => env('MANAGER_ID'),
-                    "token" => $dataToken->token
+                    "token" => $dataToken->manager_token
                 ],
                 "comment" => 'string',
                 "amount" => (int) ceil($price),
@@ -852,7 +903,7 @@ class MatchService {
             ])->post("https://grpc-mtrwl.match-trade.com/v1/balance/creditIn", [
                 "auth" => [
                     "managerID" => env('MANAGER_ID'),
-                    "token" => $dataToken->token
+                    "token" => $dataToken->manager_token
                 ],
                 "comment" => 'string',
                 "amount" => (int) ceil($price),
@@ -877,7 +928,7 @@ class MatchService {
             ])->post("https://grpc-mtrwl.match-trade.com/v1/balance/withdrawMoney", [
                 "auth" => [
                     "managerID" => env('MANAGER_ID'),
-                    "token" => $dataToken->token
+                    "token" => $dataToken->manager_token
                 ],
                 "amount" => (int) ceil($price)*100,
                 "clientId" => $user->client_trading_id
@@ -901,7 +952,7 @@ class MatchService {
             ])->post("https://grpc-mtrwl.match-trade.com/v1/balance/depositMoney", [
                 "auth" => [
                     "managerID" => env('MANAGER_ID'),
-                    "token" => $dataToken->token
+                    "token" => $dataToken->manager_token
                 ],
                 "amount" => (int) ceil($price) * 100,
                 "clientId" => $userRecieved->client_trading_id

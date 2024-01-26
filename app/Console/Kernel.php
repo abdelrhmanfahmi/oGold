@@ -10,6 +10,8 @@ class Kernel extends ConsoleKernel
 
     protected $commands = [
         Commands\UpdatePriceCommand::class,
+        Commands\UpdateUserCommand::class,
+        Commands\UpdateManager::class,
     ];
 
     /**
