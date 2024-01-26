@@ -7,13 +7,20 @@ use App\Http\Requests\StoreCatalogRequest;
 use App\Http\Requests\UpdateCatalogRequest;
 use App\Http\Resources\CatalogResource;
 use App\Models\Product;
+use App\Models\User;
 use App\Repository\Interfaces\CatalogRepositoryInterface;
+use App\Repository\Interfaces\UserRepositoryInterface;
+use App\Services\MatchService;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
 
 class CatalogController extends Controller
 {
-    public function __construct(private CatalogRepositoryInterface $catalogRepository)
+    public function __construct(
+        private CatalogRepositoryInterface $catalogRepository,
+        private MatchService $matchService,
+        private UserRepositoryInterface $userRepository
+    )
     {
         $this->middleware('auth:api');
     }
@@ -83,13 +90,15 @@ class CatalogController extends Controller
     {
         try{
             $arrResult = [];
+            $user = $this->userRepository->findByEmail(env('EMAILUPDATEPRICE'));
+            $buyPrice = $this->matchService->getMarketWatchSymbolPerUser($user->id);
             if($preimum_fees == null){
                 $preimum_fees = 0;
             }
             foreach($products as $key => $product){
                 foreach($product as $p){
                     $dataProduct = Product::whereId($p)->first();
-                    $totalPrice = ($dataProduct->buy_price * $dataProduct->gram) + $dataProduct->charge + ($preimum_fees * $dataProduct->gram);
+                    $totalPrice = ($buyPrice[0]->ask * $dataProduct->gram) + $dataProduct->charge + ($preimum_fees * $dataProduct->gram);
                     $arrResult [$key]['product_id'] = $p;
                     $arrResult [$key]['total_price'] = $totalPrice;
                 }

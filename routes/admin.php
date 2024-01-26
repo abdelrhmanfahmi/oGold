@@ -65,7 +65,7 @@ $router->group(['prefix' => 'catalogs' ,'namespace' => 'App\Http\Controllers\Adm
     $router->get('/', ['as' => 'catalogs.index', 'uses' => 'CatalogController@index']);
     $router->post('/', ['as' => 'catalogs.store', 'uses' => 'CatalogController@store']);
     $router->get('/{id}', ['as' => 'catalogs.show', 'uses' => 'CatalogController@show']);
-    $router->put('/{id}', ['as' => 'catalogs.update', 'uses' => 'CatalogController@update']);
+    $router->post('/{id}', ['as' => 'catalogs.update', 'uses' => 'CatalogController@update']);
     $router->delete('/{id}', ['as' => 'catalogs.delete', 'uses' => 'CatalogController@destroy']);
 });
 
