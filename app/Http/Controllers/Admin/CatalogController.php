@@ -44,8 +44,8 @@ class CatalogController extends Controller
             $data = $request->validated();
             $data['uuid'] = Uuid::uuid4();
             $catalog = $this->catalogRepository->create($data);
-            $dataTotal = $this->getTotalPriceWithCatalog($data['products'] , $data['preimum_fees']);
-            $catalog->products()->attach($dataTotal);
+            // $dataTotal = $this->getTotalPriceWithCatalog($data['products'] , $data['preimum_fees']);
+            $catalog->products()->attach($data['products']);
             return response()->json(['message' => 'Catalog Stored Successfully'] , 200);
         }catch(\Exception $e){
             return $e;
@@ -68,8 +68,8 @@ class CatalogController extends Controller
             $data = $request->validated();
             $model = $this->catalogRepository->find($id , []);
             $catalog = $this->catalogRepository->update($model,$data);
-            $dataTotal = $this->getTotalPriceWithCatalog($data['products'] , $data['preimum_fees']);
-            $catalog->products()->sync($dataTotal);
+            // $dataTotal = $this->getTotalPriceWithCatalog($data['products'] , $data['preimum_fees']);
+            $catalog->products()->sync($data['products']);
             return response()->json(['message' => 'Catalog Updated Successfully'] , 200);
         }catch(\Exception $e){
             return $e;
