@@ -15,7 +15,7 @@ class ShipdayService {
 
     public function storeOrderDelivery($order, $user, $isCash)
     {
-        $isCash == 'cash' ? 'cash' : 'credit_card';
+        $isCash = $isCash == 'cash' ? 'cash' : 'credit_card';
         $pickup_from = Setting::where('key' , 'pickup_address')->value('value');
         $delivery_fees = Setting::where('key' , 'shipping_fees')->value('value');
         $daysToDeliver = Setting::where('key' , 'delivery_period')->value('value');
