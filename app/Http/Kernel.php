@@ -69,5 +69,6 @@ class Kernel extends HttpKernel
         'is_client' => \App\Http\Middleware\isClient::class,
         'is_refinery' => \App\Http\Middleware\isRefinery::class,
         'is_match_authed' => \App\Http\Middleware\CheckMatchAuthentication::class,
+        'hmac' => \App\Http\Middleware\HmacMiddleware::class,
     ];
 }
