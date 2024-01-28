@@ -15,8 +15,9 @@ class ShipdayService {
 
     public function storeOrderDelivery($order, $user, $isCash)
     {
-        $isCash = $isCash == 'cash' ? 'cash' : 'credit_card';
+        $isCash == 'cash' ? 'cash' : 'credit_card';
         $pickup_from = Setting::where('key' , 'pickup_address')->value('value');
+        $pickup_from_phone = Setting::where('key' , 'oGold-phone')->value('value');
         $delivery_fees = Setting::where('key' , 'shipping_fees')->value('value');
         $daysToDeliver = Setting::where('key' , 'delivery_period')->value('value');
         $currentDay = Carbon::now();
@@ -37,7 +38,7 @@ class ShipdayService {
                 "customerPhoneNumber"=> $user->phone,
                 "restaurantName"=> "OGold",
                 "restaurantAddress"=> $pickup_from,
-                "restaurantPhoneNumber"=> "+14152392013",
+                "restaurantPhoneNumber"=> $pickup_from_phone,
                 "expectedDeliveryDate"=> $deliverExpectedDate->format('Y-m-d'),
                 "expectedPickupTime"=> Carbon::now()->format('H:i:s'),
                 "expectedDeliveryTime"=> $deliverExpectedDate->format('H:i:s'),
@@ -75,6 +76,7 @@ class ShipdayService {
     {
         $user = User::where('id' , $user_id)->first();
         $pickup_from = Setting::where('key' , 'pickup_address')->value('value');
+        $pickup_from_phone = Setting::where('key' , 'oGold-phone')->value('value');
         $delivery_fees = Setting::where('key' , 'shipping_fees')->value('value');
         $daysToDeliver = Setting::where('key' , 'delivery_period')->value('value');
         $currentDay = Carbon::now();
@@ -95,7 +97,7 @@ class ShipdayService {
                 "customerPhoneNumber"=> $user->phone,
                 "restaurantName"=> "OGold",
                 "restaurantAddress"=> $pickup_from,
-                "restaurantPhoneNumber"=> "+14152392013",
+                "restaurantPhoneNumber"=> $pickup_from_phone,
                 "expectedDeliveryDate"=> $deliverExpectedDate->format('Y-m-d'),
                 "expectedPickupTime"=> Carbon::now()->format('H:i:s'),
                 "expectedDeliveryTime"=> $deliverExpectedDate->format('H:i:s'),

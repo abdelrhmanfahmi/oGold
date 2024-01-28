@@ -292,26 +292,6 @@ class MatchService {
         }
     }
 
-    public function getMarketWatchSymbolMarkup()
-    {
-        try{
-            $client = new \GuzzleHttp\Client();
-            $url = 'https://platform.ogold.app/mtr-api/'.env('SYSTEMUUID').'/quotations?symbols=GoldGram24c&applyMarkup=true';
-            $response = $client->request('GET', $url, [
-                'headers' => [
-                    'co-auth' => Auth::user()->co_auth,
-                    'Auth-trading-api' => Auth::user()->trading_api_token,
-                    'Cookie' => 'co-auth='. Auth::user()->co_auth
-                ],
-            ]);
-            $result = $response->getBody()->getContents();
-            $decodedData = json_decode($result);
-            return $decodedData;
-        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
-            return $e->getResponse()->getBody()->getContents();
-        }
-    }
-
     public function getMarketWatchSymbolPerUser($user_id)
     {
         try{
@@ -355,7 +335,7 @@ class MatchService {
             ]);
             $result = $response->getBody()->getContents();
             $decodedData = json_decode($result);
-            $buyPrice = $this->getMarketWatchSymbolMarkup();
+            $buyPrice = $this->getMarketWatchSymbolPerUser(Auth::id());
             return ['buyResponse' => $decodedData , 'buy_price' => $buyPrice[0]->ask];
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
@@ -385,7 +365,7 @@ class MatchService {
             ]);
             $result = $response->getBody()->getContents();
             $decodedData = json_decode($result);
-            $buyPrice = $this->getMarketWatchSymbolMarkup();
+            $buyPrice = $this->getMarketWatchSymbolPerUser(Auth::id());
             return ['buyResponse' => $decodedData , 'buy_price' => $buyPrice[0]->ask];
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
@@ -415,7 +395,7 @@ class MatchService {
             ]);
             $result = $response->getBody()->getContents();
             $decodedData = json_decode($result);
-            $buyPrice = $this->getMarketWatchSymbolMarkup();
+            $buyPrice = $this->getMarketWatchSymbolPerUser(Auth::id());
             return ['buyResponse' => $decodedData , 'buy_price' => $buyPrice[0]->ask];
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
@@ -636,7 +616,7 @@ class MatchService {
                 $result = $response->getBody()->getContents();
                 $decodedData = json_decode($result);
             }
-            $sellPrice = $this->getMarketWatchSymbolMarkup();
+            $sellPrice = $this->getMarketWatchSymbolPerUser(Auth::id());
             return ['sellResponse' => $decodedData , 'sellPrice' => $sellPrice[0]->bid];
 
 

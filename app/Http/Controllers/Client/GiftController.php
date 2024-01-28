@@ -52,7 +52,7 @@ class GiftController extends Controller
             $opendPositions = $this->matchService->getOpenedPositions($data['sender_user_id']);
             $userBalance = $this->matchService->getBalanceMatch();
             // $sellPriceNow = $this->matchService->getMarketWatchSymbol();
-            $sellPriceNow = $this->matchService->getMarketWatchSymbolMarkup();
+            $sellPriceNow = $this->matchService->getMarketWatchSymbolPerUser($data['sender_user_id']);
 
             $userRecieved = User::find($data['recieved_user_id']);
             if($userRecieved->client_trading_id != null){

@@ -24,6 +24,7 @@ class UpdateCatalogRequest extends FormRequest
         return [
             'name' => 'string',
             'preimum_fees' => 'numeric',
+            'status' => 'in:0,1',
             'products' => 'array|min:1',
             'products.*.product_id' => 'integer|exists:products,id',
         ];
