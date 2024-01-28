@@ -43,7 +43,7 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/refinery.php'));
 
             Route::prefix('api/client')
-                ->middleware(['api' , 'is_match_authed' , 'hmac'])
+                ->middleware(['api' , 'is_match_authed'])
                 ->namespace($this->namespace)
                 ->group(base_path('routes/client.php'));
 
