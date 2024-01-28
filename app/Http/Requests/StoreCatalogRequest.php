@@ -24,6 +24,7 @@ class StoreCatalogRequest extends FormRequest
         return [
             'name' => 'required|string|min:2',
             'preimum_fees' => 'required|numeric|min:1',
+            'status' => 'required|in:0,1',
             'products' => 'required|array|min:1',
             'products.*.product_id' => 'required|integer|exists:products,id',
         ];

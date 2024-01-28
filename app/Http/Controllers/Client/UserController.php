@@ -158,7 +158,7 @@ class UserController extends Controller
         try{
             $data = $request->validated();
             $orderData = $request->only('user_id','address_book_id');
-            $buyPrice = $this->matchService->getMarketWatchSymbolMarkup();
+            $buyPrice = $this->matchService->getMarketWatchSymbolPerUser($data['user_id']);
             if(is_string($buyPrice)){
                 return response()->json(['message' => 'Authentication error !'] , 400);
             }

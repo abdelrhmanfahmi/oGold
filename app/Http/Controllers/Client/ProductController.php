@@ -68,7 +68,7 @@ class ProductController extends Controller
     public function getMarketWatch()
     {
         try{
-            $symbols = $this->matchService->getMarketWatchSymbolMarkup();
+            $symbols = $this->matchService->getMarketWatchSymbolPerUser(Auth::id());
             if(!is_string($symbols)){
                 $this->matchService->saveSymbols($symbols);
                 return SymbolResource::collection($symbols);
@@ -86,7 +86,7 @@ class ProductController extends Controller
             $data = $request->validated();
             $data['user_id'] = Auth::id();
             //get buy price & user balance
-            $buyPrice = $this->matchService->getMarketWatchSymbolMarkup();
+            $buyPrice = $this->matchService->getMarketWatchSymbolPerUser(Auth::id());
             $userBalance = $this->matchService->getBalanceMatch();
             // check if they authenticated or not
             if(!is_string($buyPrice) && !is_string($userBalance)){
@@ -163,7 +163,7 @@ class ProductController extends Controller
         try{
             $data = $request->validated();
             $orderData = $request->only('user_id','address_book_id');
-            $buyPrice = $this->matchService->getMarketWatchSymbolMarkup();
+            $buyPrice = $this->matchService->getMarketWatchSymbolPerUser($data['user_id']);
             if(is_string($buyPrice)){
                 return response()->json(['message' => 'Authentication error !'] , 400);
             }
