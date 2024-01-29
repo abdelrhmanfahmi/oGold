@@ -55,7 +55,8 @@ class GiftController extends Controller
             $sellPriceNow = $this->matchService->getMarketWatchSymbolPerUser($data['sender_user_id']);
 
             $checkManagerAuthed = $this->matchService->getInfoAccount($data['sender_user_id']);
-            if($checkManagerAuthed['status'] == 401){
+
+            if(!isset($checkManagerAuthed['accountInfo'])){
                 return response()->json(['message' => 'Authentication error ! manager must be log in'] , 401);
             }
 
