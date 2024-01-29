@@ -22,7 +22,7 @@ class ShipdayService {
         $daysToDeliver = Setting::where('key' , 'delivery_period')->value('value');
         $currentDay = Carbon::now();
         $deliverExpectedDate = $currentDay->addDays((int)$daysToDeliver);
-        $userAddress = AddressBook::where('user_id' , $user->id)->first();
+        $userAddress = AddressBook::where('user_id' , $order->user_id)->first();
 
         try{
             $response = Http::withHeaders([
@@ -81,7 +81,7 @@ class ShipdayService {
         $daysToDeliver = Setting::where('key' , 'delivery_period')->value('value');
         $currentDay = Carbon::now();
         $deliverExpectedDate = $currentDay->addDays((int)$daysToDeliver);
-        $userAddress = AddressBook::where('user_id' , $user->id)->first();
+        $userAddress = AddressBook::where('user_id' , $order->user_id)->first();
 
         try{
             $response = Http::withHeaders([
