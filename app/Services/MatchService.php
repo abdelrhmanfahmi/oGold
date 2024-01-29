@@ -84,6 +84,28 @@ class MatchService {
         }
     }
 
+    public function getInfoAccount($user_id)
+    {
+        try{
+            $dataToken = MatchData::first();
+            $user = User::findOrFail($user_id);
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])->post("https://grpc-mtrwl.match-trade.com/v1/account/getInfo", [
+                "auth" => [
+                    "managerID" => env('MANAGER_ID'),
+                    "token" => $dataToken->manager_token
+                ],
+                "clientId" => $user->client_trading_id
+            ]);
+
+            return $response->json();
+        }catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            return $e->getResponse()->getBody()->getContents();
+        }
+    }
+
     public function loginAccountForCronJob()
     {
         try{
