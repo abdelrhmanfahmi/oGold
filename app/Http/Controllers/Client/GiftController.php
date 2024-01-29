@@ -54,6 +54,12 @@ class GiftController extends Controller
             // $sellPriceNow = $this->matchService->getMarketWatchSymbol();
             $sellPriceNow = $this->matchService->getMarketWatchSymbolPerUser($data['sender_user_id']);
 
+            $checkManagerAuthed = $this->matchService->getInfoAccount($data['sender_user_id']);
+            dd($checkManagerAuthed);
+            if($checkManagerAuthed['status'] == 401){
+                return response()->json(['message' => 'Authentication error ! manager must be log in'] , 401);
+            }
+
             $userRecieved = User::find($data['recieved_user_id']);
             if($userRecieved->client_trading_id != null){
                 if(!is_string($opendPositions) && !is_string($userBalance) && !is_string($sellPriceNow)){
