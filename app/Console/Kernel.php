@@ -19,11 +19,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('update:cron')
+        $schedule->command('update_total_price_catalog:cron')
                  ->everyTwoMinutes();
-        $schedule->command('update_user:cron')
+        $schedule->command('login_user:cron')
                  ->everyTenMinutes();
-        $schedule->command('update_manager:cron')
+        $schedule->command('login_manager:cron')
                  ->everyThirtyMinutes();
     }
 

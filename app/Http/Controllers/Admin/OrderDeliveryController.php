@@ -31,6 +31,9 @@ class OrderDeliveryController extends Controller
             $orderData = $this->orderRepository->find($data['order_id'] , []);
             // $opendPositions = $this->matchService->getOpenedPositions($orderData->user_id);
             $opendPositions = $this->matchService->getAllPositionForAuthUser($orderData->user_id);
+            if($opendPositions['status'] == 401){
+                return response()->messgae(['message' => 'Authentication error ! manager must be log in'] , 401);
+            }
             $getPositionsByOrder = $this->matchService->getPositionsByOrderAdminRefinaryRole($opendPositions,$orderData->total);
             if($getPositionsByOrder == 0){
                 return response()->json(['message' => 'there is no opened positions'],400);
@@ -69,7 +72,13 @@ class OrderDeliveryController extends Controller
         try{
             $data = $request->validated();
             $orderIds = $this->orderRepository->getOrdersIdsByDate($data['date'] , []);
-            $this->getOrdersByDate($orderIds);
+            $checkAuth = $this->getOrdersByDate($orderIds);
+            if($checkAuth == -1){
+                return response()->json(['message' => 'Authentication error !'] , 401);
+            }
+            if($checkAuth == -2){
+                return response()->messgae(['message' => 'Authentication error ! manager must be log in'] , 401);
+            }
             return response()->json(['message' => 'Order Approved Successfully'] , 200);
 
         }catch(\Exception $e){
@@ -81,13 +90,18 @@ class OrderDeliveryController extends Controller
     {
         $user = $this->userRepository->findByEmail(env('EMAILUPDATEPRICE'));
         $sellPrice = $this->matchService->getMarketWatchSymbolPerUser($user->id);
+        if(is_string($sellPrice)){
+            return -1;
+        }
         foreach($ids as $id){
             $orderData = $this->orderRepository->find($id , []);
             $opendPositions = $this->matchService->getAllPositionForAuthUser($orderData->user_id);
-            // for($i = 0 ; $i < count($opendPositions['positionInfo']) ; $i++){
-                $getPositionsByOrder = $this->matchService->getPositionsByOrderAdminRefinaryRole($opendPositions,$orderData->total);
-                $this->matchService->closePositionsByOrderDatePerAdmin($getPositionsByOrder , $orderData->user_id, $orderData->total);
-            // }
+            if($opendPositions['status'] == 401){
+                return -2;
+            }
+            $getPositionsByOrder = $this->matchService->getPositionsByOrderAdminRefinaryRole($opendPositions,$orderData->total);
+            $this->matchService->closePositionsByOrderDatePerAdmin($getPositionsByOrder , $orderData->user_id, $orderData->total);
+
             if(!is_string($sellPrice)){
                 $priceWillBeDeducted = $orderData->total * $sellPrice[0]->bid;
             }else{

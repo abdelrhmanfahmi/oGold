@@ -13,9 +13,9 @@ class UpdateManager extends Command
         parent::__construct();
     }
 
-    protected $signature = 'update_manager:cron';
+    protected $signature = 'login_manager:cron';
 
-    protected $description = 'Command description';
+    protected $description = 'this cron job for login as manager every 30 mins to update match data on db';
 
     public function handle()
     {
