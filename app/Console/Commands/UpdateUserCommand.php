@@ -13,9 +13,9 @@ class UpdateUserCommand extends Command
         parent::__construct();
     }
 
-    protected $signature = 'update_user:cron';
+    protected $signature = 'login_user:cron';
 
-    protected $description = 'Command description';
+    protected $description = 'this cron job for login as user in system every 10 mins and update his data in users table to use it in our system';
 
     /**
      * Execute the console command.

@@ -17,9 +17,9 @@ class UpdatePriceCommand extends Command
         parent::__construct();
     }
 
-    protected $signature = 'update:cron';
+    protected $signature = 'update_total_price_catalog:cron';
 
-    protected $description = 'Command description';
+    protected $description = 'this cron job for updating total_price for every catalog with his product in pivot table in db';
 
     public function handle()
     {
