@@ -112,8 +112,8 @@ class OrderDeliveryController extends Controller
             $orderData = $this->orderRepository->find($data['order_id'] , []);
             // $opendPositions = $this->matchService->getOpenedPositions($orderData->user_id);
             $opendPositions = $this->matchService->getAllPositionForAuthUser($orderData->user_id);
-            if($opendPositions['status'] == 401){
-                return response()->messgae(['message' => 'Authentication error ! manager must be log in'] , 401);
+            if(isset($opendPositions['status'])){
+                return response()->json(['message' => 'Authentication error ! manager must be log in'] , 401);
             }
             $getPositionsByOrder = $this->matchService->getPositionsByOrderAdminRefinaryRole($opendPositions,$orderData->total);
             if($getPositionsByOrder == 0){
@@ -175,7 +175,7 @@ class OrderDeliveryController extends Controller
         foreach($ids as $id){
             $orderData = $this->orderRepository->find($id , []);
             $opendPositions = $this->matchService->getAllPositionForAuthUser($orderData->user_id);
-            if($opendPositions['status'] == 401){
+            if(isset($opendPositions['status'])){
                 return -2;
             }
             $getPositionsByOrder = $this->matchService->getPositionsByOrderAdminRefinaryRole($opendPositions,$orderData->total);
