@@ -20,6 +20,7 @@ class CatalogResource extends JsonResource
             'uuid' => $this->uuid ?? null,
             'preimum_fees' => $this->preimum_fees ?? null,
             'products' => ProductResource::collection($this->whenLoaded('products')),
+            'status' => $this->status == '1' ? 'active' : 'in_active'
         ];
     }
 }
