@@ -11,6 +11,7 @@ $router->group([ 'namespace' => 'App\Http\Controllers\Auth'], function () use ($
 
     // $router->post('/forget-password', ['as' => 'auth.forget', 'uses' => 'AuthController@forgetPassowrd']);
     $router->post('/forget-password', ['as' => 'auth.forget', 'uses' => 'AuthController@forgetPassowrdMatch']);
+    $router->post('/resend-verification-code', ['as' => 'auth.resend', 'uses' => 'AuthController@resendVerificcationCode']);
     // $router->post('/forget-reset-password', ['as' => 'auth.forget_reset', 'uses' => 'AuthController@resetPassword']);
     $router->post('/forget-reset-password', ['as' => 'auth.forget_reset', 'uses' => 'AuthController@resetPasswordMatch']);
     $router->post('/refresh-token' , ['as' => 'auth.refresh' , 'uses' => 'AuthController@refresh']);

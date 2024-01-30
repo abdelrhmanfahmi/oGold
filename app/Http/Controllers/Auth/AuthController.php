@@ -8,6 +8,7 @@ use App\Http\Requests\ForgetPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\ResetForgetPasswordRequest;
+use App\Http\Requests\SendVerificationCodeRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Mail\UserMail;
@@ -23,7 +24,7 @@ class AuthController extends Controller
 {
     public function __construct(private MatchService $matchService , private UserRepositoryInterface $userRepository , private PasswordResetService $passwordResetService)
     {
-        $this->middleware('auth:api', ['except' => ['login','register','forgetPassowrdMatch','verifyEmailConfirmationMatch']]);
+        $this->middleware('auth:api', ['except' => ['login','register','forgetPassowrdMatch','verifyEmailConfirmationMatch' , 'resendVerificcationCode']]);
     }
 
     public function login(LoginRequest $request)
@@ -119,9 +120,20 @@ class AuthController extends Controller
             if($isVerified){
                 return response()->json(['message' => 'Email Verified Successfully'], 200);
             }else{
-                return response()->json(['message' => 'code is not valid'], 500);
+                return response()->json(['message' => 'code is not valid'], 400);
             }
 
+        }catch(\Exception $e){
+            return $e;
+        }
+    }
+
+    public function resendVerificcationCode(SendVerificationCodeRequest $request)
+    {
+        try{
+            $data = $request->validated();
+            $this->matchService->sendVerificationCode($data['email']);
+            return response()->json(['message' => 'Verification Code Sent Successfully!'] , 200);
         }catch(\Exception $e){
             return $e;
         }
