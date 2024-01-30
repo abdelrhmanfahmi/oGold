@@ -56,7 +56,7 @@ class CatalogController extends Controller
     {
         try{
             $catalog = $this->catalogRepository->find($id , ['products']);
-            return $catalog;
+            return CatalogResource::make($catalog);
         }catch(\Exception $e){
             return $e;
         }
