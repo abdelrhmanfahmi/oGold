@@ -29,6 +29,9 @@ class OrderDeliveryController extends Controller
         try{
             $data = $request->validated();
             $orderData = $this->orderRepository->find($data['order_id'] , []);
+            if($orderData->status != 'pending'){
+                return response()->json(['message' => 'this order approved before from admin!'] , 400);
+            }
             // $opendPositions = $this->matchService->getOpenedPositions($orderData->user_id);
             $opendPositions = $this->matchService->getAllPositionForAuthUser($orderData->user_id);
             if(isset($opendPositions['status'])){
