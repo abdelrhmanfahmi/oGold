@@ -29,7 +29,7 @@ class CheckOfferMiddleware
                 }
                 return $next($request);
             }else{
-                $message = 'Invalid Offer ID';
+                $message = 'Forbidden to proceed!';
                 abort('403', $message);
             }
         }
