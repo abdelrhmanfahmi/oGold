@@ -13,8 +13,17 @@ use stdClass;
 
 class ShipdayService {
 
+    public function __construct(private MatchService $matchService)
+    {}
+
     public function storeOrderDelivery($order, $user, $isCash)
     {
+        $user = User::where('email' , env('EMAILUPDATEPRICE'))->first();
+        $buyPrice = $this->matchService->getMarketWatchSymbolPerUser($user->id);
+        if(is_string($buyPrice)){
+                $this->matchService->loginAccountForCronJob();
+                $buyPrice = $this->matchService->getMarketWatchSymbolPerUser($user->id);
+        }
         $isCash == 'cash' ? 'cash' : 'credit_card';
         $pickup_from = Setting::where('key' , 'pickup_address')->value('value');
         $pickup_from_phone = Setting::where('key' , 'oGold-phone')->value('value');
@@ -23,13 +32,13 @@ class ShipdayService {
         $currentDay = Carbon::now();
         $deliverExpectedDate = $currentDay->addDays((int)$daysToDeliver);
         $userAddress = AddressBook::where('user_id' , $order->user_id)->first();
+        $totalAmount = ($order->total * $buyPrice[0]->ask) + $delivery_fees;
 
         try{
             $response = Http::withHeaders([
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Basic BgxsDwd00n.LNNn90QydrjgZ1K9dS13',
-                'x-api-key' => env('SHIPDAY_API')
+                'Authorization' => 'Basic '.env('SHIPDAY_API')
             ])->post("https://api.shipday.com/orders", [
                 "orderNumber"=> strval($order->id),
                 "customerName"=> $user->name,
@@ -43,7 +52,7 @@ class ShipdayService {
                 "expectedPickupTime"=> Carbon::now()->format('H:i:s'),
                 "expectedDeliveryTime"=> $deliverExpectedDate->format('H:i:s'),
                 "deliveryFee"=> (int)$delivery_fees,
-                "totalOrderCost"=> $order->total,
+                "totalOrderCost"=> $totalAmount,
                 "paymentMethod"=> $isCash
             ]);
 
@@ -60,8 +69,8 @@ class ShipdayService {
             $response = Http::withHeaders([
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Basic BgxsDwd00n.LNNn90QydrjgZ1K9dS13'
-            ])->post("https://api.shipday.com/orders/".$orderId."/meta", [
+                'Authorization' => 'Basic '.env('SHIPDAY_API')
+            ])->put("https://api.shipday.com/orders/1012/meta", [
                 "readyToPickup"=> true
             ]);
 
@@ -74,6 +83,12 @@ class ShipdayService {
 
     public function storeOrderBuyAndDeliver($order, $user_id, $payment_method)
     {
+        $user = User::where('email' , env('EMAILUPDATEPRICE'))->first();
+        $buyPrice = $this->matchService->getMarketWatchSymbolPerUser($user->id);
+        if(is_string($buyPrice)){
+                $this->matchService->loginAccountForCronJob();
+                $buyPrice = $this->matchService->getMarketWatchSymbolPerUser($user->id);
+        }
         $user = User::where('id' , $user_id)->first();
         $pickup_from = Setting::where('key' , 'pickup_address')->value('value');
         $pickup_from_phone = Setting::where('key' , 'oGold-phone')->value('value');
@@ -82,13 +97,13 @@ class ShipdayService {
         $currentDay = Carbon::now();
         $deliverExpectedDate = $currentDay->addDays((int)$daysToDeliver);
         $userAddress = AddressBook::where('user_id' , $order->user_id)->first();
+        $totalAmount = ($order->total * $buyPrice[0]->ask) + $delivery_fees;
 
         try{
             $response = Http::withHeaders([
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Basic BgxsDwd00n.LNNn90QydrjgZ1K9dS13',
-                'x-api-key' => env('SHIPDAY_API')
+                'Authorization' => 'Basic '.env('SHIPDAY_API')
             ])->post("https://api.shipday.com/orders", [
                 "orderNumber"=> strval($order->id),
                 "customerName"=> $user->name,
@@ -102,7 +117,7 @@ class ShipdayService {
                 "expectedPickupTime"=> Carbon::now()->format('H:i:s'),
                 "expectedDeliveryTime"=> $deliverExpectedDate->format('H:i:s'),
                 "deliveryFee"=> (int)$delivery_fees,
-                "totalOrderCost"=> $order->total,
+                "totalOrderCost"=> $totalAmount,
                 "paymentMethod"=> $payment_method
             ]);
 
