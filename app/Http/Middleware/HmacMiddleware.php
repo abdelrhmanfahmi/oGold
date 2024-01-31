@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Offers;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,25 +16,29 @@ class HmacMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $header = env('HMAC_PUBLIC_KEY');
-        $request_hash = $request->headers->get($header);
-        if (!$request_hash) {
-            $message = 'Header `' . $header . '` missing.';
-            abort('403', $message);
-        }
+        $offer = $request->headers->get('offer_id');
+        $checkOffer = Offers::where('offer_id' , $offer)->exists();
+        if($checkOffer){
+            $offer = Offers::where('offer_id' , $offer)->first();
+            $header = "SIGNATURE";
+            $request_hash = $request->headers->get($header);
+            if (!$request_hash) {
+                $message = 'Header `' . $header . '` missing.';
+                abort('403', $message);
+            }
 
-        $body = $request->all();
-        $url = request()->url();
-        $verb = $request->method();
-        $md5 = md5(json_encode($body));
+            $body = $request->all();
+            $body['url'] = request()->url();
+            $data = json_encode($body);
 
-        $string = $verb . PHP_EOL . $url . PHP_EOL . $md5;
+            $hash = hash_hmac('SHA256', $data, $offer->secret_key);
 
-        $hash = hash_hmac('SHA256', $string, env('HMAC_SECRET_KEY'));
-        $base64_hash = base64_encode($hash);
-
-        if ($base64_hash !== $request_hash) {
-            $message = 'Invalid `' . $header . '` Header';
+            if ($hash !== $request_hash) {
+                $message = 'Invalid `' . $header . '` Header';
+                abort('403', $message);
+            }
+        }else{
+            $message = 'Invalid Offer_id';
             abort('403', $message);
         }
         return $next($request);
