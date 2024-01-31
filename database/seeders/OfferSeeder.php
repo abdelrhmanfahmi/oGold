@@ -3,20 +3,26 @@
 namespace Database\Seeders;
 
 use App\Models\Offers;
+use App\Services\MatchService;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class OfferSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+    public function __construct(private MatchService $matchService)
+    {}
+
     public function run(): void
     {
-        Offers::create([
-            'offer_id' => 'fabb2b6c-400d-4772-b037-d9717db01ec8',
-            'title' => 'fabrica_test',
-            'secret_key' => generateSecretKey()
-        ]);
+        $match_data = $this->matchService->getAccessToken();
+        $offers = $this->matchService->getOfferUUID($match_data);
+
+        foreach($offers as $offer){
+            Offers::create([
+                'offer_id' => $offer->uuid,
+                'title' => $offer->name,
+                'secret_key' => generateSecretKey()
+            ]);
+        }
     }
 }

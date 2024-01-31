@@ -16,11 +16,9 @@ class HmacMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $offer = $request->headers->get('offer_id');
-        $checkOffer = Offers::where('offer_id' , $offer)->exists();
-        if($checkOffer){
-            $offer = Offers::where('offer_id' , $offer)->first();
-            $header = "SIGNATURE";
+            // $offer_id = $request->headers->get('offer_id');
+            $offer = Offers::first();
+            $header = "signature";
             $request_hash = $request->headers->get($header);
             if (!$request_hash) {
                 $message = 'Header `' . $header . '` missing.';
@@ -28,7 +26,7 @@ class HmacMiddleware
             }
 
             $body = $request->all();
-            $body['url'] = request()->url();
+            $body['offer_id'] = $offer->offer_id;
             $data = json_encode($body);
 
             $hash = hash_hmac('SHA256', $data, $offer->secret_key);
@@ -37,10 +35,7 @@ class HmacMiddleware
                 $message = 'Invalid `' . $header . '` Header';
                 abort('403', $message);
             }
-        }else{
-            $message = 'Invalid Offer_id';
-            abort('403', $message);
-        }
+
         return $next($request);
     }
 }
