@@ -17,7 +17,7 @@ class CheckOfferMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         //check if request url login and user is admin or refinery
-        if(str_contains($request->url(), 'api/auth/client/login') && ($request->email == 'admin@gmail.com' || $request->email == 'refinery@gmail.com')){
+        if(str_contains($request->url(), 'api/auth/admin/login')){
             return $next($request);
         }else{
             $offer = $request->headers->get('offer_id');
