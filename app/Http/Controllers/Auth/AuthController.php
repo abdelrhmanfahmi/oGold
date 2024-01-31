@@ -12,6 +12,7 @@ use App\Http\Requests\SendVerificationCodeRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Mail\UserMail;
+use App\Models\Offers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Repository\Interfaces\UserRepositoryInterface;
@@ -60,9 +61,18 @@ class AuthController extends Controller
             //success logged in
             $user = Auth::user();
 
+            if(Auth::user()->offer_uuid == null){
+                $offer_id = request()->headers->get('offer_id');
+                $checkIfExists = Offers::where('offer_id' , $offer_id)->exists();
+                if($checkIfExists){
+                    Auth::user()->update(['offer_uuid' => $offer_id]);
+                }else{
+                    $firstOffer = Offers::first();
+                    Auth::user()->update(['offer_uuid' => $firstOffer->offer_id]);
+                }
+            }
+
             //login in match apis
-            $match_data = $this->matchService->getAccessToken();
-            $this->matchService->getOfferUUID($match_data);
             $this->matchService->loginAccount($credentials);
 
             return response()->json([
@@ -79,10 +89,21 @@ class AuthController extends Controller
     {
         try{
             $data = $request->validated();
-            //create token with parentId and get offerUuid
-            $match_data = $this->matchService->getAccessToken();
-            $this->matchService->getOfferUUID($match_data);
-            $this->matchService->createUserInMatch($data);
+            //create token with parentId
+            $this->matchService->getAccessToken();
+
+            //check offer exists
+            $offer_id = request()->headers->get('offer_id');
+            $checkIfExists = Offers::where('offer_id' , $offer_id)->exists();
+            if($checkIfExists){
+                $data['offer_uuid'] = $offer_id;
+                $this->matchService->createUserInMatch($data);
+            }else{
+                $firstOffer = Offers::first();
+                $data['offer_uuid'] = $firstOffer->offer_id;
+                $this->matchService->createUserInMatch($data);
+            }
+
 
             //send verification code of match to new user
             $this->matchService->sendVerificationCode($data['email']);

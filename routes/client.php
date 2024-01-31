@@ -10,8 +10,8 @@ $router->group([ 'namespace' => 'App\Http\Controllers\Client'], function () use 
 $router->group(['prefix' => 'products' ,'namespace' => 'App\Http\Controllers\Client'], function () use ($router) {
     $router->get('/', ['as' => 'products.index', 'uses' => 'ProductController@index']);
     $router->get('/market-watch', ['as' => 'products.market', 'uses' => 'ProductController@getMarketWatch']);
-    $router->post('/buy-gold', ['as' => 'products.buy_gold', 'uses' => 'ProductController@buyGold']);
-    $router->post('/sell-gold', ['as' => 'products.sell_gold', 'uses' => 'ProductController@sellGold']);
+    $router->post('/buy-gold', ['as' => 'products.buy_gold', 'uses' => 'ProductController@buyGold'])->middleware('hmac');
+    $router->post('/sell-gold', ['as' => 'products.sell_gold', 'uses' => 'ProductController@sellGold'])->middleware('hmac');
     $router->get('/get-balance', ['as' => 'products.balance', 'uses' => 'ProductController@getBalance']);
     $router->post('/exchange-gold', ['as' => 'products.exchange_gold', 'uses' => 'ProductController@exchangeGold']);
 });
@@ -52,4 +52,4 @@ $router->post('/upload-kyc-file' , ['as' => 'user.kyc', 'uses' => 'App\Http\Cont
 $router->get('/kyc-data' , ['as' => 'index.kyc_data', 'uses' => 'App\Http\Controllers\Client\UserController@getFileUrls']);
 $router->post('/check-user-exists' , ['as' => 'getusers.phone' , 'uses' => 'App\Http\Controllers\Client\UserController@getUsersByPhone']);
 $router->post('/store-contact' , ['as' => 'store.contact' , 'uses' => 'App\Http\Controllers\Client\UserController@storeContact']);
-$router->post('/buy-and-deliver' , ['as' => 'order.buyAndDeliver' , 'uses' => 'App\Http\Controllers\Client\UserController@buyAndDeliver']);
+$router->post('/buy-and-deliver' , ['as' => 'order.buyAndDeliver' , 'uses' => 'App\Http\Controllers\Client\UserController@buyAndDeliver'])->middleware('hmac');

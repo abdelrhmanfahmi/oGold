@@ -26,7 +26,9 @@ class MatchService {
                 ]
             ]);
             $data = $response->getBody()->getContents();
-            return json_decode($data);
+            $adminData = json_decode($data);
+            MatchData::where('partner_id' , $adminData->partnerId)->update(['access_token' => $adminData->access_token]);
+            return $adminData;
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
         }
@@ -42,15 +44,7 @@ class MatchService {
                 ]);
             $data = $response->getBody()->getContents();
             $data_transform = json_decode($data);
-
-            MatchData::updateOrCreate([
-                'partner_id' => $match_data->partnerId
-            ],[
-                'access_token' => $match_data->access_token,
-                'partner_id' => $match_data->partnerId,
-                'offer_uuid' => $data_transform[0]->uuid
-            ]);
-
+            return $data_transform;
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
         }
@@ -140,7 +134,7 @@ class MatchService {
             $client = new \GuzzleHttp\Client();
             $match_data = MatchData::first();
             $account = new \stdClass();
-            $account->partnerId = $match_data->partner_id;
+            $account->partnerId = (int) env('BROKERID');
             $account->email = $data['email'];
             $account->name = $data['name'];
             $account->surname = $data['surname'];
@@ -153,16 +147,16 @@ class MatchService {
             $response = $client->request('POST', $url, [
                 'headers' => ['Content-Type' => 'application/json' , 'Authorization' => 'Bearer '. $match_data->access_token],
                 'json' => [
-                    'offerUuid' => $match_data->offer_uuid,
+                    'offerUuid' => $data['offer_uuid'],
                     'createAsDepositedAccount' => true,
                     'account' => $account,
                 ]
             ]);
             $result = $response->getBody()->getContents();
             $decodedData = json_decode($result);
-            $decodedData->oneTimeToken;
-            $dataMatch = MatchData::first();
-            $dataMatch->update(['oneTimeToken' => $decodedData->oneTimeToken]);
+            // $decodedData->oneTimeToken;
+            // $dataMatch = MatchData::first();
+            // $dataMatch->update(['oneTimeToken' => $decodedData->oneTimeToken]);
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
         }
