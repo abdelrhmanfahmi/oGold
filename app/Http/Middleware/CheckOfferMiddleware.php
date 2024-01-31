@@ -24,12 +24,12 @@ class CheckOfferMiddleware
             if($offer){
                 $checkOffer = Offers::where('offer_id' , $offer)->exists();
                 if(!$checkOffer){
-                    $message = 'Invalid Offer_id';
+                    $message = 'Invalid Offer ID';
                     abort('403', $message);
                 }
                 return $next($request);
             }else{
-                $message = 'Forbiden to proceed!';
+                $message = 'Invalid Offer ID';
                 abort('403', $message);
             }
         }
