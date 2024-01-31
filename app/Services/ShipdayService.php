@@ -57,6 +57,7 @@ class ShipdayService {
             ]);
 
             $decodedData = $response->json();
+            $order->update(['order_delivery_id' => $decodedData['orderId']]);
             return $decodedData;
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
@@ -70,7 +71,7 @@ class ShipdayService {
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Basic '.env('SHIPDAY_API')
-            ])->put("https://api.shipday.com/orders/1012/meta", [
+            ])->put("https://api.shipday.com/orders/".$orderId."/meta", [
                 "readyToPickup"=> true
             ]);
 
@@ -122,6 +123,7 @@ class ShipdayService {
             ]);
 
             $decodedData = $response->json();
+            $order->update(['order_delivery_id' => $decodedData['orderId']]);
             return $decodedData;
         }catch (\GuzzleHttp\Exception\BadResponseException $e) {
             return $e->getResponse()->getBody()->getContents();
