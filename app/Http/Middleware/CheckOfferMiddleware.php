@@ -16,17 +16,22 @@ class CheckOfferMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $offer = $request->headers->get('offer_id');
-        if($offer){
-            $checkOffer = Offers::where('offer_id' , $offer)->exists();
-            if(!$checkOffer){
-                $message = 'Invalid Offer_id';
-                abort('403', $message);
-            }
+        //check if request url login and user is admin or refinery
+        if(str_contains($request->url(), 'api/auth/client/login') && ($request->email == 'admin@gmail.com' || $request->email == 'refinery@gmail.com')){
             return $next($request);
         }else{
-            $message = 'Forbiden to proceed!';
-            abort('403', $message);
+            $offer = $request->headers->get('offer_id');
+            if($offer){
+                $checkOffer = Offers::where('offer_id' , $offer)->exists();
+                if(!$checkOffer){
+                    $message = 'Invalid Offer_id';
+                    abort('403', $message);
+                }
+                return $next($request);
+            }else{
+                $message = 'Forbiden to proceed!';
+                abort('403', $message);
+            }
         }
     }
 }
