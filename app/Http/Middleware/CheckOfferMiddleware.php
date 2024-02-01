@@ -31,6 +31,7 @@ class CheckOfferMiddleware
                 }
                 return $next($request);
             }else{
+                return $next($request);
                 $message = 'Forbidden to proceed!';
                 abort('403', $message);
             }
