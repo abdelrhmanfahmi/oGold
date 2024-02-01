@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\Offers;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckOfferMiddleware
@@ -22,6 +23,8 @@ class CheckOfferMiddleware
         }elseif(str_contains($request->url(), 'api/auth/user/info')){
             return $next($request);
         }else{
+            Log::info($request->headers->all());
+            dd($request->headers->all());
             $offer = $request->headers->get('offer_id');
             if($offer){
                 $checkOffer = Offers::where('offer_id' , $offer)->exists();
@@ -31,7 +34,6 @@ class CheckOfferMiddleware
                 }
                 return $next($request);
             }else{
-                return $next($request);
                 $message = 'Forbidden to proceed!';
                 abort('403', $message);
             }
