@@ -23,8 +23,8 @@ class CheckOfferMiddleware
         }elseif(str_contains($request->url(), 'api/auth/user/info')){
             return $next($request);
         }else{
-            dd(request()->header('offer_id'));
-            $offer = request()->header('offer_id');
+            dd($request->header('offer_id'));
+            $offer = $request->header('offer_id');
             if($offer){
                 $checkOffer = Offers::where('offer_id' , $offer)->exists();
                 if(!$checkOffer){
