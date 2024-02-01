@@ -62,7 +62,7 @@ class AuthController extends Controller
             $user = Auth::user();
 
             if(Auth::user()->offer_uuid == null){
-                $offer_id = request()->headers->get('offer_id');
+                $offer_id = request()->headers->get('offer');
                 $checkIfExists = Offers::where('offer_id' , $offer_id)->exists();
                 if($checkIfExists){
                     Auth::user()->update(['offer_uuid' => $offer_id]);
@@ -93,7 +93,7 @@ class AuthController extends Controller
             $this->matchService->getAccessToken();
 
             //check offer exists
-            $offer_id = request()->headers->get('offer_id');
+            $offer_id = request()->headers->get('offer');
             $checkIfExists = Offers::where('offer_id' , $offer_id)->exists();
             if($checkIfExists){
                 $data['offer_uuid'] = $offer_id;
