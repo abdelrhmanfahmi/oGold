@@ -137,7 +137,7 @@ class OrderDeliveryController extends Controller
                     }
                     $this->matchService->withdrawMoneyManager($priceWillBeDeducted , $orderData->user_id);
                     //here call api for approve order to ready to pick up delivery integration
-                    $this->shipdayService->approveOrderReadyToPickup($orderData->order_delivery_id);
+                    $this->shipdayService->approveOrderReadyToPickup($orderData->order_ship_id);
                     $this->orderRepository->update($orderData,['status' => 'ready_to_picked']);
                     return response()->json(['message' => 'Order Approved Successfully'] , 200);
                 }else{
@@ -193,7 +193,7 @@ class OrderDeliveryController extends Controller
             }
             $this->matchService->withdrawMoneyManager($priceWillBeDeducted , $orderData->user_id);
             //here call api for approve order to ready to pick up delivery integration
-            $this->shipdayService->approveOrderReadyToPickup($orderData->order_delivery_id);
+            $this->shipdayService->approveOrderReadyToPickup($orderData->order_ship_id);
             $this->orderRepository->update($orderData,['status' => 'ready_to_picked']);
         }
     }
