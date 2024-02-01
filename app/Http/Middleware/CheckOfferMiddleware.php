@@ -24,7 +24,7 @@ class CheckOfferMiddleware
             return $next($request);
         }else{
 //            dd($request->header(``'offer_id'));
-            $offer = $request->header('offer_id');
+            $offer = $request->header('offer');
             if($offer){
                 $checkOffer = Offers::where('offer_id' , $offer)->exists();
                 if(!$checkOffer){
