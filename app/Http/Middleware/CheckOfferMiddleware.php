@@ -19,6 +19,8 @@ class CheckOfferMiddleware
         //check if request url login and user is admin or refinery
         if(str_contains($request->url(), 'api/auth/admin/login')){
             return $next($request);
+        }elseif(str_contains($request->url(), 'api/auth/user/info')){
+            return $next($request);
         }else{
             $offer = $request->headers->get('offer_id');
             if($offer){
