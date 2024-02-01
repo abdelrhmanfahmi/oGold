@@ -16,7 +16,7 @@ class HmacMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-            $offer_id = $request->headers->get('offer_id');
+            $offer_id = $request->headers->get('offer');
             $offer = Offers::where('offer_id' , $offer_id)->first();
             $header = "signature";
             $request_hash = $request->headers->get($header);
